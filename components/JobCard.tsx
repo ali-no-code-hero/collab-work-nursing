@@ -1,4 +1,3 @@
-import { clsx } from "clsx";
 
 export type Job = {
   id: string | number;
