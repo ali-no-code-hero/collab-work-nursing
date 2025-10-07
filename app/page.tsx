@@ -4,17 +4,49 @@ async function fetchJobs(): Promise<Job[]> {
   const endpoint = process.env.JOBS_API_URL || "";
   try {
     if (!endpoint) {
-      // Fallback demo data (3–5 jobs) if no API configured
+      // Fallback demo (nursing flavor)
       return [
-        { id: 1, title: "Senior Product Manager", company: "Acme Corp", location: "Remote (US)", type: "Full-time", tags: ["Product", "Strategy", "SaaS"], url: "#", postedAt: new Date().toISOString() },
-        { id: 2, title: "Frontend Engineer (React/Next.js)", company: "Bright Labs", location: "Austin, TX", type: "Full-time", tags: ["React", "Next.js", "Tailwind"], url: "#", postedAt: new Date().toISOString() },
-        { id: 3, title: "Data Analyst", company: "FinEdge", location: "NYC (Hybrid)", type: "Contract", tags: ["SQL", "BigQuery", "Looker"], url: "#", postedAt: new Date().toISOString() },
+        {
+          id: 1,
+          title: "Registered Nurse (RN) – Med/Surg",
+          company: "CareFirst Health",
+          location: "Houston, TX",
+          type: "Full-time",
+          tags: ["RN", "Med/Surg", "Acute Care"],
+          url: "#",
+          postedAt: new Date().toISOString(),
+          description: "Provide bedside care on a 32-bed unit. Collaborate with interdisciplinary teams. 3x12 schedule.",
+          logo: "https://dummyimage.com/112x112/EAF2FF/2E6AFF&text=C"
+        },
+        {
+          id: 2,
+          title: "ICU Nurse (Night Shift)",
+          company: "Bayou Medical Center",
+          location: "Houston, TX",
+          type: "Full-time",
+          tags: ["ICU", "Critical Care", "BLS/ACLS"],
+          url: "#",
+          postedAt: new Date().toISOString(),
+          description: "Manage high-acuity patients, ventilators, drips. Night differential available.",
+          logo: "https://dummyimage.com/112x112/EAF2FF/2E6AFF&text=B"
+        },
+        {
+          id: 3,
+          title: "Home Health RN Case Manager",
+          company: "Community Nurses of Texas",
+          location: "Remote/Field (Houston)",
+          type: "Contract",
+          tags: ["Home Health", "Case Mgmt", "RN"],
+          url: "#",
+          postedAt: new Date().toISOString(),
+          description: "Coordinate patient care plans, conduct in-home visits, document in EMR.",
+          logo: "https://dummyimage.com/112x112/EAF2FF/2E6AFF&text=H"
+        },
       ];
     }
     const res = await fetch(`${endpoint}`, { next: { revalidate: 60 } });
     if (!res.ok) throw new Error(`HTTP ${res.status}`);
     const data = await res.json();
-    // Normalize: accept either {jobs: [...]} or an array
     const jobs: any[] = Array.isArray(data) ? data : (data.jobs ?? []);
     return jobs.slice(0, 5).map((j, idx) => ({
       id: j.id ?? idx,
@@ -26,6 +58,9 @@ async function fetchJobs(): Promise<Job[]> {
       url: j.url ?? j.apply_url ?? j.link ?? "#",
       salary: j.salary ?? j.compensation ?? undefined,
       type: j.type ?? j.employment_type ?? undefined,
+      // NEW: map logo / description from common field names
+      logo: j.logo ?? j.company_logo ?? j.logo_url ?? j.employer_logo ?? undefined,
+      description: j.description ?? j.job_description ?? j.summary ?? j.desc ?? undefined,
     }));
   } catch (e) {
     console.error(e);
@@ -38,22 +73,20 @@ export default async function Page() {
 
   return (
     <div>
+      {/* Hero */}
       <section className="bg-primary-light border-b border-black/5">
         <div className="mx-auto max-w-6xl px-6 py-16 md:py-24">
-          <p className="uppercase tracking-widest text-xs text-primary font-semibold">Jobs</p>
+          <p className="uppercase tracking-widest text-xs text-primary font-semibold">Nursing Jobs</p>
           <h1 className="mt-3 text-4xl md:text-6xl font-semibold text-ink">
-            Unlock the hidden job market
+            Find your next nursing role
           </h1>
           <p className="mt-4 max-w-2xl text-base md:text-lg text-ink-soft">
-            A minimal, CollabWORK‑inspired list of curated roles. Drop in your API and deploy to Vercel.
+            Curated RN, ICU, and Home Health roles. Plug in your jobs API and deploy.
           </p>
-          <div className="mt-8 flex gap-3">
-            <a className="btn" href="https://vercel.com/new" target="_blank">Deploy to Vercel</a>
-            <a className="inline-flex items-center gap-2 px-5 py-3 rounded-2xl border border-black/10 text-ink hover:bg-surface-alt" href="https://www.collabwork.com/" target="_blank" rel="noreferrer">Learn about CollabWORK</a>
-          </div>
         </div>
       </section>
 
+      {/* Jobs */}
       <section>
         <div className="mx-auto max-w-6xl px-6 py-12 md:py-16">
           {jobs.length === 0 ? (
@@ -62,7 +95,7 @@ export default async function Page() {
               <p className="mt-2 text-sm">Provide an API endpoint via <code>JOBS_API_URL</code> to load jobs.</p>
             </div>
           ) : (
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div className="grid grid-cols-1 gap-6">
               {jobs.slice(0, 5).map((job) => (
                 <JobCard key={job.id} job={job} />
               ))}
