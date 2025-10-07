@@ -32,7 +32,7 @@ export default function JobCard({ job }: { job: Job }) {
         </div>
       )}
       <div className="mt-5 flex items-center gap-3">
-        {job.salary && <span className="text-sm font-medium text-ink">${"{job.salary}"}</span>}
+        {job.salary && <span className="text-sm font-medium text-ink">{job.salary}</span>}
         {job.url && (
           <a className="btn" href={job.url} target="_blank" rel="noreferrer">
             View Job
