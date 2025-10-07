@@ -1,4 +1,4 @@
-import JobCard, { type Job } from "@/components/JobCard";
+import JobCard, { type Job } from "../components/JobCard";
 
 async function fetchJobs(): Promise<Job[]> {
   const endpoint = process.env.JOBS_API_URL || "";
@@ -21,7 +21,7 @@ async function fetchJobs(): Promise<Job[]> {
       title: j.title ?? j.job_title ?? "Untitled role",
       company: j.company ?? j.company_name ?? "Company",
       location: j.location ?? j.city_state ?? "",
-      postedAt: j.posted_at ?? j.created_at ?? null,
+      postedAt: j.posted_at ?? j.created_at ?? undefined,
       tags: j.tags ?? j.skills ?? [],
       url: j.url ?? j.apply_url ?? j.link ?? "#",
       salary: j.salary ?? j.compensation ?? undefined,
