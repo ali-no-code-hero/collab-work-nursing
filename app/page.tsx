@@ -81,7 +81,7 @@ export default async function Page() {
             Find your next nursing role
           </h1>
           <p className="mt-4 max-w-2xl text-base md:text-lg text-ink-soft">
-            Curated RN, ICU, and Home Health roles. Plug in your jobs API and deploy.
+            Curated RN, ICU, and Home Health roles based on your search.
           </p>
         </div>
       </section>
@@ -103,6 +103,21 @@ export default async function Page() {
           )}
         </div>
       </section>
+      {/* See more CTA */}
+        <section>
+          <div className="mx-auto max-w-6xl px-6 pb-16">
+            <div className="card p-6 flex items-center justify-center">
+              <a
+                className="btn"
+                href={MORE_JOBS_URL}
+                target="_blank"
+                rel="noreferrer"
+              >
+                See More Nursing Jobs
+              </a>
+            </div>
+          </div>
+        </section>
     </div>
   );
 }
