@@ -1,5 +1,8 @@
 import JobCard, { type Job } from "../components/JobCard";
 
+const MORE_JOBS_URL: string =
+  process.env.MORE_JOBS_URL || "https://your-site.example.com/more-nursing-jobs";
+
 async function fetchJobs(): Promise<Job[]> {
   const endpoint = process.env.JOBS_API_URL || "";
   try {
