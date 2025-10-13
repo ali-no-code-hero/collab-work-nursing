@@ -1,13 +1,18 @@
 import JobCard, { type Job } from "../components/JobCard";
 
 const MORE_JOBS_URL: string =
-  process.env.MORE_JOBS_URL || "https://your-site.example.com/more-nursing-jobs";
+  process.env.MORE_JOBS_URL || "#";
 
 async function fetchJobs(): Promise<Job[]> {
-  const endpoint = process.env.JOBS_API_URL || "";
   try {
-    if (!endpoint) {
-      // Fallback demo (nursing flavor)
+    // Use our internal API route instead of calling CollabWORK directly
+    const res = await fetch(`${process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3000'}/api/jobs`, { 
+      next: { revalidate: 60 } 
+    });
+    
+    if (!res.ok) {
+      console.error(`API Error: ${res.status} ${res.statusText}`);
+      // Fallback demo (nursing flavor) if API fails
       return [
         {
           id: 1,
@@ -18,8 +23,12 @@ async function fetchJobs(): Promise<Job[]> {
           tags: ["RN", "Med/Surg", "Acute Care"],
           url: "#",
           postedAt: new Date().toISOString(),
-          description: "Provide bedside care on a 32-bed unit. Collaborate with interdisciplinary teams. 3x12 schedule.",
-          logo: "https://dummyimage.com/112x112/EAF2FF/2E6AFF&text=C"
+          description: "Provide bedside care on a 32-bed unit. Collaborate with interdisciplinary teams. 3x12 schedule with weekend rotation. Strong mentorship program for new nurses.",
+          salaryMin: 72000,
+          salaryMax: 92000,
+          isRemote: false,
+          industry: "Health Care Providers & Services",
+          logo: undefined
         },
         {
           id: 2,
@@ -30,75 +39,110 @@ async function fetchJobs(): Promise<Job[]> {
           tags: ["ICU", "Critical Care", "BLS/ACLS"],
           url: "#",
           postedAt: new Date().toISOString(),
-          description: "Manage high-acuity patients, ventilators, drips. Night differential available.",
-          logo: "https://dummyimage.com/112x112/EAF2FF/2E6AFF&text=B"
+          description: "Manage high-acuity patients, ventilators, drips. Night differential available. Strong mentorship program for new ICU nurses.",
+          salaryMin: 78000,
+          salaryMax: 98000,
+          isRemote: false,
+          industry: "Health Care Providers & Services",
+          logo: undefined
         },
         {
           id: 3,
           title: "Home Health RN Case Manager",
           company: "Community Nurses of Texas",
-          location: "Remote/Field (Houston)",
+          location: "Remote/Field (Houston area)",
           type: "Contract",
           tags: ["Home Health", "Case Mgmt", "RN"],
           url: "#",
           postedAt: new Date().toISOString(),
-          description: "Coordinate patient care plans, conduct in-home visits, document in EMR.",
-          logo: "https://dummyimage.com/112x112/EAF2FF/2E6AFF&text=H"
+          description: "Coordinate patient care plans, conduct in-home visits, document in EMR. Flexible scheduling with autonomy and work-life balance.",
+          salaryMin: 68000,
+          salaryMax: 85000,
+          isRemote: true,
+          industry: "Health Care Providers & Services",
+          logo: undefined
         },
       ];
     }
-    const res = await fetch(`${endpoint}`, { next: { revalidate: 60 } });
-    if (!res.ok) throw new Error(`HTTP ${res.status}`);
+    
     const data = await res.json();
     const jobs: any[] = Array.isArray(data) ? data : (data.jobs ?? []);
     return jobs.slice(0, 5).map((j, idx) => ({
-      id: j.id ?? idx,
+      id: j.job_eid ?? j.id ?? idx,
       title: j.title ?? j.job_title ?? "Untitled role",
       company: j.company ?? j.company_name ?? "Company",
       location: j.location ?? j.city_state ?? "",
-      postedAt: j.posted_at ?? j.created_at ?? undefined,
+      postedAt: j.date_posted ? new Date(j.date_posted).toISOString() : (j.posted_at ?? j.created_at ?? undefined),
       tags: j.tags ?? j.skills ?? [],
       url: j.url ?? j.apply_url ?? j.link ?? "#",
-      salary: j.salary ?? j.compensation ?? undefined,
-      type: j.type ?? j.employment_type ?? undefined,
+      salary: j.salary_min && j.salary_max ? `$${j.salary_min.toLocaleString()}-$${j.salary_max.toLocaleString()}` : (j.salary ?? j.compensation ?? undefined),
+      salaryMin: j.salary_min,
+      salaryMax: j.salary_max,
+      type: j.is_remote ? "Remote" : (j.type ?? j.employment_type ?? undefined),
+      isRemote: j.is_remote ?? false,
+      industry: j.industry,
       // NEW: map logo / description from common field names
       logo: j.logo ?? j.company_logo ?? j.logo_url ?? j.employer_logo ?? undefined,
       description: j.description ?? j.job_description ?? j.summary ?? j.desc ?? undefined,
     }));
   } catch (e) {
-    console.error(e);
+    console.error('Error fetching jobs:', e);
     return [];
   }
 }
 
 export default async function Page() {
   const jobs = await fetchJobs();
+  const jobCount = Math.min(jobs.length, 5);
 
   return (
-    <div>
-      {/* Hero */}
-      <section className="bg-primary-light border-b border-black/5">
-        <div className="mx-auto max-w-6xl px-6 py-16 md:py-24">
-          <p className="uppercase tracking-widest text-xs text-primary font-semibold">Nursing Jobs</p>
-          <h1 className="mt-3 text-4xl md:text-6xl font-semibold text-ink">
-            Find your next nursing role
+    <div className="min-h-screen bg-gray-50">
+      {/* Header */}
+      <section className="bg-gradient-to-r from-blue-50 to-purple-50 border-b border-gray-200">
+        <div className="mx-auto max-w-6xl px-6 py-12 md:py-16">
+          {/* Subscription Status */}
+          <div className="flex items-center gap-2 mb-4">
+            <div className="w-5 h-5 bg-green-500 rounded-full flex items-center justify-center">
+              <svg className="w-3 h-3 text-white" fill="currentColor" viewBox="0 0 20 20">
+                <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
+              </svg>
+            </div>
+            <p className="text-blue-600 font-medium text-sm">✓ YOU'RE SUBSCRIBED!</p>
+          </div>
+
+          {/* Main Heading */}
+          <h1 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
+            Thanks! Here are {jobCount} jobs you can apply to right now
           </h1>
-          <p className="mt-4 max-w-2xl text-base md:text-lg text-ink-soft">
-            Curated RN, ICU, and Home Health roles based on your search.
-          </p>
+
+          {/* Matching Criteria */}
+          <div className="flex flex-wrap items-center gap-2 text-sm text-gray-600">
+            <span>From our network, matched to your</span>
+            <div className="flex flex-wrap gap-2">
+              <span className="px-3 py-1 bg-pink-100 text-pink-700 rounded-full text-xs font-medium flex items-center gap-1">
+                📍 Houston location
+              </span>
+              <span className="px-3 py-1 bg-purple-100 text-purple-700 rounded-full text-xs font-medium flex items-center gap-1">
+                🩺 ICU experience
+              </span>
+              <span className="px-3 py-1 bg-green-100 text-green-700 rounded-full text-xs font-medium flex items-center gap-1">
+                ✓ openness to new roles
+              </span>
+            </div>
+          </div>
         </div>
       </section>
 
       {/* Jobs */}
-      <section>
-        <div className="mx-auto max-w-6xl px-6 py-12 md:py-16">
+      <section className="py-8">
+        <div className="mx-auto max-w-6xl px-6">
           {jobs.length === 0 ? (
-            <div className="card p-6 text-center">
-              <h3>No jobs found</h3>
-              <p className="mt-2 text-sm">Provide an API endpoint via <code>JOBS_API_URL</code> to load jobs.</p>
+            <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-8 text-center">
+              <h3 className="text-xl font-semibold text-gray-900 mb-2">No jobs found</h3>
+              <p className="text-gray-600">We couldn't find any matching jobs at the moment. Please try again later.</p>
             </div>
           ) : (
-            <div className="grid grid-cols-1 gap-6">
+            <div className="space-y-6">
               {jobs.slice(0, 5).map((job) => (
                 <JobCard key={job.id} job={job} />
               ))}
@@ -106,21 +150,6 @@ export default async function Page() {
           )}
         </div>
       </section>
-      {/* See more CTA */}
-        <section>
-          <div className="mx-auto max-w-6xl px-6 pb-16">
-            <div className="card p-6 flex items-center justify-center">
-              <a
-                className="btn"
-                href={MORE_JOBS_URL}
-                target="_blank"
-                rel="noreferrer"
-              >
-                See More Nursing Jobs
-              </a>
-            </div>
-          </div>
-        </section>
     </div>
   );
 }
