@@ -1,0 +1,17 @@
+{
+  // Specify the version of the Vercel platform configuration
+  "version": 2,
+  // Define the serverless function runtime for our webhook endpoint
+  "functions": {
+    "api/youform.js": {
+      "runtime": "nodejs18.x"
+    }
+  },
+  // Route incoming requests to the appropriate function
+  "routes": [
+    {
+      "src": "/api/youform",
+      "dest": "/api/youform.js"
+    }
+  ]
+}
