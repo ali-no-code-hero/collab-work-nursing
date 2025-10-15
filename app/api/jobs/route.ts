@@ -8,7 +8,8 @@ export async function GET(request: Request) {
   console.log('Environment variables:', {
     apiKey: apiKey ? `${apiKey.substring(0, 10)}...` : 'undefined',
     apiUrl: apiUrl,
-    nodeEnv: process.env.NODE_ENV
+    nodeEnv: process.env.NODE_ENV,
+    allEnvKeys: Object.keys(process.env).filter(key => key.includes('COLLAB') || key.includes('JOBS'))
   });
   
   if (!apiKey) {
@@ -28,6 +29,7 @@ export async function GET(request: Request) {
   const urlWithParams = `${apiUrl}?email=${encodeURIComponent(email)}&api_key=${apiKey}`;
   
   console.log('Making API request to:', urlWithParams);
+  console.log('API key being used:', apiKey);
   
   try {
     const res = await fetch(urlWithParams, { headers });
