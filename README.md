@@ -98,7 +98,7 @@ collab-work-nursing/
 | Variable | Required | Description | Example |
 |----------|----------|-------------|---------|
 | `JOBS_API_URL` | Yes | CollabWORK API endpoint | `https://api.collabwork.com/api:partners/JobSearchKW` |
-| `COLLABWORK_API_KEY` | Yes | Your CollabWORK API key | `eyJhbGciOiJBMjU2S1ci...` |
+| `COLLABWORK_API_KEY` | Yes | Your CollabWORK API key | `d1ce2baf922734bbc04390cdf656dd50f86fbc028d6c2e64f4a51f870a4a69e6` |
 | `COLLABWORK_ENDPOINT` | No | Override API endpoint | `https://api.collabwork.com/api:partners/JobSearchKW` |
 | `MORE_JOBS_URL` | No | "See More Jobs" button URL | `https://your-site.com/jobs` |
 
@@ -108,8 +108,7 @@ The application integrates with the CollabWORK Partner API to fetch real-time nu
 
 **Request Format:**
 ```
-GET https://api.collabwork.com/api:partners/JobSearchKW?query=nursing
-Authorization: Bearer YOUR_API_KEY
+GET https://api.collabwork.com/api:partners/JobSearchKW?query=nursing&api_key=YOUR_API_KEY
 ```
 
 **Response Format:**
