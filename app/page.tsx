@@ -162,6 +162,10 @@ export default function Page() {
   const [subscriberLocation, setSubscriberLocation] = useState('Houston, TX');
   const [retryCount, setRetryCount] = useState(0);
   const [isRetrying, setIsRetrying] = useState(false);
+  const [matchingCriteria, setMatchingCriteria] = useState({
+    experience: 'ICU experience',
+    openness: 'openness to new roles'
+  });
   
   useEffect(() => {
     const loadJobs = async (isRetry = false) => {
@@ -187,12 +191,37 @@ export default function Page() {
           if (data.code && data.code.includes('ERROR')) {
             console.warn('API Error:', data.message);
             setJobs(getFallbackJobs(subscriberLocation));
+            setMatchingCriteria({
+              experience: 'Critical Care experience',
+              openness: 'openness to new roles'
+            });
             setLoading(false);
             setIsRetrying(false);
           } else if (data.response_jobs && Array.isArray(data.response_jobs) && data.response_jobs.length > 0) {
             // Map the personalized jobs response
             const location = `${data.subscriber_city}, ${data.subscriber_state}`;
             setSubscriberLocation(location);
+            
+            // Extract matching criteria from API response
+            const industries = [...new Set(data.response_jobs.map((job: any) => job.industry))];
+            const experienceTypes = industries.filter(industry => 
+              industry && (
+                industry.toLowerCase().includes('critical') ||
+                industry.toLowerCase().includes('icu') ||
+                industry.toLowerCase().includes('intensive') ||
+                industry.toLowerCase().includes('emergency') ||
+                industry.toLowerCase().includes('trauma')
+              )
+            );
+            
+            // Set dynamic matching criteria
+            setMatchingCriteria({
+              experience: experienceTypes.length > 0 
+                ? `${experienceTypes[0]} experience` 
+                : 'Critical Care experience',
+              openness: 'openness to new roles'
+            });
+            
             const mappedJobs = data.response_jobs.slice(0, 5).map((j: any, idx: number) => ({
               id: j.job_eid ?? j.id ?? idx,
               title: j.title ?? "Untitled role",
@@ -225,24 +254,40 @@ export default function Page() {
             } else {
               console.log('Max retries reached, using fallback data');
               setJobs(getFallbackJobs(subscriberLocation));
+              setMatchingCriteria({
+                experience: 'Critical Care experience',
+                openness: 'openness to new roles'
+              });
               setLoading(false);
               setIsRetrying(false);
             }
           } else {
             // Fallback if no response_jobs
             setJobs(getFallbackJobs(subscriberLocation));
+            setMatchingCriteria({
+              experience: 'Critical Care experience',
+              openness: 'openness to new roles'
+            });
             setLoading(false);
             setIsRetrying(false);
           }
         } else {
           // Fallback demo data
           setJobs(getFallbackJobs(subscriberLocation));
+          setMatchingCriteria({
+            experience: 'Critical Care experience',
+            openness: 'openness to new roles'
+          });
           setLoading(false);
           setIsRetrying(false);
         }
       } catch (error) {
         console.error('Error loading jobs:', error);
         setJobs([]);
+        setMatchingCriteria({
+          experience: 'Critical Care experience',
+          openness: 'openness to new roles'
+        });
         setLoading(false);
         setIsRetrying(false);
       }
@@ -281,10 +326,10 @@ export default function Page() {
                         📍 {subscriberLocation} location
                       </span>
                       <span className="px-3 py-1 bg-purple-100 text-purple-700 rounded-full text-xs font-medium flex items-center gap-1">
-                        🩺 ICU experience
+                        🩺 {matchingCriteria.experience}
                       </span>
                       <span className="px-3 py-1 bg-green-100 text-green-700 rounded-full text-xs font-medium flex items-center gap-1">
-                        ✓ openness to new roles
+                        ✓ {matchingCriteria.openness}
                       </span>
                     </div>
                   </div>
