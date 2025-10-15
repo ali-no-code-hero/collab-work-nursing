@@ -6,7 +6,8 @@ const MORE_JOBS_URL: string =
 async function fetchJobs(): Promise<Job[]> {
   try {
     // Use our internal API route instead of calling CollabWORK directly
-    const res = await fetch(`${process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3000'}/api/jobs`, { 
+    const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || (typeof window !== 'undefined' ? window.location.origin : 'http://localhost:3000');
+    const res = await fetch(`${baseUrl}/api/jobs`, { 
       next: { revalidate: 60 } 
     });
     
