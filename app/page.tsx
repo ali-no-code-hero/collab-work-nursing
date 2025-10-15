@@ -205,7 +205,7 @@ export default function Page() {
             // Extract matching criteria from API response
             const industries = [...new Set(data.response_jobs.map((job: any) => job.industry))];
             const experienceTypes = industries.filter(industry => 
-              industry && (
+              industry && typeof industry === 'string' && (
                 industry.toLowerCase().includes('critical') ||
                 industry.toLowerCase().includes('icu') ||
                 industry.toLowerCase().includes('intensive') ||
