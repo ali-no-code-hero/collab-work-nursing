@@ -78,14 +78,13 @@ module.exports = async (req, res) => {
     } else if (!apiKey) {
       console.warn('COLLABWORK_API_KEY is not set; skipping API call.');
     } else {
-      collabworkUrl = `${endpoint}?query=${encodeURIComponent(query)}`;
+      collabworkUrl = `${endpoint}?query=${encodeURIComponent(query)}&api_key=${apiKey}`;
       console.log('Requesting CollabWORK jobs from:', collabworkUrl);
 
       // Node 18 runtime on Vercel has global fetch
       const resp = await fetch(collabworkUrl, {
         method: 'GET',
         headers: {
-          Authorization: `Bearer ${apiKey}`,
           'Content-Type': 'application/json',
         },
       });
