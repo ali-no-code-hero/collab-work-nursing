@@ -173,7 +173,25 @@ export default function Page() {
             setJobs(getFallbackJobs());
           } else {
             const jobList = Array.isArray(data) ? data : (data.jobs ?? []);
-            setJobs(jobList.slice(0, 5));
+            // Map the API response to Job format
+            const mappedJobs = jobList.slice(0, 5).map((j: any, idx: number) => ({
+              id: j.job_eid ?? j.id ?? idx,
+              title: j.title ?? j.job_title ?? "Untitled role",
+              company: j.company ?? j.company_name ?? "Company",
+              location: j.location ?? j.city_state ?? "",
+              postedAt: j.date_posted ? new Date(j.date_posted).toISOString() : (j.posted_at ?? j.created_at ?? undefined),
+              tags: j.tags ?? j.skills ?? [],
+              url: j.url ?? j.apply_url ?? j.link ?? "#",
+              salary: j.salary_min && j.salary_max ? `$${j.salary_min.toLocaleString()}-$${j.salary_max.toLocaleString()}` : (j.salary ?? j.compensation ?? undefined),
+              salaryMin: j.salary_min,
+              salaryMax: j.salary_max,
+              type: j.is_remote ? "Remote" : (j.type ?? j.employment_type ?? undefined),
+              isRemote: j.is_remote ?? false,
+              industry: j.industry,
+              logo: j.logo ?? j.company_logo ?? j.logo_url ?? j.employer_logo ?? undefined,
+              description: j.description ?? j.job_description ?? j.summary ?? j.desc ?? undefined,
+            }));
+            setJobs(mappedJobs);
           }
         } else {
           // Fallback demo data
