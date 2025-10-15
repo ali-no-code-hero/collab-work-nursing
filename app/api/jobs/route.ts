@@ -17,12 +17,8 @@ export async function GET(request: Request) {
     'Content-Type': 'application/json',
   };
   
-  if (apiKey) {
-    headers['Authorization'] = `Bearer ${apiKey}`;
-  }
-  
-  // Add query parameter to the URL
-  const urlWithQuery = `${upstream}?query=${encodeURIComponent(query)}`;
+  // Add query parameter and api_key to the URL
+  const urlWithQuery = `${upstream}?query=${encodeURIComponent(query)}&api_key=${apiKey}`;
   
   const res = await fetch(urlWithQuery, { headers });
   const data = await res.json();
