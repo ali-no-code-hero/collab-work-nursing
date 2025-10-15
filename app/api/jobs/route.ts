@@ -1,26 +1,31 @@
 import { NextResponse } from "next/server";
 
-// Optional proxy endpoint for CORS-friendly job fetching
+// API endpoint for getting personalized nursing jobs based on email
 export async function GET(request: Request) {
-  const upstream = process.env.JOBS_API_URL;
   const apiKey = process.env.COLLABWORK_API_KEY;
+  const apiUrl = 'https://api.collabwork.com/api:partners/get_nursing_form_record_jobs';
   
-  if (!upstream) {
+  if (!apiKey) {
     return NextResponse.json({ jobs: [] }, { status: 200 });
   }
   
-  // Get query parameter from URL, default to "nursing" for nursing jobs
+  // Get email parameter from URL, default to chosennurse@hotmail.com
   const { searchParams } = new URL(request.url);
-  const query = searchParams.get('query') || 'nursing';
+  const email = searchParams.get('email') || 'chosennurse@hotmail.com';
   
   const headers: HeadersInit = {
     'Content-Type': 'application/json',
   };
   
-  // Add query parameter and api_key to the URL
-  const urlWithQuery = `${upstream}?query=${encodeURIComponent(query)}&api_key=${apiKey}`;
+  // Add email and api_key to the URL
+  const urlWithParams = `${apiUrl}?email=${encodeURIComponent(email)}&api_key=${apiKey}`;
   
-  const res = await fetch(urlWithQuery, { headers });
-  const data = await res.json();
-  return NextResponse.json(data);
+  try {
+    const res = await fetch(urlWithParams, { headers });
+    const data = await res.json();
+    return NextResponse.json(data);
+  } catch (error) {
+    console.error('Error fetching personalized jobs:', error);
+    return NextResponse.json({ jobs: [] }, { status: 200 });
+  }
 }

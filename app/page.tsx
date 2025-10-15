@@ -159,42 +159,51 @@ async function fetchJobs(): Promise<Job[]> {
 export default function Page() {
   const [jobs, setJobs] = useState<Job[]>([]);
   const [loading, setLoading] = useState(true);
+  const [subscriberLocation, setSubscriberLocation] = useState('Houston, TX');
   
   useEffect(() => {
     const loadJobs = async () => {
-      console.log('Loading jobs...');
+      console.log('Loading personalized jobs...');
       try {
-        const response = await fetch('/api/jobs');
+        // Get email from URL parameters
+        const urlParams = new URLSearchParams(window.location.search);
+        const email = urlParams.get('email') || 'chosennurse@hotmail.com';
+        
+        const response = await fetch(`/api/jobs?email=${encodeURIComponent(email)}`);
         console.log('Response status:', response.status);
         if (response.ok) {
           const data = await response.json();
           console.log('API data received:', data);
-          // Check if the API returned an error (like expired token)
+          
+          // Check if the API returned an error
           if (data.code && data.code.includes('ERROR')) {
             console.warn('API Error:', data.message);
-            // Use fallback data
             setJobs(getFallbackJobs());
-          } else {
-            const jobList = Array.isArray(data) ? data : (data.jobs ?? []);
-            // Map the API response to Job format
-            const mappedJobs = jobList.slice(0, 5).map((j: any, idx: number) => ({
+          } else if (data.response_jobs && Array.isArray(data.response_jobs)) {
+            // Map the personalized jobs response
+            const location = `${data.subscriber_city}, ${data.subscriber_state}`;
+            setSubscriberLocation(location);
+            const mappedJobs = data.response_jobs.slice(0, 5).map((j: any, idx: number) => ({
               id: j.job_eid ?? j.id ?? idx,
-              title: j.title ?? j.job_title ?? "Untitled role",
-              company: j.company ?? j.company_name ?? "Company",
-              location: j.location ?? j.city_state ?? "",
-              postedAt: j.date_posted ? new Date(j.date_posted).toISOString() : (j.posted_at ?? j.created_at ?? undefined),
-              tags: j.tags ?? j.skills ?? [],
-              url: j.url ?? j.apply_url ?? j.link ?? "#",
-              salary: j.salary_min && j.salary_max ? `$${j.salary_min.toLocaleString()}-$${j.salary_max.toLocaleString()}` : (j.salary ?? j.compensation ?? undefined),
+              title: j.title ?? "Untitled role",
+              company: j.company ?? "Company",
+              location: location, // Use subscriber location instead of job location
+              postedAt: j.date_posted ? new Date(j.date_posted).toISOString() : undefined,
+              tags: [j.industry] ?? [],
+              url: j.url ?? "#",
+              salary: j.salary_min && j.salary_max ? `$${j.salary_min.toLocaleString()}-$${j.salary_max.toLocaleString()}` : undefined,
               salaryMin: j.salary_min,
               salaryMax: j.salary_max,
-              type: j.is_remote ? "Remote" : (j.type ?? j.employment_type ?? undefined),
+              type: j.is_remote ? "Remote" : "Full-time",
               isRemote: j.is_remote ?? false,
               industry: j.industry,
-              logo: j.logo ?? j.company_logo ?? j.logo_url ?? j.employer_logo ?? undefined,
-              description: j.description ?? j.job_description ?? j.summary ?? j.desc ?? undefined,
+              logo: undefined, // No logo in this API response
+              description: `Great opportunity in ${location}. Apply now to join our team!`,
             }));
             setJobs(mappedJobs);
+          } else {
+            // Fallback if no response_jobs
+            setJobs(getFallbackJobs());
           }
         } else {
           // Fallback demo data
@@ -234,20 +243,20 @@ export default function Page() {
           </h1>
 
           {/* Matching Criteria */}
-          <div className="flex flex-wrap items-center gap-2 text-sm text-gray-600">
-            <span>From our network, matched to your</span>
-            <div className="flex flex-wrap gap-2">
-              <span className="px-3 py-1 bg-pink-100 text-pink-700 rounded-full text-xs font-medium flex items-center gap-1">
-                📍 Houston location
-              </span>
-              <span className="px-3 py-1 bg-purple-100 text-purple-700 rounded-full text-xs font-medium flex items-center gap-1">
-                🩺 ICU experience
-              </span>
-              <span className="px-3 py-1 bg-green-100 text-green-700 rounded-full text-xs font-medium flex items-center gap-1">
-                ✓ openness to new roles
-              </span>
-            </div>
-          </div>
+                  <div className="flex flex-wrap items-center gap-2 text-sm text-gray-600">
+                    <span>From our network, matched to your</span>
+                    <div className="flex flex-wrap gap-2">
+                      <span className="px-3 py-1 bg-pink-100 text-pink-700 rounded-full text-xs font-medium flex items-center gap-1">
+                        📍 {subscriberLocation} location
+                      </span>
+                      <span className="px-3 py-1 bg-purple-100 text-purple-700 rounded-full text-xs font-medium flex items-center gap-1">
+                        🩺 ICU experience
+                      </span>
+                      <span className="px-3 py-1 bg-green-100 text-green-700 rounded-full text-xs font-medium flex items-center gap-1">
+                        ✓ openness to new roles
+                      </span>
+                    </div>
+                  </div>
         </div>
       </section>
 
