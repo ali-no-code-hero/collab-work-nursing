@@ -7,17 +7,17 @@ const MORE_JOBS_URL: string =
   process.env.MORE_JOBS_URL || "#";
 
 // Helper function for fallback demo data
-const getFallbackJobs = (): Job[] => [
+const getFallbackJobs = (location: string = "Houston, TX"): Job[] => [
   {
     id: 1,
     title: "Registered Nurse (RN) – Med/Surg",
     company: "CareFirst Health",
-    location: "Houston, TX",
+    location: location,
     type: "Full-time",
     tags: ["RN", "Med/Surg", "Acute Care"],
     url: "#",
     postedAt: new Date().toISOString(),
-    description: "Provide bedside care on a 32-bed unit. Collaborate with interdisciplinary teams. 3x12 schedule with weekend rotation. Strong mentorship program for new nurses.",
+    description: `Provide bedside care on a 32-bed unit in ${location}. Collaborate with interdisciplinary teams. 3x12 schedule with weekend rotation. Strong mentorship program for new nurses.`,
     salaryMin: 72000,
     salaryMax: 92000,
     isRemote: false,
@@ -28,12 +28,12 @@ const getFallbackJobs = (): Job[] => [
     id: 2,
     title: "ICU Nurse (Night Shift)",
     company: "Bayou Medical Center",
-    location: "Houston, TX",
+    location: location,
     type: "Full-time",
     tags: ["ICU", "Critical Care", "BLS/ACLS"],
     url: "#",
     postedAt: new Date().toISOString(),
-    description: "Manage high-acuity patients, ventilators, drips. Night differential available. Strong mentorship program for new ICU nurses.",
+    description: `Manage high-acuity patients, ventilators, drips in ${location}. Night differential available. Strong mentorship program for new ICU nurses.`,
     salaryMin: 78000,
     salaryMax: 98000,
     isRemote: false,
@@ -44,12 +44,12 @@ const getFallbackJobs = (): Job[] => [
     id: 3,
     title: "Home Health RN Case Manager",
     company: "Community Nurses of Texas",
-    location: "Remote/Field (Houston area)",
+    location: `Remote/Field (${location} area)`,
     type: "Contract",
     tags: ["Home Health", "Case Mgmt", "RN"],
     url: "#",
     postedAt: new Date().toISOString(),
-    description: "Coordinate patient care plans, conduct in-home visits, document in EMR. Flexible scheduling with autonomy and work-life balance.",
+    description: `Coordinate patient care plans, conduct in-home visits in ${location}, document in EMR. Flexible scheduling with autonomy and work-life balance.`,
     salaryMin: 68000,
     salaryMax: 85000,
     isRemote: true,
@@ -178,7 +178,7 @@ export default function Page() {
           // Check if the API returned an error
           if (data.code && data.code.includes('ERROR')) {
             console.warn('API Error:', data.message);
-            setJobs(getFallbackJobs());
+            setJobs(getFallbackJobs(subscriberLocation));
           } else if (data.response_jobs && Array.isArray(data.response_jobs)) {
             // Map the personalized jobs response
             const location = `${data.subscriber_city}, ${data.subscriber_state}`;
@@ -203,11 +203,11 @@ export default function Page() {
             setJobs(mappedJobs);
           } else {
             // Fallback if no response_jobs
-            setJobs(getFallbackJobs());
+            setJobs(getFallbackJobs(subscriberLocation));
           }
         } else {
           // Fallback demo data
-          setJobs(getFallbackJobs());
+          setJobs(getFallbackJobs(subscriberLocation));
         }
       } catch (error) {
         console.error('Error loading jobs:', error);
