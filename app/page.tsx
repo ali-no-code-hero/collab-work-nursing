@@ -163,7 +163,7 @@ export default function Page() {
   useEffect(() => {
     const loadJobs = async () => {
       try {
-        const response = await fetch(`${window.location.origin}/api/jobs`);
+        const response = await fetch('/api/jobs');
         if (response.ok) {
           const data = await response.json();
           // Check if the API returned an error (like expired token)
