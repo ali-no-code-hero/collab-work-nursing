@@ -1,17 +1,22 @@
 # CollabWORK Nursing Jobs (Next.js)
 
-A modern Next.js application that displays nursing job listings from the CollabWORK API with a subscription-based landing page design. Features real-time job data, responsive design, and seamless integration with the CollabWORK Partner API.
+A modern Next.js application that displays personalized nursing job listings from the CollabWORK API with a subscription-based landing page design. Features real-time job data, email-based personalization, responsive design, and seamless integration with the CollabWORK Partner API.
 
 ## ✨ Features
 
+- **Personalized Job Recommendations**: Email-based job matching with subscriber location
 - **Subscription Landing Page**: "You're Subscribed" status with personalized job recommendations
 - **Real-time Job Data**: Fetches live nursing jobs from CollabWORK API
+- **Email Parameter Support**: URL-based email parameter for personalized job matching
+- **Automatic Retry Logic**: 5-second retry with 3 attempts for empty API responses
+- **Dynamic Location Display**: Shows subscriber's actual city and state
 - **Modern UI Design**: Clean, professional interface with job cards
 - **Responsive Layout**: Works perfectly on desktop and mobile
 - **Job Details**: Salary ranges, locations, company info, and application stats
 - **Expandable Descriptions**: Long job descriptions with show more/less functionality
 - **Random Application Stats**: Dynamic "X nurses applied this week" counts
 - **Environment Configuration**: Secure API key management
+- **Fallback Support**: Graceful fallback to demo data if API fails
 
 ## 🚀 Quick Start
 
@@ -45,11 +50,8 @@ A modern Next.js application that displays nursing job listings from the CollabW
 
    Update `.env` with your API credentials:
    ```env
-   # Base URL for your job listings API
-   JOBS_API_URL=https://api.collabwork.com/api:partners/JobSearchKW
-
    # Secret API key for the CollabWORK Partner API
-   COLLABWORK_API_KEY=your_collabwork_api_key_here
+   COLLABWORK_API_KEY=d1ce2baf922734bbc04390cdf656dd50f86fbc028d6c2e64f4a51f870a4a69e6
 
    # Optional override for the CollabWORK endpoint
    COLLABWORK_ENDPOINT=
@@ -67,6 +69,72 @@ A modern Next.js application that displays nursing job listings from the CollabW
 
 5. **Open your browser**
    Navigate to `http://localhost:3000`
+
+## 📧 How It Works
+
+### Email-Based Personalization
+
+The application uses email parameters to provide personalized job recommendations:
+
+**Basic Usage:**
+```
+http://localhost:3000?email=user@example.com
+```
+
+**Default Behavior:**
+- If no email is provided, defaults to `chosennurse@hotmail.com`
+- API fetches personalized jobs based on subscriber's location
+- Displays subscriber's actual city and state in the UI
+
+**Example URLs:**
+```
+http://localhost:3000?email=nurse@hospital.com
+http://localhost:3000?email=john.doe@gmail.com
+http://localhost:3000  # Uses default email
+```
+
+### API Integration
+
+The application uses the CollabWORK `get_nursing_form_record_jobs` endpoint:
+
+**Request Format:**
+```
+GET https://api.collabwork.com/api:partners/get_nursing_form_record_jobs?email=user@example.com&api_key=YOUR_API_KEY
+```
+
+**Response Structure:**
+```json
+{
+  "id": 13,
+  "subscriber_email": "user@example.com",
+  "subscriber_city": "Chicago",
+  "subscriber_state": "IL",
+  "response_jobs": [
+    {
+      "title": "Healthcare Recruiter",
+      "company": "RCM Healthcare Services",
+      "job_eid": "4f3a6d4ae98544d79135cb7787b3b8a7",
+      "industry": "Business Support Services",
+      "location": "Chicago IL US",
+      "is_remote": false,
+      "salary_max": 60000,
+      "salary_min": 55000,
+      "date_posted": 1760400000000,
+      "salary_period": "YEARLY",
+      "url": "https://api.collabwork.com/api:1SHNakFf/jobs?ref=..."
+    }
+  ]
+}
+```
+
+### Retry Logic
+
+The application includes intelligent retry logic for better reliability:
+
+- **Empty Response Handling**: If `response_jobs` is empty, automatically retries after 5 seconds
+- **Maximum Retries**: Up to 3 retry attempts before falling back to demo data
+- **User Feedback**: Shows retry status with progress indicator
+- **Graceful Fallback**: Uses personalized demo data if all retries fail
 
 ## 🏗️ Project Structure
 
@@ -97,37 +165,42 @@ collab-work-nursing/
 
 | Variable | Required | Description | Example |
 |----------|----------|-------------|---------|
-| `JOBS_API_URL` | Yes | CollabWORK API endpoint | `https://api.collabwork.com/api:partners/JobSearchKW` |
 | `COLLABWORK_API_KEY` | Yes | Your CollabWORK API key | `d1ce2baf922734bbc04390cdf656dd50f86fbc028d6c2e64f4a51f870a4a69e6` |
-| `COLLABWORK_ENDPOINT` | No | Override API endpoint | `https://api.collabwork.com/api:partners/JobSearchKW` |
+| `COLLABWORK_ENDPOINT` | No | Override API endpoint | `https://api.collabwork.com/api:partners/get_nursing_form_record_jobs` |
 | `MORE_JOBS_URL` | No | "See More Jobs" button URL | `https://your-site.com/jobs` |
 
 ### API Integration
 
-The application integrates with the CollabWORK Partner API to fetch real-time nursing job listings. The API expects:
+The application integrates with the CollabWORK Partner API to fetch personalized nursing job listings. The API expects:
 
 **Request Format:**
 ```
-GET https://api.collabwork.com/api:partners/JobSearchKW?query=nursing&api_key=YOUR_API_KEY
+GET https://api.collabwork.com/api:partners/get_nursing_form_record_jobs?email=user@example.com&api_key=YOUR_API_KEY
 ```
 
 **Response Format:**
 ```json
-[
-  {
-    "job_eid": "unique-job-id",
-    "title": "Registered Nurse (RN) – Med/Surg",
-    "company": "CareFirst Health",
-    "location": "Houston, TX",
-    "is_remote": false,
-    "industry": "Health Care Providers & Services",
-    "date_posted": 1759881600000,
-    "salary_min": 72000,
-    "salary_max": 92000,
-    "salary_period": "YEARLY",
-    "url": "https://api.collabwork.com/api:1SHNakFf/jobs?ref=..."
-  }
-]
+{
+  "id": 13,
+  "subscriber_email": "user@example.com",
+  "subscriber_city": "Chicago",
+  "subscriber_state": "IL",
+  "response_jobs": [
+    {
+      "job_eid": "4f3a6d4ae98544d79135cb7787b3b8a7",
+      "title": "Healthcare Recruiter",
+      "company": "RCM Healthcare Services",
+      "industry": "Business Support Services",
+      "location": "Chicago IL US",
+      "is_remote": false,
+      "salary_max": 60000,
+      "salary_min": 55000,
+      "date_posted": 1760400000000,
+      "salary_period": "YEARLY",
+      "url": "https://api.collabwork.com/api:1SHNakFf/jobs?ref=..."
+    }
+  ]
+}
 ```
 
 ## 🎨 Customization
@@ -228,6 +301,27 @@ npm run lint     # Run ESLint
 2. **Styling Changes**: Modify Tailwind classes or `globals.css`
 3. **API Changes**: Update the mapping logic in `app/page.tsx`
 
+## 🔄 Retry Logic
+
+The application includes intelligent retry logic for better reliability:
+
+### How It Works
+
+1. **Initial API Call**: Fetches personalized jobs based on email parameter
+2. **Empty Response Detection**: If `response_jobs` array is empty, triggers retry
+3. **Retry Process**: 
+   - Waits 5 seconds before retrying
+   - Shows user-friendly retry status with progress indicator
+   - Maximum 3 retry attempts
+4. **Fallback**: Uses personalized demo data if all retries fail
+
+### User Experience
+
+- **Loading State**: Shows "Loading jobs..." during initial fetch
+- **Retry State**: Shows "Retrying..." with attempt counter (1/3, 2/3, 3/3)
+- **Progress Indicator**: Animated spinner during retry attempts
+- **Graceful Fallback**: Seamless transition to demo data if needed
+
 ## 🐛 Troubleshooting
 
 ### Common Issues
@@ -236,15 +330,23 @@ npm run lint     # Run ESLint
    - Check if `COLLABWORK_API_KEY` is set correctly
    - Verify the API endpoint is accessible
    - Check browser console for errors
+   - Wait for retry attempts to complete (up to 15 seconds)
 
-2. **Hydration errors**
+2. **Empty response_jobs array**
+   - This triggers automatic retry logic
+   - Wait for retry attempts to complete
+   - Check API logs for any issues
+   - Verify email parameter is valid
+
+3. **Hydration errors**
    - Ensure all client-side code is in components marked with `'use client'`
    - Check for server/client rendering mismatches
 
-3. **API errors**
+4. **API errors**
    - Verify your CollabWORK API key is valid
    - Check the API endpoint URL
-   - Ensure the query parameter is properly formatted
+   - Ensure the email parameter is properly formatted
+   - Check if retry logic is working (look for retry messages)
 
 ### Debug Mode
 
