@@ -6,6 +6,58 @@ import JobCard, { type Job } from "../components/JobCard";
 const MORE_JOBS_URL: string =
   process.env.MORE_JOBS_URL || "#";
 
+// Helper function for fallback demo data
+const getFallbackJobs = (): Job[] => [
+  {
+    id: 1,
+    title: "Registered Nurse (RN) – Med/Surg",
+    company: "CareFirst Health",
+    location: "Houston, TX",
+    type: "Full-time",
+    tags: ["RN", "Med/Surg", "Acute Care"],
+    url: "#",
+    postedAt: new Date().toISOString(),
+    description: "Provide bedside care on a 32-bed unit. Collaborate with interdisciplinary teams. 3x12 schedule with weekend rotation. Strong mentorship program for new nurses.",
+    salaryMin: 72000,
+    salaryMax: 92000,
+    isRemote: false,
+    industry: "Health Care Providers & Services",
+    logo: undefined
+  },
+  {
+    id: 2,
+    title: "ICU Nurse (Night Shift)",
+    company: "Bayou Medical Center",
+    location: "Houston, TX",
+    type: "Full-time",
+    tags: ["ICU", "Critical Care", "BLS/ACLS"],
+    url: "#",
+    postedAt: new Date().toISOString(),
+    description: "Manage high-acuity patients, ventilators, drips. Night differential available. Strong mentorship program for new ICU nurses.",
+    salaryMin: 78000,
+    salaryMax: 98000,
+    isRemote: false,
+    industry: "Health Care Providers & Services",
+    logo: undefined
+  },
+  {
+    id: 3,
+    title: "Home Health RN Case Manager",
+    company: "Community Nurses of Texas",
+    location: "Remote/Field (Houston area)",
+    type: "Contract",
+    tags: ["Home Health", "Case Mgmt", "RN"],
+    url: "#",
+    postedAt: new Date().toISOString(),
+    description: "Coordinate patient care plans, conduct in-home visits, document in EMR. Flexible scheduling with autonomy and work-life balance.",
+    salaryMin: 68000,
+    salaryMax: 85000,
+    isRemote: true,
+    industry: "Health Care Providers & Services",
+    logo: undefined
+  },
+];
+
 async function fetchJobs(): Promise<Job[]> {
   try {
     // Skip API call during build time to avoid static generation errors
@@ -111,63 +163,21 @@ export default function Page() {
   useEffect(() => {
     const loadJobs = async () => {
       try {
-        const response = await fetch('/api/jobs');
+        const response = await fetch(`${window.location.origin}/api/jobs`);
         if (response.ok) {
           const data = await response.json();
-          const jobList = Array.isArray(data) ? data : (data.jobs ?? []);
-          setJobs(jobList.slice(0, 5));
+          // Check if the API returned an error (like expired token)
+          if (data.code && data.code.includes('ERROR')) {
+            console.warn('API Error:', data.message);
+            // Use fallback data
+            setJobs(getFallbackJobs());
+          } else {
+            const jobList = Array.isArray(data) ? data : (data.jobs ?? []);
+            setJobs(jobList.slice(0, 5));
+          }
         } else {
           // Fallback demo data
-          setJobs([
-            {
-              id: 1,
-              title: "Registered Nurse (RN) – Med/Surg",
-              company: "CareFirst Health",
-              location: "Houston, TX",
-              type: "Full-time",
-              tags: ["RN", "Med/Surg", "Acute Care"],
-              url: "#",
-              postedAt: new Date().toISOString(),
-              description: "Provide bedside care on a 32-bed unit. Collaborate with interdisciplinary teams. 3x12 schedule with weekend rotation. Strong mentorship program for new nurses.",
-              salaryMin: 72000,
-              salaryMax: 92000,
-              isRemote: false,
-              industry: "Health Care Providers & Services",
-              logo: undefined
-            },
-            {
-              id: 2,
-              title: "ICU Nurse (Night Shift)",
-              company: "Bayou Medical Center",
-              location: "Houston, TX",
-              type: "Full-time",
-              tags: ["ICU", "Critical Care", "BLS/ACLS"],
-              url: "#",
-              postedAt: new Date().toISOString(),
-              description: "Manage high-acuity patients, ventilators, drips. Night differential available. Strong mentorship program for new ICU nurses.",
-              salaryMin: 78000,
-              salaryMax: 98000,
-              isRemote: false,
-              industry: "Health Care Providers & Services",
-              logo: undefined
-            },
-            {
-              id: 3,
-              title: "Home Health RN Case Manager",
-              company: "Community Nurses of Texas",
-              location: "Remote/Field (Houston area)",
-              type: "Contract",
-              tags: ["Home Health", "Case Mgmt", "RN"],
-              url: "#",
-              postedAt: new Date().toISOString(),
-              description: "Coordinate patient care plans, conduct in-home visits, document in EMR. Flexible scheduling with autonomy and work-life balance.",
-              salaryMin: 68000,
-              salaryMax: 85000,
-              isRemote: true,
-              industry: "Health Care Providers & Services",
-              logo: undefined
-            },
-          ]);
+          setJobs(getFallbackJobs());
         }
       } catch (error) {
         console.error('Error loading jobs:', error);
