@@ -160,10 +160,18 @@ export default function Page() {
   const [jobs, setJobs] = useState<Job[]>([]);
   const [loading, setLoading] = useState(true);
   const [subscriberLocation, setSubscriberLocation] = useState('Houston, TX');
+  const [retryCount, setRetryCount] = useState(0);
+  const [isRetrying, setIsRetrying] = useState(false);
   
   useEffect(() => {
-    const loadJobs = async () => {
-      console.log('Loading personalized jobs...');
+    const loadJobs = async (isRetry = false) => {
+      if (isRetry) {
+        console.log(`Retrying API call (attempt ${retryCount + 1})...`);
+        setIsRetrying(true);
+      } else {
+        console.log('Loading personalized jobs...');
+      }
+      
       try {
         // Get email from URL parameters
         const urlParams = new URLSearchParams(window.location.search);
@@ -179,7 +187,9 @@ export default function Page() {
           if (data.code && data.code.includes('ERROR')) {
             console.warn('API Error:', data.message);
             setJobs(getFallbackJobs(subscriberLocation));
-          } else if (data.response_jobs && Array.isArray(data.response_jobs)) {
+            setLoading(false);
+            setIsRetrying(false);
+          } else if (data.response_jobs && Array.isArray(data.response_jobs) && data.response_jobs.length > 0) {
             // Map the personalized jobs response
             const location = `${data.subscriber_city}, ${data.subscriber_state}`;
             setSubscriberLocation(location);
@@ -201,24 +211,45 @@ export default function Page() {
               description: `Great opportunity in ${location}. Apply now to join our team!`,
             }));
             setJobs(mappedJobs);
+            setLoading(false);
+            setIsRetrying(false);
+            setRetryCount(0); // Reset retry count on success
+          } else if (data.response_jobs && Array.isArray(data.response_jobs) && data.response_jobs.length === 0) {
+            // Empty response_jobs array - retry after 5 seconds
+            console.log('Empty response_jobs array, retrying in 5 seconds...');
+            if (retryCount < 3) { // Max 3 retries
+              setRetryCount(prev => prev + 1);
+              setTimeout(() => {
+                loadJobs(true);
+              }, 5000);
+            } else {
+              console.log('Max retries reached, using fallback data');
+              setJobs(getFallbackJobs(subscriberLocation));
+              setLoading(false);
+              setIsRetrying(false);
+            }
           } else {
             // Fallback if no response_jobs
             setJobs(getFallbackJobs(subscriberLocation));
+            setLoading(false);
+            setIsRetrying(false);
           }
         } else {
           // Fallback demo data
           setJobs(getFallbackJobs(subscriberLocation));
+          setLoading(false);
+          setIsRetrying(false);
         }
       } catch (error) {
         console.error('Error loading jobs:', error);
         setJobs([]);
-      } finally {
         setLoading(false);
+        setIsRetrying(false);
       }
     };
     
     loadJobs();
-  }, []);
+  }, [retryCount, subscriberLocation]);
   
   const jobCount = Math.min(jobs.length, 5);
 
@@ -263,12 +294,30 @@ export default function Page() {
       {/* Jobs */}
       <section className="py-8">
         <div className="mx-auto max-w-6xl px-6">
-          {loading ? (
-            <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-8 text-center">
-              <h3 className="text-xl font-semibold text-gray-900 mb-2">Loading jobs...</h3>
-              <p className="text-gray-600">Please wait while we fetch the latest nursing opportunities.</p>
-            </div>
-          ) : jobs.length === 0 ? (
+                  {loading ? (
+                    <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-8 text-center">
+                      <h3 className="text-xl font-semibold text-gray-900 mb-2">
+                        {isRetrying ? 'Retrying...' : 'Loading jobs...'}
+                      </h3>
+                      <p className="text-gray-600">
+                        {isRetrying 
+                          ? `Attempting to fetch jobs again (${retryCount}/3). Please wait...`
+                          : 'Please wait while we fetch the latest nursing opportunities.'
+                        }
+                      </p>
+                      {isRetrying && (
+                        <div className="mt-4">
+                          <div className="inline-flex items-center px-4 py-2 bg-blue-50 text-blue-700 rounded-lg text-sm">
+                            <svg className="animate-spin -ml-1 mr-3 h-4 w-4 text-blue-500" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                              <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                              <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                            </svg>
+                            Retrying in 5 seconds...
+                          </div>
+                        </div>
+                      )}
+                    </div>
+                  ) : jobs.length === 0 ? (
             <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-8 text-center">
               <h3 className="text-xl font-semibold text-gray-900 mb-2">No jobs found</h3>
               <p className="text-gray-600">We couldn't find any matching jobs at the moment. Please try again later.</p>
