@@ -5,6 +5,11 @@ const MORE_JOBS_URL: string =
 
 async function fetchJobs(): Promise<Job[]> {
   try {
+    // Skip API call during build time to avoid static generation errors
+    if (process.env.NODE_ENV === 'production' && !process.env.VERCEL_URL) {
+      return [];
+    }
+    
     // Use our internal API route instead of calling CollabWORK directly
     const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || (typeof window !== 'undefined' ? window.location.origin : 'http://localhost:3000');
     const res = await fetch(`${baseUrl}/api/jobs`, { 
