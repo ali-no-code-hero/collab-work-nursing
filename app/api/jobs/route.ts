@@ -18,8 +18,20 @@ export async function GET(request: Request) {
   }
   
   // Get email parameter from URL, default to chosennurse@hotmail.com
-  const { searchParams } = new URL(request.url);
-  const email = searchParams.get('email') || 'chosennurse@hotmail.com';
+  // Handle + symbol in email addresses properly by parsing the raw query string
+  const url = new URL(request.url);
+  const rawQuery = url.search;
+  let email = 'chosennurse@hotmail.com';
+  
+  if (rawQuery) {
+    const emailMatch = rawQuery.match(/[?&]email=([^&]*)/);
+    if (emailMatch) {
+      // Decode the email parameter while preserving + symbols
+      email = decodeURIComponent(emailMatch[1]);
+      console.log('Raw email parameter:', emailMatch[1]);
+      console.log('Decoded email:', email);
+    }
+  }
   
   const headers: HeadersInit = {
     'Content-Type': 'application/json',
