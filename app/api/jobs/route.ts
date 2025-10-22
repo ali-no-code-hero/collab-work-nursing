@@ -3,7 +3,7 @@ import { NextResponse } from "next/server";
 // API endpoint for getting personalized nursing jobs based on email
 export async function GET(request: Request) {
   const apiKey = process.env.COLLABWORK_API_KEY;
-  const apiUrl = process.env.JOBS_API_URL || 'https://api.collabwork.com/api:partners/get_nursing_form_record_jobs';
+  const apiUrl = 'https://api.collabwork.com/api:partners/get_nursing_form_record_jobs';
   
   console.log('Environment variables:', {
     apiKey: apiKey ? `${apiKey.substring(0, 10)}...` : 'undefined',
@@ -28,6 +28,13 @@ export async function GET(request: Request) {
     if (emailMatch) {
       // Decode the email parameter while preserving + symbols
       email = decodeURIComponent(emailMatch[1]);
+      
+      // Fix the common issue where + gets converted to space in browser URLs
+      // Check if the email contains spaces and if so, convert them back to +
+      if (email.includes(' ') && email.includes('@')) {
+        email = email.replace(/ /g, '+');
+      }
+      
       console.log('Raw email parameter:', emailMatch[1]);
       console.log('Decoded email:', email);
     }
