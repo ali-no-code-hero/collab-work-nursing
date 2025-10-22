@@ -13,6 +13,7 @@ export type Job = {
   salary?: string;
   salaryMin?: number;
   salaryMax?: number;
+  salaryPeriod?: string; // e.g., YEARLY, HOURLY, NULL
   type?: string; // e.g., Full-time
   logo?: string;  // employer logo URL
   description?: string; // plain text or markdown-ish
@@ -32,7 +33,25 @@ export default function JobCard({ job }: { job: Job }) {
   // Format salary
   const formatSalary = () => {
     if (job.salaryMin && job.salaryMax) {
-      return `$${job.salaryMin.toLocaleString()} - $${job.salaryMax.toLocaleString()}/year`;
+      const period = job.salaryPeriod?.toLowerCase();
+      let periodText = '/year';
+      
+      if (period === 'hourly') {
+        periodText = '/hour';
+      } else if (period === 'yearly') {
+        periodText = '/year';
+      } else if (period === 'monthly') {
+        periodText = '/month';
+      } else if (period === 'weekly') {
+        periodText = '/week';
+      } else if (period === 'daily') {
+        periodText = '/day';
+      } else if (period === 'null' || period === null || period === undefined) {
+        // For NULL salary periods, don't show any period text
+        return `$${job.salaryMin.toLocaleString()} - $${job.salaryMax.toLocaleString()}`;
+      }
+      
+      return `$${job.salaryMin.toLocaleString()} - $${job.salaryMax.toLocaleString()}${periodText}`;
     }
     return job.salary || 'Salary not specified';
   };

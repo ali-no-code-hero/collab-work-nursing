@@ -20,6 +20,7 @@ const getFallbackJobs = (location: string = "Houston, TX"): Job[] => [
     description: `Provide bedside care on a 32-bed unit in ${location}. Collaborate with interdisciplinary teams. 3x12 schedule with weekend rotation. Strong mentorship program for new nurses.`,
     salaryMin: 72000,
     salaryMax: 92000,
+    salaryPeriod: "YEARLY",
     isRemote: false,
     industry: "Health Care Providers & Services",
     logo: undefined
@@ -36,6 +37,7 @@ const getFallbackJobs = (location: string = "Houston, TX"): Job[] => [
     description: `Manage high-acuity patients, ventilators, drips in ${location}. Night differential available. Strong mentorship program for new ICU nurses.`,
     salaryMin: 78000,
     salaryMax: 98000,
+    salaryPeriod: "YEARLY",
     isRemote: false,
     industry: "Health Care Providers & Services",
     logo: undefined
@@ -52,6 +54,7 @@ const getFallbackJobs = (location: string = "Houston, TX"): Job[] => [
     description: `Coordinate patient care plans, conduct in-home visits in ${location}, document in EMR. Flexible scheduling with autonomy and work-life balance.`,
     salaryMin: 68000,
     salaryMax: 85000,
+    salaryPeriod: "YEARLY",
     isRemote: true,
     industry: "Health Care Providers & Services",
     logo: undefined
@@ -143,6 +146,7 @@ async function fetchJobs(): Promise<Job[]> {
       salary: j.salary_min && j.salary_max ? `$${j.salary_min.toLocaleString()}-$${j.salary_max.toLocaleString()}` : (j.salary ?? j.compensation ?? undefined),
       salaryMin: j.salary_min,
       salaryMax: j.salary_max,
+      salaryPeriod: j.salary_period,
       type: j.is_remote ? "Remote" : (j.type ?? j.employment_type ?? undefined),
       isRemote: j.is_remote ?? false,
       industry: j.industry,
@@ -233,6 +237,7 @@ export default function Page() {
               salary: j.salary_min && j.salary_max ? `$${j.salary_min.toLocaleString()}-$${j.salary_max.toLocaleString()}` : undefined,
               salaryMin: j.salary_min,
               salaryMax: j.salary_max,
+              salaryPeriod: j.salary_period,
               type: j.is_remote ? "Remote" : "Full-time",
               isRemote: j.is_remote ?? false,
               industry: j.industry,
