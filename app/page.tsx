@@ -4,7 +4,27 @@ import { useState, useEffect } from 'react';
 import JobCard, { type Job } from "../components/JobCard";
 
 const MORE_JOBS_URL: string =
-  process.env.MORE_JOBS_URL || "#";
+  process.env.MORE_JOBS_URL || "https://app.collabwork.com/board/5a72371f-659b-4f3b-9aeb-d13bf23f9e87";
+
+// ============================================================================
+// EDITABLE TEXT CONTENT - Update these constants to change static text
+// Easily customize all user-facing text by modifying the values below
+// ============================================================================
+const TEXT = {
+  subscriptionStatus: "✓ YOU'RE SUBSCRIBED!",
+  headingWithJobs: (count: number) => `Thanks! Here are ${count} jobs you can apply to right now`,
+  headingNoJobs: "Thanks! We're working on finding jobs for you",
+  matchingNetworkText: "From our network, matched to your",
+  noJobsTitle: "No jobs available for your specific search at the moment",
+  noJobsDescription: "We couldn't find any personalized jobs that match your criteria right now.",
+  redirectCountdownPrefix: "Redirecting to more jobs in",
+  redirectCountdownSuffix: "seconds...",
+  seeMoreJobsButton: "See More Nursing Jobs",
+  loadingJobs: "Loading jobs...",
+  retryingJobs: "Retrying...",
+  retryMessage: (attempt: number, max: number) => `Attempting to fetch jobs again (${attempt}/${max}). Please wait...`,
+  loadingMessage: "Please wait while we fetch the latest nursing opportunities.",
+} as const;
 
 // Helper function for fallback demo data
 const getFallbackJobs = (location: string = "Houston, TX"): Job[] => [
@@ -166,6 +186,8 @@ export default function Page() {
   const [subscriberLocation, setSubscriberLocation] = useState('Houston, TX');
   const [retryCount, setRetryCount] = useState(0);
   const [isRetrying, setIsRetrying] = useState(false);
+  const [noResults, setNoResults] = useState(false);
+  const [redirectCountdown, setRedirectCountdown] = useState<number | null>(null);
   const [matchingCriteria, setMatchingCriteria] = useState({
     experience: 'ICU experience',
     openness: 'openness to new roles'
@@ -183,7 +205,17 @@ export default function Page() {
       try {
         // Get email from URL parameters
         const urlParams = new URLSearchParams(window.location.search);
-        const email = urlParams.get('email') || 'chosennurse@hotmail.com';
+        const email = urlParams.get('email');
+        
+        // If no email parameter, show no results
+        if (!email) {
+          console.log('No email parameter provided, showing no results');
+          setJobs([]);
+          setNoResults(true);
+          setLoading(false);
+          setIsRetrying(false);
+          return;
+        }
         
         const response = await fetch(`/api/jobs?email=${encodeURIComponent(email)}`);
         console.log('Response status:', response.status);
@@ -257,42 +289,32 @@ export default function Page() {
                 loadJobs(true);
               }, 5000);
             } else {
-              console.log('Max retries reached, using fallback data');
-              setJobs(getFallbackJobs(subscriberLocation));
-              setMatchingCriteria({
-                experience: 'Critical Care experience',
-                openness: 'openness to new roles'
-              });
+              console.log('Max retries reached, showing no results message');
+              setJobs([]);
+              setNoResults(true);
               setLoading(false);
               setIsRetrying(false);
             }
           } else {
-            // Fallback if no response_jobs
-            setJobs(getFallbackJobs(subscriberLocation));
-            setMatchingCriteria({
-              experience: 'Critical Care experience',
-              openness: 'openness to new roles'
-            });
+            // Fallback if no response_jobs - show no results instead of demo data
+            console.log('No response_jobs found, showing no results message');
+            setJobs([]);
+            setNoResults(true);
             setLoading(false);
             setIsRetrying(false);
           }
         } else {
-          // Fallback demo data
-          setJobs(getFallbackJobs(subscriberLocation));
-          setMatchingCriteria({
-            experience: 'Critical Care experience',
-            openness: 'openness to new roles'
-          });
+          // API error - show no results instead of fallback data
+          console.log('API error, showing no results message');
+          setJobs([]);
+          setNoResults(true);
           setLoading(false);
           setIsRetrying(false);
         }
       } catch (error) {
         console.error('Error loading jobs:', error);
         setJobs([]);
-        setMatchingCriteria({
-          experience: 'Critical Care experience',
-          openness: 'openness to new roles'
-        });
+        setNoResults(true);
         setLoading(false);
         setIsRetrying(false);
       }
@@ -300,59 +322,86 @@ export default function Page() {
     
     loadJobs();
   }, [retryCount, subscriberLocation]);
+
+  // Auto-redirect after 5 seconds when no results
+  useEffect(() => {
+    if (noResults) {
+      setRedirectCountdown(5);
+      const timer = setInterval(() => {
+        setRedirectCountdown((prev) => {
+          if (prev === null || prev <= 1) {
+            clearInterval(timer);
+            window.location.href = MORE_JOBS_URL;
+            return 0;
+          }
+          return prev - 1;
+        });
+      }, 1000);
+
+      return () => clearInterval(timer);
+    } else {
+      setRedirectCountdown(null);
+    }
+  }, [noResults]);
   
-  const jobCount = Math.min(jobs.length, 5);
+  const jobCount = noResults ? 0 : Math.min(jobs.length, 5);
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      {/* Header */}
-      <section className="bg-gradient-to-r from-blue-50 to-purple-50 border-b border-gray-200">
-        <div className="mx-auto max-w-6xl px-6 py-12 md:py-16">
+    <div className="min-h-screen bg-white">
+      {/* Hero Section */}
+      <section className="bg-white border-b border-gray-200">
+        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-12">
           {/* Subscription Status */}
-          <div className="flex items-center gap-2 mb-4">
+          <div className="flex items-center gap-2 mb-6">
             <div className="w-5 h-5 bg-green-500 rounded-full flex items-center justify-center">
               <svg className="w-3 h-3 text-white" fill="currentColor" viewBox="0 0 20 20">
                 <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
               </svg>
             </div>
-            <p className="text-blue-600 font-medium text-sm">✓ YOU'RE SUBSCRIBED!</p>
+            <p className="text-green-600 font-medium text-sm">{TEXT.subscriptionStatus}</p>
           </div>
 
           {/* Main Heading */}
-          <h1 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
-            Thanks! Here are {jobCount} jobs you can apply to right now
+          <h1 className="text-4xl md:text-5xl font-bold text-gray-900 mb-6 leading-tight">
+            {noResults ? (
+              TEXT.headingNoJobs
+            ) : (
+              TEXT.headingWithJobs(jobCount)
+            )}
           </h1>
 
-          {/* Matching Criteria */}
-                  <div className="flex flex-wrap items-center gap-2 text-sm text-gray-600">
-                    <span>From our network, matched to your</span>
-                    <div className="flex flex-wrap gap-2">
-                      <span className="px-3 py-1 bg-pink-100 text-pink-700 rounded-full text-xs font-medium flex items-center gap-1">
-                        📍 {subscriberLocation} location
-                      </span>
-                      <span className="px-3 py-1 bg-purple-100 text-purple-700 rounded-full text-xs font-medium flex items-center gap-1">
-                        🩺 {matchingCriteria.experience}
-                      </span>
-                      <span className="px-3 py-1 bg-green-100 text-green-700 rounded-full text-xs font-medium flex items-center gap-1">
-                        ✓ {matchingCriteria.openness}
-                      </span>
-                    </div>
-                  </div>
+          {/* Matching Criteria - only show when there are results */}
+          {!noResults && jobs.length > 0 && (
+            <div className="flex flex-wrap items-center gap-3 text-base text-gray-600">
+              <span>{TEXT.matchingNetworkText}</span>
+              <div className="flex flex-wrap gap-3">
+                <span className="px-4 py-2 bg-blue-50 text-blue-700 rounded-lg text-sm font-medium flex items-center gap-2">
+                  📍 {subscriberLocation} location
+                </span>
+                <span className="px-4 py-2 bg-purple-50 text-purple-700 rounded-lg text-sm font-medium flex items-center gap-2">
+                  🩺 {matchingCriteria.experience}
+                </span>
+                <span className="px-4 py-2 bg-green-50 text-green-700 rounded-lg text-sm font-medium flex items-center gap-2">
+                  ✓ {matchingCriteria.openness}
+                </span>
+              </div>
+            </div>
+          )}
         </div>
       </section>
 
       {/* Jobs */}
-      <section className="py-8">
-        <div className="mx-auto max-w-6xl px-6">
+      <section className="py-12 bg-gray-50">
+        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
                   {loading ? (
                     <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-8 text-center">
                       <h3 className="text-xl font-semibold text-gray-900 mb-2">
-                        {isRetrying ? 'Retrying...' : 'Loading jobs...'}
+                        {isRetrying ? TEXT.retryingJobs : TEXT.loadingJobs}
                       </h3>
                       <p className="text-gray-600">
                         {isRetrying 
-                          ? `Attempting to fetch jobs again (${retryCount}/3). Please wait...`
-                          : 'Please wait while we fetch the latest nursing opportunities.'
+                          ? TEXT.retryMessage(retryCount, 3)
+                          : TEXT.loadingMessage
                         }
                       </p>
                       {isRetrying && (
@@ -367,24 +416,17 @@ export default function Page() {
                         </div>
                       )}
                     </div>
-                  ) : jobs.length === 0 ? (
-            <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-8 text-center">
-              <h3 className="text-xl font-semibold text-gray-900 mb-4">No jobs found matching your current criteria</h3>
-              <p className="text-gray-600 mb-6">
-                We couldn't find any jobs that match your specific location and experience preferences at the moment. 
-                Don't worry though - you can explore more opportunities by clicking the More Jobs button below.
+                  ) : noResults || jobs.length === 0 ? (
+            <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-12 text-center">
+              <h3 className="text-2xl font-semibold text-gray-900 mb-4">{TEXT.noJobsTitle}</h3>
+              <p className="text-gray-600 mb-6 text-lg">
+                {TEXT.noJobsDescription}
               </p>
-              <a
-                href={MORE_JOBS_URL}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="inline-flex items-center px-6 py-3 bg-purple-600 text-white font-medium rounded-lg hover:bg-purple-700 transition-colors duration-200"
-              >
-                More Jobs
-                <svg className="ml-2 w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
-                </svg>
-              </a>
+              {redirectCountdown !== null && (
+                <div className="inline-flex items-center px-6 py-3 bg-purple-50 text-purple-700 rounded-lg text-lg font-medium">
+                  <span>{TEXT.redirectCountdownPrefix} {redirectCountdown} {TEXT.redirectCountdownSuffix}</span>
+                </div>
+              )}
             </div>
           ) : (
             <div className="space-y-6">
@@ -396,24 +438,31 @@ export default function Page() {
         </div>
       </section>
 
-      {/* See More Jobs Button */}
-      <section className="py-8">
-        <div className="mx-auto max-w-6xl px-6">
-          <div className="text-center">
-            <a
-              href={MORE_JOBS_URL}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="inline-flex items-center px-6 py-3 bg-purple-600 text-white font-medium rounded-lg hover:bg-purple-700 transition-colors duration-200"
-            >
-              See More Nursing Jobs
-              <svg className="ml-2 w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
-              </svg>
-            </a>
+      {/* See More Jobs Button - only show when there are results */}
+      {!noResults && jobs.length > 0 && (
+        <section className="py-12 bg-white">
+          <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+            <div className="text-center">
+              <a
+                href={MORE_JOBS_URL}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex items-center px-8 py-4 text-white font-semibold rounded-lg transition-colors duration-200 text-lg"
+                style={{ 
+                  backgroundColor: '#b2b2e6'
+                }}
+                onMouseEnter={(e) => e.target.style.backgroundColor = '#c7c7ed'}
+                onMouseLeave={(e) => e.target.style.backgroundColor = '#b2b2e6'}
+              >
+                {TEXT.seeMoreJobsButton}
+                <svg className="ml-3 w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
+                </svg>
+              </a>
+            </div>
           </div>
-        </div>
-      </section>
+        </section>
+      )}
     </div>
   );
 }

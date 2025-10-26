@@ -154,7 +154,10 @@ export default function JobCard({ job }: { job: Job }) {
                 href={job.url || '#'}
                 target="_blank"
                 rel="noreferrer"
-                className="bg-purple-600 hover:bg-purple-700 text-white px-6 py-2 rounded-lg font-medium transition-colors"
+                className="text-white px-6 py-2 rounded-lg font-medium transition-colors"
+                style={{ backgroundColor: '#b2b2e6' }}
+                onMouseEnter={(e) => e.target.style.backgroundColor = '#c7c7ed'}
+                onMouseLeave={(e) => e.target.style.backgroundColor = '#b2b2e6'}
               >
                 Apply Now
               </a>
