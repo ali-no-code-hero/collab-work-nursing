@@ -35,6 +35,23 @@ export async function GET(request: Request) {
         email = email.replace(/ /g, '+');
       }
       
+      // Email validation
+      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+      if (!emailRegex.test(email)) {
+        return NextResponse.json(
+          { error: 'Invalid email address' }, 
+          { status: 400 }
+        );
+      }
+      
+      // Prevent email injection attacks by ensuring no special characters
+      if (email.includes(';') || email.includes('<') || email.includes('>')) {
+        return NextResponse.json(
+          { error: 'Invalid email format' }, 
+          { status: 400 }
+        );
+      }
+      
       console.log('Raw email parameter:', emailMatch[1]);
       console.log('Decoded email:', email);
     }
@@ -47,17 +64,38 @@ export async function GET(request: Request) {
   // Add email and api_key to the URL
   const urlWithParams = `${apiUrl}?email=${encodeURIComponent(email)}&api_key=${apiKey}`;
   
-  console.log('Making API request to:', urlWithParams);
-  console.log('API key being used:', apiKey);
+  // Log request details without exposing API key
+  console.log('Making API request to:', `${apiUrl}?email=${encodeURIComponent(email)}&api_key=***REDACTED***`);
+  // API key logged for debugging only in development
+  if (process.env.NODE_ENV === 'development') {
+    console.log('API key (first 10 chars):', apiKey?.substring(0, 10) + '...');
+  }
   
   try {
-    const res = await fetch(urlWithParams, { headers });
+    const res = await fetch(urlWithParams, { 
+      headers,
+      // Add timeout to prevent hanging requests
+      signal: AbortSignal.timeout(10000) // 10 second timeout
+    });
     console.log('API response status:', res.status);
+    
+    if (!res.ok) {
+      console.error('API error:', res.status, res.statusText);
+      return NextResponse.json({ jobs: [] }, { status: 200 });
+    }
     
     const data = await res.json();
     console.log('API response data:', data);
     
-    return NextResponse.json(data);
+    // Add security headers to response
+    return NextResponse.json(data, {
+      headers: {
+        'X-Content-Type-Options': 'nosniff',
+        'X-Frame-Options': 'DENY',
+        'X-XSS-Protection': '1; mode=block',
+        'Referrer-Policy': 'strict-origin-when-cross-origin'
+      }
+    });
   } catch (error) {
     console.error('Error fetching personalized jobs:', error);
     return NextResponse.json({ jobs: [] }, { status: 200 });
