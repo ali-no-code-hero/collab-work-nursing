@@ -156,8 +156,8 @@ export default function JobCard({ job }: { job: Job }) {
                 rel="noreferrer"
                 className="text-white px-6 py-2 rounded-lg font-medium transition-colors"
                 style={{ backgroundColor: '#b2b2e6' }}
-                onMouseEnter={(e) => e.target.style.backgroundColor = '#c7c7ed'}
-                onMouseLeave={(e) => e.target.style.backgroundColor = '#b2b2e6'}
+                onMouseEnter={(e) => (e.target as HTMLElement).style.backgroundColor = '#c7c7ed'}
+                onMouseLeave={(e) => (e.target as HTMLElement).style.backgroundColor = '#b2b2e6'}
               >
                 Apply Now
               </a>

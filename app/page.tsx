@@ -451,8 +451,8 @@ export default function Page() {
                 style={{ 
                   backgroundColor: '#b2b2e6'
                 }}
-                onMouseEnter={(e) => e.target.style.backgroundColor = '#c7c7ed'}
-                onMouseLeave={(e) => e.target.style.backgroundColor = '#b2b2e6'}
+                onMouseEnter={(e) => (e.target as HTMLElement).style.backgroundColor = '#c7c7ed'}
+                onMouseLeave={(e) => (e.target as HTMLElement).style.backgroundColor = '#b2b2e6'}
               >
                 {TEXT.seeMoreJobsButton}
                 <svg className="ml-3 w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
