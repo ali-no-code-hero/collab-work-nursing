@@ -238,8 +238,12 @@ export default function Page() {
             const location = `${data.subscriber_city}, ${data.subscriber_state}`;
             setSubscriberLocation(location);
             
+            // Flatten the nested array structure - response_jobs is an array of arrays
+            const allJobs = data.response_jobs.flat();
+            console.log('Flattened jobs:', allJobs);
+            
             // Extract matching criteria from API response
-            const industries = [...new Set(data.response_jobs.map((job: any) => job.industry))];
+            const industries = [...new Set(allJobs.map((job: any) => job.industry))];
             const experienceTypes = industries.filter(industry => 
               industry && typeof industry === 'string' && (
                 industry.toLowerCase().includes('critical') ||
@@ -258,24 +262,27 @@ export default function Page() {
               openness: 'openness to new roles'
             });
             
-            const mappedJobs = data.response_jobs.slice(0, 5).map((j: any, idx: number) => ({
-              id: j.job_eid ?? j.id ?? idx,
-              title: j.title ?? "Untitled role",
-              company: j.company ?? "Company",
-              location: location, // Use subscriber location instead of job location
-              postedAt: j.date_posted ? new Date(j.date_posted).toISOString() : undefined,
-              tags: [j.industry] ?? [],
-              url: j.url ?? "#",
-              salary: j.salary_min && j.salary_max ? `$${j.salary_min.toLocaleString()}-$${j.salary_max.toLocaleString()}` : undefined,
-              salaryMin: j.salary_min,
-              salaryMax: j.salary_max,
-              salaryPeriod: j.salary_period,
-              type: j.is_remote ? "Remote" : "Full-time",
-              isRemote: j.is_remote ?? false,
-              industry: j.industry,
-              logo: undefined, // No logo in this API response
-              description: j.description || `Great opportunity in ${location}. Apply now to join our team!`,
-            }));
+            const mappedJobs = allJobs.slice(0, 5).map((j: any, idx: number) => {
+              console.log(`Job ${idx} description:`, j.description);
+              return {
+                id: j.job_eid ?? j.id ?? idx,
+                title: j.title ?? "Untitled role",
+                company: j.company ?? "Company",
+                location: location, // Use subscriber location instead of job location
+                postedAt: j.date_posted ? new Date(j.date_posted).toISOString() : undefined,
+                tags: [j.industry] ?? [],
+                url: j.url ?? "#",
+                salary: j.salary_min && j.salary_max ? `$${j.salary_min.toLocaleString()}-$${j.salary_max.toLocaleString()}` : undefined,
+                salaryMin: j.salary_min,
+                salaryMax: j.salary_max,
+                salaryPeriod: j.salary_period,
+                type: j.is_remote ? "Remote" : "Full-time",
+                isRemote: j.is_remote ?? false,
+                industry: j.industry,
+                logo: undefined, // No logo in this API response
+                description: j.description || `Great opportunity in ${location}. Apply now to join our team!`,
+              };
+            });
             setJobs(mappedJobs);
             setLoading(false);
             setIsRetrying(false);
