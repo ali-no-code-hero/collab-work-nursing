@@ -449,10 +449,10 @@ export default function Page() {
                 rel="noopener noreferrer"
                 className="inline-flex items-center px-8 py-4 text-white font-semibold rounded-lg transition-colors duration-200 text-lg"
                 style={{ 
-                  backgroundColor: '#8f8fd6'
+                  backgroundColor: '#6c6cbe'
                 }}
                 onMouseEnter={(e) => (e.target as HTMLElement).style.backgroundColor = '#b2b2e6'}
-                onMouseLeave={(e) => (e.target as HTMLElement).style.backgroundColor = '#8f8fd6'}
+                onMouseLeave={(e) => (e.target as HTMLElement).style.backgroundColor = '#6c6cbe'}
               >
                 {TEXT.seeMoreJobsButton}
                 <svg className="ml-3 w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
