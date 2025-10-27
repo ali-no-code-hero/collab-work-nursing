@@ -274,7 +274,7 @@ export default function Page() {
               isRemote: j.is_remote ?? false,
               industry: j.industry,
               logo: undefined, // No logo in this API response
-              description: `Great opportunity in ${location}. Apply now to join our team!`,
+              description: j.description || `Great opportunity in ${location}. Apply now to join our team!`,
             }));
             setJobs(mappedJobs);
             setLoading(false);
@@ -449,10 +449,10 @@ export default function Page() {
                 rel="noopener noreferrer"
                 className="inline-flex items-center px-8 py-4 text-white font-semibold rounded-lg transition-colors duration-200 text-lg"
                 style={{ 
-                  backgroundColor: '#b2b2e6'
+                  backgroundColor: '#8f8fd6'
                 }}
-                onMouseEnter={(e) => (e.target as HTMLElement).style.backgroundColor = '#c7c7ed'}
-                onMouseLeave={(e) => (e.target as HTMLElement).style.backgroundColor = '#b2b2e6'}
+                onMouseEnter={(e) => (e.target as HTMLElement).style.backgroundColor = '#b2b2e6'}
+                onMouseLeave={(e) => (e.target as HTMLElement).style.backgroundColor = '#8f8fd6'}
               >
                 {TEXT.seeMoreJobsButton}
                 <svg className="ml-3 w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">

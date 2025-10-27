@@ -75,7 +75,7 @@ export default function JobCard({ job }: { job: Job }) {
 
   // Check if description is long (more than 100 characters)
   const isDescriptionLong = job.description && job.description.length > 100;
-  const shortDescription = isDescriptionLong ? job.description?.substring(0, 100) + '...' : job.description;
+  const shortDescription = isDescriptionLong ? (job.description?.substring(0, 100) + '...') : (job.description || '');
 
   return (
     <article className="bg-white rounded-lg shadow-sm border border-gray-200 p-6 hover:shadow-md transition-shadow">
@@ -117,21 +117,19 @@ export default function JobCard({ job }: { job: Job }) {
           </div>
 
           {/* Description */}
-          {job.description && (
-            <div className="mb-4">
-              <p className="text-gray-700 text-sm leading-relaxed">
-                {isExpanded ? job.description : shortDescription}
-              </p>
-              {isDescriptionLong && (
-                <button
-                  onClick={() => setIsExpanded(!isExpanded)}
-                  className="text-blue-600 text-sm font-medium mt-1 hover:text-blue-800"
-                >
-                  {isExpanded ? 'Show less' : 'Show more'}
-                </button>
-              )}
-            </div>
-          )}
+          <div className="mb-4">
+            <p className="text-gray-700 text-sm leading-relaxed">
+              {isExpanded ? (job.description || '') : shortDescription}
+            </p>
+            {isDescriptionLong && (
+              <button
+                onClick={() => setIsExpanded(!isExpanded)}
+                className="text-blue-600 text-sm font-medium mt-1 hover:text-blue-800"
+              >
+                {isExpanded ? 'Show less' : 'Show more'}
+              </button>
+            )}
+          </div>
 
           {/* Tags */}
           {job.tags && job.tags.length > 0 && (
@@ -155,19 +153,11 @@ export default function JobCard({ job }: { job: Job }) {
                 target="_blank"
                 rel="noreferrer"
                 className="text-white px-6 py-2 rounded-lg font-medium transition-colors"
-                style={{ backgroundColor: '#b2b2e6' }}
-                onMouseEnter={(e) => (e.target as HTMLElement).style.backgroundColor = '#c7c7ed'}
-                onMouseLeave={(e) => (e.target as HTMLElement).style.backgroundColor = '#b2b2e6'}
+                style={{ backgroundColor: '#8f8fd6' }}
+                onMouseEnter={(e) => (e.target as HTMLElement).style.backgroundColor = '#b2b2e6'}
+                onMouseLeave={(e) => (e.target as HTMLElement).style.backgroundColor = '#8f8fd6'}
               >
                 Apply Now
-              </a>
-              <a
-                href={job.url || '#'}
-                target="_blank"
-                rel="noreferrer"
-                className="text-blue-600 hover:text-blue-800 font-medium text-sm underline"
-              >
-                View Details
               </a>
             </div>
 
