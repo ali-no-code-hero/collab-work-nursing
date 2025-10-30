@@ -257,12 +257,16 @@ export default function Page() {
                 )
               );
               
-              // Set dynamic matching criteria
+              // Set dynamic matching criteria (prefer API-provided fields)
               setMatchingCriteria({
-                experience: experienceTypes.length > 0 
-                  ? `${experienceTypes[0]} experience` 
-                  : 'Critical Care experience',
-                openness: 'openness to new roles'
+                experience: (data.job_passion && typeof data.job_passion === 'string' && data.job_passion.trim().length > 0)
+                  ? data.job_passion
+                  : (experienceTypes.length > 0 
+                    ? `${experienceTypes[0]} experience` 
+                    : 'Critical Care experience'),
+                openness: (data.job_interest && typeof data.job_interest === 'string' && data.job_interest.trim().length > 0)
+                  ? data.job_interest
+                  : 'openness to new roles'
               });
               
               const mappedJobs = curated.slice(0, 5).map((j: any, idx: number) => ({
@@ -328,10 +332,14 @@ export default function Page() {
                       );
                       
                       setMatchingCriteria({
-                        experience: experienceTypes.length > 0 
-                          ? `${experienceTypes[0]} experience` 
-                          : 'Critical Care experience',
-                        openness: 'openness to new roles'
+                        experience: (pollData.job_passion && typeof pollData.job_passion === 'string' && pollData.job_passion.trim().length > 0)
+                          ? pollData.job_passion
+                          : (experienceTypes.length > 0 
+                            ? `${experienceTypes[0]} experience` 
+                            : 'Critical Care experience'),
+                        openness: (pollData.job_interest && typeof pollData.job_interest === 'string' && pollData.job_interest.trim().length > 0)
+                          ? pollData.job_interest
+                          : 'openness to new roles'
                       });
                       
                       const mappedJobs = pollCurated.slice(0, 5).map((j: any, idx: number) => ({
