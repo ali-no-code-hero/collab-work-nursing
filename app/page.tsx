@@ -291,7 +291,6 @@ export default function Page() {
               setLoading(false);
               setIsRetrying(false);
               setWaitingForCurated(false);
-              setCuratedTimeout(false);
               setRetryCount(0);
             } else if (responses.length > 0) {
               // We have response_jobs but no curated_jobs yet - wait for curated
