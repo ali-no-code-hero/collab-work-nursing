@@ -197,6 +197,18 @@ export default function Page() {
     experience: 'ICU experience',
     openness: 'openness to new roles'
   });
+  const [viewerEmail, setViewerEmail] = useState<string | null>(null);
+  const [usedCurated, setUsedCurated] = useState<boolean>(false);
+  
+  const logEvent = async (payload: any) => {
+    try {
+      await fetch('/api/events', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ timestamp: new Date().toISOString(), ...payload })
+      });
+    } catch {}
+  };
   
   useEffect(() => {
     const loadJobs = async (isRetry = false) => {
@@ -211,6 +223,7 @@ export default function Page() {
         // Get email from URL parameters
         const urlParams = new URLSearchParams(window.location.search);
         const email = urlParams.get('email');
+        setViewerEmail(email);
         
         // If no email parameter, show no results
         if (!email) {
@@ -246,6 +259,7 @@ export default function Page() {
             if (curated.length > 0) {
               const location = `${data.subscriber_city}, ${data.subscriber_state}`;
               setSubscriberLocation(location);
+              setUsedCurated(true);
               
               // Extract matching criteria from API response
               const industries = [...new Set(curated.map((job: any) => job.industry))];
@@ -294,6 +308,8 @@ export default function Page() {
               setIsRetrying(false);
               setWaitingForCurated(false);
               setRetryCount(0);
+              // Log page view with curated
+              logEvent({ type: 'page_view', email, jobCount: mappedJobs.length, location, usedCurated: true });
             } else if (responses.length > 0) {
               // We have response_jobs but no curated_jobs yet - wait for curated
               console.log('Have response_jobs but waiting for curated_jobs...');
@@ -322,6 +338,7 @@ export default function Page() {
                       
                       const location = `${pollData.subscriber_city}, ${pollData.subscriber_state}`;
                       setSubscriberLocation(location);
+                      setUsedCurated(true);
                       
                       const industries = [...new Set(pollCurated.map((job: any) => job.industry))];
                       const experienceTypes = industries.filter(industry => 
@@ -369,6 +386,8 @@ export default function Page() {
                       setWaitingForCurated(false);
                       
                       setRetryCount(0);
+                      // Log page view when curated arrives
+                      logEvent({ type: 'page_view', email, jobCount: mappedJobs.length, location, usedCurated: true });
                     } else {
                       // Still no curated jobs, poll again in 2 seconds
                       setTimeout(pollForCurated, 2000);
@@ -382,7 +401,7 @@ export default function Page() {
               
               // Start polling after 2 seconds
               setTimeout(pollForCurated, 2000);
-            } else {
+              } else {
               // No jobs at all - retry after 5 seconds
               console.log('No jobs found, retrying in 5 seconds...');
               if (retryCount < 3) {
@@ -396,6 +415,8 @@ export default function Page() {
                 setNoResults(true);
                 setLoading(false);
                 setIsRetrying(false);
+                  // Log zero jobs
+                  logEvent({ type: 'zero_jobs', email, usedCurated: false });
               }
             }
           }
@@ -448,6 +469,8 @@ export default function Page() {
         setRedirectCountdown((prev) => {
           if (prev === null || prev <= 1) {
             clearInterval(timer);
+            // Log redirect due to curated timeout (zero personalized results path)
+            logEvent({ type: 'redirect_no_jobs', email: viewerEmail, usedCurated });
             window.location.href = MORE_JOBS_URL;
             return 0;
           }
@@ -555,7 +578,20 @@ export default function Page() {
           ) : (
             <div className="space-y-6">
               {jobs.slice(0, 5).map((job) => (
-                <JobCard key={job.id} job={job} />
+                <JobCard
+                  key={job.id}
+                  job={job}
+                  onApply={(clicked) => logEvent({
+                    type: 'apply_click',
+                    email: viewerEmail,
+                    jobId: clicked.id,
+                    title: clicked.title,
+                    company: clicked.company,
+                    url: clicked.url,
+                    location: clicked.location,
+                    usedCurated
+                  })}
+                />
               ))}
             </div>
           )}

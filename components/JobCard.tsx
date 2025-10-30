@@ -21,7 +21,7 @@ export type Job = {
   industry?: string;
 };
 
-export default function JobCard({ job }: { job: Job }) {
+export default function JobCard({ job, onApply }: { job: Job, onApply?: (job: Job) => void }) {
   const [isExpanded, setIsExpanded] = useState(false);
   const [applicationCount, setApplicationCount] = useState<number | null>(null);
   
@@ -156,6 +156,7 @@ export default function JobCard({ job }: { job: Job }) {
                 style={{ backgroundColor: '#6c6cbe' }}
                 onMouseEnter={(e) => (e.target as HTMLElement).style.backgroundColor = '#b2b2e6'}
                 onMouseLeave={(e) => (e.target as HTMLElement).style.backgroundColor = '#6c6cbe'}
+                onClick={() => { try { onApply?.(job); } catch {} }}
               >
                 Apply Now
               </a>
