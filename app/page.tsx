@@ -306,10 +306,6 @@ export default function Page() {
                 setRedirectingToMore(true);
                 setWaitingForCurated(false);
                 setLoading(true);
-                // Give users a brief moment to see the redirect message
-                setTimeout(() => {
-                  window.location.href = MORE_JOBS_URL;
-                }, 500);
               }, 15000);
               
               // Poll for curated jobs every 2 seconds
@@ -443,6 +439,25 @@ export default function Page() {
       setRedirectCountdown(null);
     }
   }, [noResults]);
+
+  // Show a 5-second countdown before redirect when curated timeout triggers
+  useEffect(() => {
+    if (redirectingToMore) {
+      setRedirectCountdown(5);
+      const timer = setInterval(() => {
+        setRedirectCountdown((prev) => {
+          if (prev === null || prev <= 1) {
+            clearInterval(timer);
+            window.location.href = MORE_JOBS_URL;
+            return 0;
+          }
+          return prev - 1;
+        });
+      }, 1000);
+
+      return () => clearInterval(timer);
+    }
+  }, [redirectingToMore]);
   
   const jobCount = noResults ? 0 : Math.min(jobs.length, 5);
 
@@ -502,7 +517,7 @@ export default function Page() {
                       </h3>
                       <p className="text-gray-600">
                         {redirectingToMore
-                          ? TEXT.redirectCountdownPrefix + ' ' + (3) + ' ' + TEXT.redirectCountdownSuffix
+                          ? TEXT.redirectCountdownPrefix + ' ' + (redirectCountdown ?? 5) + ' ' + TEXT.redirectCountdownSuffix
                           : (waitingForCurated 
                               ? TEXT.loadingCuratedJobsDetail
                               : (isRetrying 
