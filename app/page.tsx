@@ -25,7 +25,8 @@ const TEXT = {
   retryMessage: (attempt: number, max: number) => `Attempting to fetch jobs again (${attempt}/${max}). Please wait...`,
   loadingMessage: "Please wait while we fetch the latest nursing opportunities.",
   loadingCuratedJobs: "Locating jobs that are the best fit for you based on your signup form...",
-  curatedJobsTimeout: "Please refresh the page for the most personalized results.",
+  loadingCuratedJobsDetail: "We’re prioritizing roles based on your preferences and location.",
+  redirectingToMoreJobs: "Redirecting you to more nursing jobs...",
 } as const;
 
 // Helper function for fallback demo data
@@ -191,6 +192,7 @@ export default function Page() {
   const [noResults, setNoResults] = useState(false);
   const [redirectCountdown, setRedirectCountdown] = useState<number | null>(null);
   const [waitingForCurated, setWaitingForCurated] = useState(false);
+  const [redirectingToMore, setRedirectingToMore] = useState(false);
   const [matchingCriteria, setMatchingCriteria] = useState({
     experience: 'ICU experience',
     openness: 'openness to new roles'
@@ -301,7 +303,13 @@ export default function Page() {
               // Set up 15-second timeout for curated jobs
               const timeoutId = setTimeout(() => {
                 console.log('15-second timeout reached, redirecting to more jobs');
-                window.location.href = MORE_JOBS_URL;
+                setRedirectingToMore(true);
+                setWaitingForCurated(false);
+                setLoading(true);
+                // Give users a brief moment to see the redirect message
+                setTimeout(() => {
+                  window.location.href = MORE_JOBS_URL;
+                }, 500);
               }, 15000);
               
               // Poll for curated jobs every 2 seconds
@@ -488,25 +496,31 @@ export default function Page() {
                   {loading ? (
                     <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-8 text-center">
                       <h3 className="text-xl font-semibold text-gray-900 mb-2">
-                        {waitingForCurated ? TEXT.loadingCuratedJobs : (isRetrying ? TEXT.retryingJobs : TEXT.loadingJobs)}
+                        {redirectingToMore
+                          ? TEXT.redirectingToMoreJobs
+                          : (waitingForCurated ? TEXT.loadingCuratedJobs : (isRetrying ? TEXT.retryingJobs : TEXT.loadingJobs))}
                       </h3>
                       <p className="text-gray-600">
-                        {waitingForCurated 
-                          ? TEXT.loadingCuratedJobs
-                          : (isRetrying 
-                            ? TEXT.retryMessage(retryCount, 3)
-                            : TEXT.loadingMessage
-                          )
+                        {redirectingToMore
+                          ? TEXT.redirectCountdownPrefix + ' ' + (3) + ' ' + TEXT.redirectCountdownSuffix
+                          : (waitingForCurated 
+                              ? TEXT.loadingCuratedJobsDetail
+                              : (isRetrying 
+                                ? TEXT.retryMessage(retryCount, 3)
+                                : TEXT.loadingMessage
+                              )
+                            )
                         }
                       </p>
-                      {(isRetrying || waitingForCurated) && (
+                      {(isRetrying || waitingForCurated || redirectingToMore) && (
                         <div className="mt-4">
                           <div className="inline-flex items-center px-4 py-2 bg-blue-50 text-blue-700 rounded-lg text-sm">
                             <svg className="animate-spin -ml-1 mr-3 h-4 w-4 text-blue-500" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
                               <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
                               <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
                             </svg>
-                            {waitingForCurated ? "Finding your personalized matches..." : "Retrying in 5 seconds..."}
+                            {redirectingToMore ? "Taking you to more nursing jobs..."
+                              : (waitingForCurated ? "Finding your personalized matches..." : "Retrying in 5 seconds...")}
                           </div>
                         </div>
                       )}
