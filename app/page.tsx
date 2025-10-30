@@ -26,7 +26,7 @@ const TEXT = {
   loadingMessage: "Please wait while we fetch the latest nursing opportunities.",
   loadingCuratedJobs: "Locating jobs that are the best fit for you based on your signup form...",
   loadingCuratedJobsDetail: "We’re prioritizing roles based on your preferences and location.",
-  redirectingToMoreJobs: "Redirecting you to more nursing jobs...",
+  redirectingToMoreJobs: "We were unable to locate jobs within your area based on your preferences. We are redirecting you to more nursing jobs where you can do a detailed search.",
 } as const;
 
 // Helper function for fallback demo data
