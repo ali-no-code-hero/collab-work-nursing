@@ -191,7 +191,6 @@ export default function Page() {
   const [noResults, setNoResults] = useState(false);
   const [redirectCountdown, setRedirectCountdown] = useState<number | null>(null);
   const [waitingForCurated, setWaitingForCurated] = useState(false);
-  const [curatedTimeout, setCuratedTimeout] = useState(false);
   const [matchingCriteria, setMatchingCriteria] = useState({
     experience: 'ICU experience',
     openness: 'openness to new roles'
@@ -298,10 +297,8 @@ export default function Page() {
               
               // Set up 15-second timeout for curated jobs
               const timeoutId = setTimeout(() => {
-                console.log('15-second timeout reached, showing refresh message');
-                setCuratedTimeout(true);
-                setWaitingForCurated(false);
-                setLoading(false);
+                console.log('15-second timeout reached, redirecting to more jobs');
+                window.location.href = MORE_JOBS_URL;
               }, 15000);
               
               // Poll for curated jobs every 2 seconds
@@ -359,7 +356,7 @@ export default function Page() {
                       setLoading(false);
                       setIsRetrying(false);
                       setWaitingForCurated(false);
-                      setCuratedTimeout(false);
+                      
                       setRetryCount(0);
                     } else {
                       // Still no curated jobs, poll again in 2 seconds
@@ -506,22 +503,6 @@ export default function Page() {
                           </div>
                         </div>
                       )}
-                    </div>
-                  ) : curatedTimeout ? (
-                    <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-12 text-center">
-                      <h3 className="text-2xl font-semibold text-gray-900 mb-4">Personalized Jobs Loading</h3>
-                      <p className="text-gray-600 mb-6 text-lg">
-                        {TEXT.curatedJobsTimeout}
-                      </p>
-                      <button
-                        onClick={() => window.location.reload()}
-                        className="inline-flex items-center px-6 py-3 bg-purple-600 text-white font-semibold rounded-lg hover:bg-purple-700 transition-colors duration-200 text-lg"
-                      >
-                        Refresh Page
-                        <svg className="ml-2 w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
-                        </svg>
-                      </button>
                     </div>
                   ) : noResults || jobs.length === 0 ? (
             <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-12 text-center">
