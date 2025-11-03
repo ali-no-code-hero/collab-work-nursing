@@ -24,9 +24,6 @@ const TEXT = {
   retryingJobs: "Retrying...",
   retryMessage: (attempt: number, max: number) => `Attempting to fetch jobs again (${attempt}/${max}). Please wait...`,
   loadingMessage: "Please wait while we fetch the latest nursing opportunities.",
-  loadingCuratedJobs: "Locating jobs that are the best fit for you based on your signup form...",
-  loadingCuratedJobsDetail: "We’re prioritizing roles based on your preferences and location.",
-  redirectingToMoreJobs: "We were unable to locate jobs within your area based on your preferences. We are redirecting you to more nursing jobs where you can do a detailed search.",
 } as const;
 
 // Helper function for fallback demo data
@@ -191,24 +188,11 @@ export default function Page() {
   const [isRetrying, setIsRetrying] = useState(false);
   const [noResults, setNoResults] = useState(false);
   const [redirectCountdown, setRedirectCountdown] = useState<number | null>(null);
-  const [waitingForCurated, setWaitingForCurated] = useState(false);
-  const [redirectingToMore, setRedirectingToMore] = useState(false);
+  const [viewerEmail, setViewerEmail] = useState<string | null>(null);
   const [matchingCriteria, setMatchingCriteria] = useState({
     experience: 'ICU experience',
     openness: 'openness to new roles'
   });
-  const [viewerEmail, setViewerEmail] = useState<string | null>(null);
-  const [usedCurated, setUsedCurated] = useState<boolean>(false);
-  
-  const logEvent = async (payload: any) => {
-    try {
-      await fetch('/api/events', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ timestamp: new Date().toISOString(), ...payload })
-      });
-    } catch {}
-  };
   
   useEffect(() => {
     const loadJobs = async (isRetry = false) => {
@@ -223,7 +207,7 @@ export default function Page() {
         // Get email from URL parameters
         const urlParams = new URLSearchParams(window.location.search);
         const email = urlParams.get('email');
-        setViewerEmail(email);
+        setViewerEmail(email); // Store email in state for passing to JobCard
         
         // If no email parameter, show no results
         if (!email) {
@@ -251,174 +235,75 @@ export default function Page() {
             });
             setLoading(false);
             setIsRetrying(false);
-          } else {
-            const curated = Array.isArray(data.curated_jobs) ? data.curated_jobs : [];
-            const responses = Array.isArray(data.response_jobs) ? data.response_jobs : [];
+          } else if (data.response_jobs && Array.isArray(data.response_jobs) && data.response_jobs.length > 0) {
+            // Map the personalized jobs response
+            const location = `${data.subscriber_city}, ${data.subscriber_state}`;
+            setSubscriberLocation(location);
             
-            // If we have curated jobs, use them immediately
-            if (curated.length > 0) {
-              const location = `${data.subscriber_city}, ${data.subscriber_state}`;
-              setSubscriberLocation(location);
-              setUsedCurated(true);
-              
-              // Extract matching criteria from API response
-              const industries = [...new Set(curated.map((job: any) => job.industry))];
-              const experienceTypes = industries.filter(industry => 
-                industry && typeof industry === 'string' && (
-                  industry.toLowerCase().includes('critical') ||
-                  industry.toLowerCase().includes('icu') ||
-                  industry.toLowerCase().includes('intensive') ||
-                  industry.toLowerCase().includes('emergency') ||
-                  industry.toLowerCase().includes('trauma')
-                )
-              );
-              
-              // Set dynamic matching criteria (prefer API-provided fields)
-              setMatchingCriteria({
-                experience: (data.job_passion && typeof data.job_passion === 'string' && data.job_passion.trim().length > 0)
-                  ? data.job_passion
-                  : (experienceTypes.length > 0 
-                    ? `${experienceTypes[0]} experience` 
-                    : 'Critical Care experience'),
-                openness: (data.job_interest && typeof data.job_interest === 'string' && data.job_interest.trim().length > 0)
-                  ? data.job_interest
-                  : 'openness to new roles'
-              });
-              
-              const mappedJobs = curated.slice(0, 5).map((j: any, idx: number) => ({
-                id: j.job_eid ?? j.id ?? idx,
-                title: j.title ?? "Untitled role",
-                company: j.company ?? "Company",
-                location: j.location_string ?? j.location ?? location,
-                postedAt: j.date_posted ? new Date(j.date_posted).toISOString() : undefined,
-                tags: [j.industry] ?? [],
-                url: j.url ?? "#",
-                salary: j.salary_min && j.salary_max ? `$${j.salary_min.toLocaleString()}-$${j.salary_max.toLocaleString()}` : undefined,
-                salaryMin: j.salary_min,
-                salaryMax: j.salary_max,
-                salaryPeriod: j.salary_period,
-                type: j.is_remote ? "Remote" : "Full-time",
-                isRemote: j.is_remote ?? false,
-                industry: j.industry,
-                logo: undefined,
-                description: j.description ?? `Great opportunity in ${j.location_string ?? j.location ?? location}. Apply now to join our team!`,
-              }));
-              setJobs(mappedJobs);
+            // Extract matching criteria from API response
+            const industries = [...new Set(data.response_jobs.map((job: any) => job.industry))];
+            const experienceTypes = industries.filter(industry => 
+              industry && typeof industry === 'string' && (
+                industry.toLowerCase().includes('critical') ||
+                industry.toLowerCase().includes('icu') ||
+                industry.toLowerCase().includes('intensive') ||
+                industry.toLowerCase().includes('emergency') ||
+                industry.toLowerCase().includes('trauma')
+              )
+            );
+            
+            // Set dynamic matching criteria
+            setMatchingCriteria({
+              experience: experienceTypes.length > 0 
+                ? `${experienceTypes[0]} experience` 
+                : 'Critical Care experience',
+              openness: 'openness to new roles'
+            });
+            
+            const mappedJobs = data.response_jobs.slice(0, 5).map((j: any, idx: number) => ({
+              id: j.job_eid ?? j.id ?? idx,
+              title: j.title ?? "Untitled role",
+              company: j.company ?? "Company",
+              location: location, // Use subscriber location instead of job location
+              postedAt: j.date_posted ? new Date(j.date_posted).toISOString() : undefined,
+              tags: [j.industry] ?? [],
+              url: j.url ?? "#",
+              salary: j.salary_min && j.salary_max ? `$${j.salary_min.toLocaleString()}-$${j.salary_max.toLocaleString()}` : undefined,
+              salaryMin: j.salary_min,
+              salaryMax: j.salary_max,
+              salaryPeriod: j.salary_period,
+              type: j.is_remote ? "Remote" : "Full-time",
+              isRemote: j.is_remote ?? false,
+              industry: j.industry,
+              logo: undefined, // No logo in this API response
+              description: `Great opportunity in ${location}. Apply now to join our team!`,
+            }));
+            setJobs(mappedJobs);
+            setLoading(false);
+            setIsRetrying(false);
+            setRetryCount(0); // Reset retry count on success
+          } else if (data.response_jobs && Array.isArray(data.response_jobs) && data.response_jobs.length === 0) {
+            // Empty response_jobs array - retry after 5 seconds
+            console.log('Empty response_jobs array, retrying in 5 seconds...');
+            if (retryCount < 3) { // Max 3 retries
+              setRetryCount(prev => prev + 1);
+              setTimeout(() => {
+                loadJobs(true);
+              }, 5000);
+            } else {
+              console.log('Max retries reached, showing no results message');
+              setJobs([]);
+              setNoResults(true);
               setLoading(false);
               setIsRetrying(false);
-              setWaitingForCurated(false);
-              setRetryCount(0);
-              // Log page view with curated
-              logEvent({ type: 'page_view', email, jobCount: mappedJobs.length, location, usedCurated: true });
-            } else if (responses.length > 0) {
-              // We have response_jobs but no curated_jobs yet - wait for curated
-              console.log('Have response_jobs but waiting for curated_jobs...');
-              setWaitingForCurated(true);
-              setLoading(true);
-              
-              // Set up 15-second timeout for curated jobs
-              const timeoutId = setTimeout(() => {
-                console.log('15-second timeout reached, redirecting to more jobs');
-                setRedirectingToMore(true);
-                setWaitingForCurated(false);
-                setLoading(true);
-              }, 15000);
-              
-              // Poll for curated jobs every 2 seconds
-              const pollForCurated = async () => {
-                try {
-                  const pollResponse = await fetch(`/api/jobs?email=${encodeURIComponent(email)}`);
-                  if (pollResponse.ok) {
-                    const pollData = await pollResponse.json();
-                    const pollCurated = Array.isArray(pollData.curated_jobs) ? pollData.curated_jobs : [];
-                    
-                    if (pollCurated.length > 0) {
-                      clearTimeout(timeoutId);
-                      console.log('Curated jobs found, updating display');
-                      
-                      const location = `${pollData.subscriber_city}, ${pollData.subscriber_state}`;
-                      setSubscriberLocation(location);
-                      setUsedCurated(true);
-                      
-                      const industries = [...new Set(pollCurated.map((job: any) => job.industry))];
-                      const experienceTypes = industries.filter(industry => 
-                        industry && typeof industry === 'string' && (
-                          industry.toLowerCase().includes('critical') ||
-                          industry.toLowerCase().includes('icu') ||
-                          industry.toLowerCase().includes('intensive') ||
-                          industry.toLowerCase().includes('emergency') ||
-                          industry.toLowerCase().includes('trauma')
-                        )
-                      );
-                      
-                      setMatchingCriteria({
-                        experience: (pollData.job_passion && typeof pollData.job_passion === 'string' && pollData.job_passion.trim().length > 0)
-                          ? pollData.job_passion
-                          : (experienceTypes.length > 0 
-                            ? `${experienceTypes[0]} experience` 
-                            : 'Critical Care experience'),
-                        openness: (pollData.job_interest && typeof pollData.job_interest === 'string' && pollData.job_interest.trim().length > 0)
-                          ? pollData.job_interest
-                          : 'openness to new roles'
-                      });
-                      
-                      const mappedJobs = pollCurated.slice(0, 5).map((j: any, idx: number) => ({
-                        id: j.job_eid ?? j.id ?? idx,
-                        title: j.title ?? "Untitled role",
-                        company: j.company ?? "Company",
-                        location: j.location_string ?? j.location ?? location,
-                        postedAt: j.date_posted ? new Date(j.date_posted).toISOString() : undefined,
-                        tags: [j.industry] ?? [],
-                        url: j.url ?? "#",
-                        salary: j.salary_min && j.salary_max ? `$${j.salary_min.toLocaleString()}-$${j.salary_max.toLocaleString()}` : undefined,
-                        salaryMin: j.salary_min,
-                        salaryMax: j.salary_max,
-                        salaryPeriod: j.salary_period,
-                        type: j.is_remote ? "Remote" : "Full-time",
-                        isRemote: j.is_remote ?? false,
-                        industry: j.industry,
-                        logo: undefined,
-                        description: j.description ?? `Great opportunity in ${j.location_string ?? j.location ?? location}. Apply now to join our team!`,
-                      }));
-                      setJobs(mappedJobs);
-                      setLoading(false);
-                      setIsRetrying(false);
-                      setWaitingForCurated(false);
-                      
-                      setRetryCount(0);
-                      // Log page view when curated arrives
-                      logEvent({ type: 'page_view', email, jobCount: mappedJobs.length, location, usedCurated: true });
-                    } else {
-                      // Still no curated jobs, poll again in 2 seconds
-                      setTimeout(pollForCurated, 2000);
-                    }
-                  }
-                } catch (error) {
-                  console.error('Error polling for curated jobs:', error);
-                  setTimeout(pollForCurated, 2000);
-                }
-              };
-              
-              // Start polling after 2 seconds
-              setTimeout(pollForCurated, 2000);
-              } else {
-              // No jobs at all - retry after 5 seconds
-              console.log('No jobs found, retrying in 5 seconds...');
-              if (retryCount < 3) {
-                setRetryCount(prev => prev + 1);
-                setTimeout(() => {
-                  loadJobs(true);
-                }, 5000);
-              } else {
-                console.log('Max retries reached, showing no results message');
-                setJobs([]);
-                setNoResults(true);
-                setLoading(false);
-                setIsRetrying(false);
-                  // Log zero jobs
-                  logEvent({ type: 'zero_jobs', email, usedCurated: false });
-              }
             }
+          } else {
+            // Fallback if no response_jobs - show no results instead of demo data
+            console.log('No response_jobs found, showing no results message');
+            setJobs([]);
+            setNoResults(true);
+            setLoading(false);
+            setIsRetrying(false);
           }
         } else {
           // API error - show no results instead of fallback data
@@ -460,27 +345,6 @@ export default function Page() {
       setRedirectCountdown(null);
     }
   }, [noResults]);
-
-  // Show a 5-second countdown before redirect when curated timeout triggers
-  useEffect(() => {
-    if (redirectingToMore) {
-      setRedirectCountdown(5);
-      const timer = setInterval(() => {
-        setRedirectCountdown((prev) => {
-          if (prev === null || prev <= 1) {
-            clearInterval(timer);
-            // Log redirect due to curated timeout (zero personalized results path)
-            logEvent({ type: 'redirect_no_jobs', email: viewerEmail, usedCurated });
-            window.location.href = MORE_JOBS_URL;
-            return 0;
-          }
-          return prev - 1;
-        });
-      }, 1000);
-
-      return () => clearInterval(timer);
-    }
-  }, [redirectingToMore]);
   
   const jobCount = noResults ? 0 : Math.min(jobs.length, 5);
 
@@ -534,31 +398,22 @@ export default function Page() {
                   {loading ? (
                     <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-8 text-center">
                       <h3 className="text-xl font-semibold text-gray-900 mb-2">
-                        {redirectingToMore
-                          ? TEXT.redirectingToMoreJobs
-                          : (waitingForCurated ? TEXT.loadingCuratedJobs : (isRetrying ? TEXT.retryingJobs : TEXT.loadingJobs))}
+                        {isRetrying ? TEXT.retryingJobs : TEXT.loadingJobs}
                       </h3>
                       <p className="text-gray-600">
-                        {redirectingToMore
-                          ? TEXT.redirectCountdownPrefix + ' ' + (redirectCountdown ?? 5) + ' ' + TEXT.redirectCountdownSuffix
-                          : (waitingForCurated 
-                              ? TEXT.loadingCuratedJobsDetail
-                              : (isRetrying 
-                                ? TEXT.retryMessage(retryCount, 3)
-                                : TEXT.loadingMessage
-                              )
-                            )
+                        {isRetrying 
+                          ? TEXT.retryMessage(retryCount, 3)
+                          : TEXT.loadingMessage
                         }
                       </p>
-                      {(isRetrying || waitingForCurated || redirectingToMore) && (
+                      {isRetrying && (
                         <div className="mt-4">
                           <div className="inline-flex items-center px-4 py-2 bg-blue-50 text-blue-700 rounded-lg text-sm">
                             <svg className="animate-spin -ml-1 mr-3 h-4 w-4 text-blue-500" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
                               <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
                               <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
                             </svg>
-                            {redirectingToMore ? "Taking you to more nursing jobs..."
-                              : (waitingForCurated ? "Finding your personalized matches..." : "Retrying in 5 seconds...")}
+                            Retrying in 5 seconds...
                           </div>
                         </div>
                       )}
@@ -578,20 +433,7 @@ export default function Page() {
           ) : (
             <div className="space-y-6">
               {jobs.slice(0, 5).map((job) => (
-                <JobCard
-                  key={job.id}
-                  job={job}
-                  onApply={(clicked) => logEvent({
-                    type: 'apply_click',
-                    email: viewerEmail,
-                    jobId: clicked.id,
-                    title: clicked.title,
-                    company: clicked.company,
-                    url: clicked.url,
-                    location: clicked.location,
-                    usedCurated
-                  })}
-                />
+                <JobCard key={job.id} job={job} email={viewerEmail} />
               ))}
             </div>
           )}

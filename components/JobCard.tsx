@@ -21,7 +21,7 @@ export type Job = {
   industry?: string;
 };
 
-export default function JobCard({ job, onApply }: { job: Job, onApply?: (job: Job) => void }) {
+export default function JobCard({ job, email }: { job: Job; email?: string | null }) {
   const [isExpanded, setIsExpanded] = useState(false);
   const [applicationCount, setApplicationCount] = useState<number | null>(null);
   
@@ -29,6 +29,32 @@ export default function JobCard({ job, onApply }: { job: Job, onApply?: (job: Jo
   useEffect(() => {
     setApplicationCount(Math.floor(Math.random() * 17) + 4);
   }, []);
+
+  // Handle apply button click - log to API
+  const handleApplyClick = async (e: React.MouseEvent<HTMLAnchorElement>) => {
+    if (!email) {
+      console.warn('No email available for logging apply click');
+      return; // Still allow navigation, just don't log
+    }
+
+    try {
+      await fetch('https://api.collabwork.com/api:ERDpOWih/log_apply', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          job_title: job.title,
+          job_url: job.url || '',
+          email: email,
+          job_eid: job.id.toString(),
+        }),
+      });
+    } catch (error) {
+      console.error('Failed to log apply click:', error);
+      // Don't block navigation if logging fails
+    }
+  };
   
   // Format salary
   const formatSalary = () => {
@@ -156,7 +182,7 @@ export default function JobCard({ job, onApply }: { job: Job, onApply?: (job: Jo
                 style={{ backgroundColor: '#6c6cbe' }}
                 onMouseEnter={(e) => (e.target as HTMLElement).style.backgroundColor = '#b2b2e6'}
                 onMouseLeave={(e) => (e.target as HTMLElement).style.backgroundColor = '#6c6cbe'}
-                onClick={() => { try { onApply?.(job); } catch {} }}
+                onClick={handleApplyClick}
               >
                 Apply Now
               </a>
