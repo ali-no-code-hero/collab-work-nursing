@@ -194,6 +194,33 @@ export default function Page() {
     openness: 'openness to new roles'
   });
   
+  // Log page view when component mounts
+  useEffect(() => {
+    const logPageView = async () => {
+      try {
+        const urlParams = new URLSearchParams(window.location.search);
+        const email = urlParams.get('email');
+        
+        if (email) {
+          await fetch('https://api.collabwork.com/api:ERDpOWih/log_page_view', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+              email: email,
+            }),
+          });
+        }
+      } catch (error) {
+        console.error('Failed to log page view:', error);
+        // Don't block page load if logging fails
+      }
+    };
+    
+    logPageView();
+  }, []); // Run once on mount
+  
   useEffect(() => {
     const loadJobs = async (isRetry = false) => {
       if (isRetry) {
