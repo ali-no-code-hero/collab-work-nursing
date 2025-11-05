@@ -1,5 +1,6 @@
 import "./globals.css";
 import { ReactNode } from "react";
+import { Analytics } from "@vercel/analytics/next";
 
 export const metadata = {
   title: "Jobs — CollabWORK‑inspired",
@@ -14,7 +15,7 @@ export default function RootLayout({ children }: { children: ReactNode }) {
           <header className="sticky top-0 z-30 border-b border-gray-200 bg-white shadow-sm">
             <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
               <div className="flex items-center h-16">
-                <a href="https://app.collabwork.com/" className="flex items-center">
+                <a href="/" className="flex items-center">
                   <img 
                     src="https://api.surveyjs.io/private/Surveys/files?name=ec679579-87c3-4066-bb6a-df9e969152e6" 
                     alt="CollabWork Logo" 
@@ -39,6 +40,7 @@ export default function RootLayout({ children }: { children: ReactNode }) {
             </div>
           </footer>
         </div>
+        <Analytics />
       </body>
     </html>
   );
