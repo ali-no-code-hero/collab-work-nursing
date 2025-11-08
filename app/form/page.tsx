@@ -279,9 +279,9 @@ export default function FormPage() {
       <section className="py-12 bg-gray-50">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
           <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-8">
-          {/* Step 1: Location */}
-          {currentStep === 1 && (
-            <div>
+            {/* Step 1: Location */}
+            {currentStep === 1 && (
+              <div>
               <h2 className="text-2xl font-bold text-gray-900 mb-3">Where are you located?</h2>
               <p className="text-gray-600 mb-6 text-base">
                 We use your location to match you with nursing opportunities in your area. This helps us show you relevant jobs that are actually accessible to you, saving you time and ensuring you see positions you can realistically pursue.
@@ -341,12 +341,12 @@ export default function FormPage() {
                   </button>
                 </div>
               </div>
-            </div>
-          )}
+              </div>
+            )}
 
-          {/* Step 2: Email */}
-          {currentStep === 2 && (
-            <div>
+            {/* Step 2: Email */}
+            {currentStep === 2 && (
+              <div>
               <h2 className="text-2xl font-bold text-gray-900 mb-3">What's your email address?</h2>
               <p className="text-gray-600 mb-6 text-base">
                 Your email allows us to send you personalized job recommendations, career tips, and exclusive opportunities. We'll also use it to notify you if you win our monthly $200 Amazon gift card raffle!
@@ -384,12 +384,12 @@ export default function FormPage() {
                   Continue
                 </button>
               </div>
-            </div>
-          )}
+              </div>
+            )}
 
-          {/* Step 3: Licenses */}
-          {currentStep === 3 && (
-            <div>
+            {/* Step 3: Licenses */}
+            {currentStep === 3 && (
+              <div>
               <h2 className="text-2xl font-bold text-gray-900 mb-3">
                 Which of the following nursing licenses or certifications do you currently hold?
               </h2>
@@ -434,12 +434,12 @@ export default function FormPage() {
                   Continue
                 </button>
               </div>
-            </div>
-          )}
+              </div>
+            )}
 
-          {/* Step 4: Specialties */}
-          {currentStep === 4 && (
-            <div>
+            {/* Step 4: Specialties */}
+            {currentStep === 4 && (
+              <div>
               <h2 className="text-2xl font-bold text-gray-900 mb-3">
                 Which nursing specialties are you most passionate about?
               </h2>
@@ -484,12 +484,12 @@ export default function FormPage() {
                   Continue
                 </button>
               </div>
-            </div>
-          )}
+              </div>
+            )}
 
-          {/* Step 5: Job Types */}
-          {currentStep === 5 && (
-            <div>
+            {/* Step 5: Job Types */}
+            {currentStep === 5 && (
+              <div>
               <h2 className="text-2xl font-bold text-gray-900 mb-3">
                 What type of nursing jobs interest you?
               </h2>
@@ -535,11 +535,11 @@ export default function FormPage() {
                 </button>
               </div>
             </div>
-          )}
+            )}
 
-          {/* Step 6: Current Workplace */}
-          {currentStep === 6 && (
-            <div>
+            {/* Step 6: Current Workplace */}
+            {currentStep === 6 && (
+              <div>
               <h2 className="text-2xl font-bold text-gray-900 mb-3">
                 Where do you currently work?
               </h2>
@@ -587,8 +587,8 @@ export default function FormPage() {
                   {isSubmitting ? 'Submitting...' : 'Submit'}
                 </button>
               </div>
-            </div>
-          )}
+              </div>
+            )}
           </div>
         </div>
       </section>
