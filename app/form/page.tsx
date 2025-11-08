@@ -336,7 +336,7 @@ export default function FormPage() {
       // Wait for processing ID if not available yet (max 5 seconds)
       // The ID is fetched in background after location step, so it might not be ready yet
       // Check multiple sources: state, ref, and sessionStorage
-      let processingId = formData.processingId || processingIdRef.current || sessionStorage.getItem('processingId');
+      let processingId: string | null = formData.processingId || processingIdRef.current || sessionStorage.getItem('processingId') || null;
       
       console.log('Initial processingId check:', { 
         fromState: formData.processingId, 
@@ -350,8 +350,11 @@ export default function FormPage() {
         console.log('Waiting for processing ID...');
         for (let i = 0; i < 10; i++) {
           await new Promise(resolve => setTimeout(resolve, 500)); // Wait 500ms
-          // Check all sources again
-          processingId = processingIdRef.current || sessionStorage.getItem('processingId') || formData.processingId;
+          // Check all sources again - convert undefined to null
+          const fromRef = processingIdRef.current || null;
+          const fromStorage = sessionStorage.getItem('processingId');
+          const fromState = formData.processingId || null;
+          processingId = fromRef || fromStorage || fromState;
           if (processingId) {
             console.log('Processing ID found after wait:', processingId);
             break;
