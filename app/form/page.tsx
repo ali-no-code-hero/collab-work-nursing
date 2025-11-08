@@ -213,10 +213,11 @@ export default function FormPage() {
     })
       .then(async (response) => {
         if (response.ok) {
+          let responseText = '';
           try {
             // Response is an array with a JSON string inside: ["{   \"status\": \"success\",   \"message\": \"Webhook received\", \"id\": \"1165\" }"]
             // Read as text first, then parse
-            const responseText = await response.text();
+            responseText = await response.text();
             console.log('Location webhook raw response text:', responseText);
             
             let processingId = null;
@@ -271,7 +272,7 @@ export default function FormPage() {
               console.error('❌ No processing ID found in location webhook response. Full response:', responseText);
             }
           } catch (e) {
-            console.error('Error parsing location webhook response:', e, responseText);
+            console.error('Error parsing location webhook response:', e, responseText || 'No response text available');
           }
         } else {
           const errorText = await response.text().catch(() => '');
