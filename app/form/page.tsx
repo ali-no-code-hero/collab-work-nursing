@@ -1,0 +1,597 @@
+'use client';
+
+import { useState, useEffect } from 'react';
+import { useRouter } from 'next/navigation';
+
+interface FormData {
+  city: string;
+  state: string;
+  email: string;
+  licenses: string[];
+  specialties: string[];
+  jobTypes: string[];
+  currentWorkplace: string;
+  processingId?: string; // ID from first webhook
+}
+
+const LICENSE_OPTIONS = [
+  'Registered Nurse (RN)',
+  'Licensed Practical Nurse / Licensed Vocational Nurse (LPN/LVN)',
+  'Nurse Practitioner (NP/FNP)',
+  'Certified Registered Nurse Anesthetist (CRNA)',
+  'Critical Care Registered Nurse (CCRN)',
+  'Basic Life Support (BLS)',
+  'Advanced Cardiovascular Life Support (ACLS)'
+];
+
+const SPECIALTY_OPTIONS = [
+  'Critical Care / ICU',
+  'Emergency Department',
+  'Pediatrics',
+  'Oncology',
+  'Med-Surg',
+  'Psychiatric/Mental Health'
+];
+
+const JOB_TYPE_OPTIONS = [
+  'Full-time (Staff Nurse)',
+  'Part-time / Per Diem',
+  'Travel Nursing',
+  'Remote / Telehealth',
+  'Open to Anything'
+];
+
+export default function FormPage() {
+  const router = useRouter();
+  const [currentStep, setCurrentStep] = useState(1);
+  const [formData, setFormData] = useState<FormData>({
+    city: '',
+    state: '',
+    email: '',
+    licenses: [],
+    specialties: [],
+    jobTypes: [],
+    currentWorkplace: '',
+  });
+  const [locationError, setLocationError] = useState<string | null>(null);
+  const [isLoadingLocation, setIsLoadingLocation] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [errors, setErrors] = useState<Record<string, string>>({});
+
+  // Try to get location from geolocation API
+  useEffect(() => {
+    if (currentStep === 1 && !formData.city && !formData.state) {
+      getLocationFromBrowser();
+    }
+  }, [currentStep]);
+
+  const getLocationFromBrowser = async () => {
+    setIsLoadingLocation(true);
+    setLocationError(null);
+
+    if (!navigator.geolocation) {
+      setLocationError('Geolocation is not supported by your browser');
+      setIsLoadingLocation(false);
+      return;
+    }
+
+    try {
+      const position = await new Promise<GeolocationPosition>((resolve, reject) => {
+        navigator.geolocation.getCurrentPosition(resolve, reject, {
+          timeout: 10000,
+          enableHighAccuracy: false,
+        });
+      });
+
+      // Reverse geocode to get city and state
+      const response = await fetch(
+        `https://api.bigdatacloud.net/data/reverse-geocode-client?latitude=${position.coords.latitude}&longitude=${position.coords.longitude}&localityLanguage=en`
+      );
+
+      if (response.ok) {
+        const data = await response.json();
+        setFormData(prev => ({
+          ...prev,
+          city: data.city || data.locality || '',
+          state: data.principalSubdivision || data.region || '',
+        }));
+      }
+    } catch (error) {
+      console.error('Error getting location:', error);
+      setLocationError('Could not automatically detect your location. Please enter it manually.');
+    } finally {
+      setIsLoadingLocation(false);
+    }
+  };
+
+  const handleLocationSubmit = async () => {
+    if (!formData.city.trim() || !formData.state.trim()) {
+      setErrors({ location: 'Please enter both city and state' });
+      return;
+    }
+
+    setErrors({});
+    
+    // Send location to first webhook
+    try {
+      const response = await fetch('https://api.collabwork.com/api:partners/webhook_just_state_nurse_ascent', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          city: formData.city,
+          state: formData.state,
+        }),
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+        setFormData(prev => ({
+          ...prev,
+          processingId: data.id || data.processing_id || data.processingId,
+        }));
+        setCurrentStep(2);
+      } else {
+        setErrors({ location: 'Failed to process location. Please try again.' });
+      }
+    } catch (error) {
+      console.error('Error sending location:', error);
+      setErrors({ location: 'Failed to process location. Please try again.' });
+    }
+  };
+
+  const handleMultiSelect = (field: 'licenses' | 'specialties' | 'jobTypes', value: string) => {
+    setFormData(prev => {
+      const current = prev[field];
+      const updated = current.includes(value)
+        ? current.filter(item => item !== value)
+        : [...current, value];
+      return { ...prev, [field]: updated };
+    });
+  };
+
+  const handleNext = () => {
+    setErrors({});
+    
+    if (currentStep === 2) {
+      if (!formData.email.trim() || !formData.email.includes('@')) {
+        setErrors({ email: 'Please enter a valid email address' });
+        return;
+      }
+    } else if (currentStep === 3) {
+      if (formData.licenses.length === 0) {
+        setErrors({ licenses: 'Please select at least one license or certification' });
+        return;
+      }
+    } else if (currentStep === 4) {
+      if (formData.specialties.length === 0) {
+        setErrors({ specialties: 'Please select at least one specialty' });
+        return;
+      }
+    } else if (currentStep === 5) {
+      if (formData.jobTypes.length === 0) {
+        setErrors({ jobTypes: 'Please select at least one job type' });
+        return;
+      }
+    }
+
+    setCurrentStep(prev => prev + 1);
+  };
+
+  const handleBack = () => {
+    setCurrentStep(prev => Math.max(1, prev - 1));
+    setErrors({});
+  };
+
+  const handleSubmit = async () => {
+    setIsSubmitting(true);
+    setErrors({});
+
+    try {
+      // Format data for webhook
+      const payload = {
+        city: formData.city,
+        state: formData.state,
+        email: formData.email,
+        licenses: formData.licenses,
+        specialties: formData.specialties,
+        job_types: formData.jobTypes,
+        current_workplace: formData.currentWorkplace,
+        processing_id: formData.processingId,
+      };
+
+      const response = await fetch('https://api.collabwork.com/api:partners/webhook_curated_jobs_nurse_ascent', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(payload),
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+        
+        // Store form data and curated jobs in sessionStorage for jobs page
+        sessionStorage.setItem('formData', JSON.stringify(formData));
+        if (data.curated_jobs) {
+          sessionStorage.setItem('curatedJobs', JSON.stringify(data.curated_jobs));
+        }
+        if (data.subscriber_city && data.subscriber_state) {
+          sessionStorage.setItem('subscriberLocation', JSON.stringify({
+            city: data.subscriber_city,
+            state: data.subscriber_state,
+          }));
+        }
+        if (data.job_passion) {
+          sessionStorage.setItem('jobPassion', data.job_passion);
+        }
+        if (data.job_interest) {
+          sessionStorage.setItem('jobInterest', data.job_interest);
+        }
+
+        // Redirect to jobs page
+        router.push('/');
+      } else {
+        const errorData = await response.json().catch(() => ({}));
+        setErrors({ submit: errorData.message || 'Failed to submit form. Please try again.' });
+      }
+    } catch (error) {
+      console.error('Error submitting form:', error);
+      setErrors({ submit: 'Failed to submit form. Please try again.' });
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
+  return (
+    <div className="min-h-screen bg-white">
+      {/* Hero Section */}
+      <section className="bg-white border-b border-gray-200">
+        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-12">
+          <h1 className="text-4xl md:text-5xl font-bold text-gray-900 mb-4 leading-tight">
+            Subscribe to Nurse Ascent *
+          </h1>
+          <p className="text-lg text-gray-600 mb-8">
+            Complete this form to get the 5-minute newsletter nurses trust to grow their careers 🎁 + enter our monthly raffle for a $200 Amazon gift card.
+          </p>
+
+          {/* Progress Indicator */}
+          <div className="mb-6">
+            <div className="flex items-center justify-between mb-2">
+              <div className="flex-1">
+                <div className="h-2 bg-gray-200 rounded-full overflow-hidden">
+                  <div
+                    className="h-full bg-blue-600 transition-all duration-300"
+                    style={{ width: `${(currentStep / 6) * 100}%` }}
+                  />
+                </div>
+              </div>
+            </div>
+            <p className="text-sm text-gray-600 text-center">
+              Step {currentStep} of 6
+            </p>
+          </div>
+        </div>
+      </section>
+
+      {/* Form Section */}
+      <section className="py-12 bg-gray-50">
+        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+          <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-8">
+          {/* Step 1: Location */}
+          {currentStep === 1 && (
+            <div>
+              <h2 className="text-2xl font-bold text-gray-900 mb-3">Where are you located?</h2>
+              <p className="text-gray-600 mb-6 text-base">
+                We use your location to match you with nursing opportunities in your area. This helps us show you relevant jobs that are actually accessible to you, saving you time and ensuring you see positions you can realistically pursue.
+              </p>
+
+              {isLoadingLocation && (
+                <div className="mb-4 p-4 bg-blue-50 rounded-lg">
+                  <p className="text-blue-700">Detecting your location...</p>
+                </div>
+              )}
+
+              {locationError && (
+                <div className="mb-4 p-4 bg-yellow-50 rounded-lg">
+                  <p className="text-yellow-700 text-sm">{locationError}</p>
+                </div>
+              )}
+
+              <div className="space-y-4">
+                <div>
+                  <label htmlFor="city" className="block text-sm font-medium text-gray-700 mb-2">
+                    City
+                  </label>
+                  <input
+                    type="text"
+                    id="city"
+                    value={formData.city}
+                    onChange={(e) => setFormData(prev => ({ ...prev, city: e.target.value }))}
+                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                    placeholder="Enter your city"
+                  />
+                </div>
+
+                <div>
+                  <label htmlFor="state" className="block text-sm font-medium text-gray-700 mb-2">
+                    State
+                  </label>
+                  <input
+                    type="text"
+                    id="state"
+                    value={formData.state}
+                    onChange={(e) => setFormData(prev => ({ ...prev, state: e.target.value }))}
+                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                    placeholder="Enter your state"
+                  />
+                </div>
+
+                {errors.location && (
+                  <p className="text-red-600 text-sm">{errors.location}</p>
+                )}
+
+                <div className="flex gap-4 mt-6">
+                  <button
+                    onClick={handleLocationSubmit}
+                    className="flex-1 px-6 py-3 bg-blue-600 text-white font-semibold rounded-lg hover:bg-blue-700 transition-colors"
+                  >
+                    Continue
+                  </button>
+                </div>
+              </div>
+            </div>
+          )}
+
+          {/* Step 2: Email */}
+          {currentStep === 2 && (
+            <div>
+              <h2 className="text-2xl font-bold text-gray-900 mb-3">What's your email address?</h2>
+              <p className="text-gray-600 mb-6 text-base">
+                Your email allows us to send you personalized job recommendations, career tips, and exclusive opportunities. We'll also use it to notify you if you win our monthly $200 Amazon gift card raffle!
+              </p>
+
+              <div>
+                <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-2">
+                  Email Address
+                </label>
+                <input
+                  type="email"
+                  id="email"
+                  value={formData.email}
+                  onChange={(e) => setFormData(prev => ({ ...prev, email: e.target.value }))}
+                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                  placeholder="your.email@example.com"
+                />
+                {errors.email && (
+                  <p className="text-red-600 text-sm mt-2">{errors.email}</p>
+                )}
+              </div>
+
+              <div className="flex gap-4 mt-6">
+                <button
+                  onClick={handleBack}
+                  className="px-6 py-3 border border-gray-300 text-gray-700 font-semibold rounded-lg hover:bg-gray-50 transition-colors"
+                >
+                  Back
+                </button>
+                <button
+                  onClick={handleNext}
+                  className="flex-1 px-6 py-3 bg-blue-600 text-white font-semibold rounded-lg hover:bg-blue-700 transition-colors"
+                  style={{ backgroundColor: '#6c6cbe' }}
+                >
+                  Continue
+                </button>
+              </div>
+            </div>
+          )}
+
+          {/* Step 3: Licenses */}
+          {currentStep === 3 && (
+            <div>
+              <h2 className="text-2xl font-bold text-gray-900 mb-3">
+                Which of the following nursing licenses or certifications do you currently hold?
+              </h2>
+              <p className="text-gray-600 mb-6 text-base">
+                Your licenses and certifications help us match you with jobs that align with your qualifications. This ensures you only see opportunities you're actually eligible for, making your job search more efficient and targeted.
+              </p>
+              <p className="text-sm text-gray-500 mb-6">Select all that apply</p>
+
+              <div className="space-y-3">
+                {LICENSE_OPTIONS.map((license) => (
+                  <label
+                    key={license}
+                    className="flex items-center p-4 border border-gray-300 rounded-lg cursor-pointer hover:bg-gray-50 transition-colors"
+                  >
+                    <input
+                      type="checkbox"
+                      checked={formData.licenses.includes(license)}
+                      onChange={() => handleMultiSelect('licenses', license)}
+                      className="w-5 h-5 text-blue-600 border-gray-300 rounded focus:ring-blue-500"
+                    />
+                    <span className="ml-3 text-gray-700">{license}</span>
+                  </label>
+                ))}
+              </div>
+
+              {errors.licenses && (
+                <p className="text-red-600 text-sm mt-4">{errors.licenses}</p>
+              )}
+
+              <div className="flex gap-4 mt-6">
+                <button
+                  onClick={handleBack}
+                  className="px-6 py-3 border border-gray-300 text-gray-700 font-semibold rounded-lg hover:bg-gray-50 transition-colors"
+                >
+                  Back
+                </button>
+                <button
+                  onClick={handleNext}
+                  className="flex-1 px-6 py-3 bg-blue-600 text-white font-semibold rounded-lg hover:bg-blue-700 transition-colors"
+                  style={{ backgroundColor: '#6c6cbe' }}
+                >
+                  Continue
+                </button>
+              </div>
+            </div>
+          )}
+
+          {/* Step 4: Specialties */}
+          {currentStep === 4 && (
+            <div>
+              <h2 className="text-2xl font-bold text-gray-900 mb-3">
+                Which nursing specialties are you most passionate about?
+              </h2>
+              <p className="text-gray-600 mb-6 text-base">
+                Understanding your passion areas helps us prioritize job opportunities that match what you love doing. Whether you're passionate about critical care, pediatrics, or mental health, we'll make sure those opportunities appear first in your recommendations.
+              </p>
+              <p className="text-sm text-gray-500 mb-6">Select all that apply</p>
+
+              <div className="space-y-3">
+                {SPECIALTY_OPTIONS.map((specialty) => (
+                  <label
+                    key={specialty}
+                    className="flex items-center p-4 border border-gray-300 rounded-lg cursor-pointer hover:bg-gray-50 transition-colors"
+                  >
+                    <input
+                      type="checkbox"
+                      checked={formData.specialties.includes(specialty)}
+                      onChange={() => handleMultiSelect('specialties', specialty)}
+                      className="w-5 h-5 text-blue-600 border-gray-300 rounded focus:ring-blue-500"
+                    />
+                    <span className="ml-3 text-gray-700">{specialty}</span>
+                  </label>
+                ))}
+              </div>
+
+              {errors.specialties && (
+                <p className="text-red-600 text-sm mt-4">{errors.specialties}</p>
+              )}
+
+              <div className="flex gap-4 mt-6">
+                <button
+                  onClick={handleBack}
+                  className="px-6 py-3 border border-gray-300 text-gray-700 font-semibold rounded-lg hover:bg-gray-50 transition-colors"
+                >
+                  Back
+                </button>
+                <button
+                  onClick={handleNext}
+                  className="flex-1 px-6 py-3 bg-blue-600 text-white font-semibold rounded-lg hover:bg-blue-700 transition-colors"
+                  style={{ backgroundColor: '#6c6cbe' }}
+                >
+                  Continue
+                </button>
+              </div>
+            </div>
+          )}
+
+          {/* Step 5: Job Types */}
+          {currentStep === 5 && (
+            <div>
+              <h2 className="text-2xl font-bold text-gray-900 mb-3">
+                What type of nursing jobs interest you?
+              </h2>
+              <p className="text-gray-600 mb-6 text-base">
+                Whether you're looking for full-time stability, part-time flexibility, travel opportunities, or remote work, we'll tailor your job matches to your preferred work style. This helps you find opportunities that fit your lifestyle and career goals.
+              </p>
+              <p className="text-sm text-gray-500 mb-6">Select all that apply</p>
+
+              <div className="space-y-3">
+                {JOB_TYPE_OPTIONS.map((jobType) => (
+                  <label
+                    key={jobType}
+                    className="flex items-center p-4 border border-gray-300 rounded-lg cursor-pointer hover:bg-gray-50 transition-colors"
+                  >
+                    <input
+                      type="checkbox"
+                      checked={formData.jobTypes.includes(jobType)}
+                      onChange={() => handleMultiSelect('jobTypes', jobType)}
+                      className="w-5 h-5 text-blue-600 border-gray-300 rounded focus:ring-blue-500"
+                    />
+                    <span className="ml-3 text-gray-700">{jobType}</span>
+                  </label>
+                ))}
+              </div>
+
+              {errors.jobTypes && (
+                <p className="text-red-600 text-sm mt-4">{errors.jobTypes}</p>
+              )}
+
+              <div className="flex gap-4 mt-6">
+                <button
+                  onClick={handleBack}
+                  className="px-6 py-3 border border-gray-300 text-gray-700 font-semibold rounded-lg hover:bg-gray-50 transition-colors"
+                >
+                  Back
+                </button>
+                <button
+                  onClick={handleNext}
+                  className="flex-1 px-6 py-3 bg-blue-600 text-white font-semibold rounded-lg hover:bg-blue-700 transition-colors"
+                  style={{ backgroundColor: '#6c6cbe' }}
+                >
+                  Continue
+                </button>
+              </div>
+            </div>
+          )}
+
+          {/* Step 6: Current Workplace */}
+          {currentStep === 6 && (
+            <div>
+              <h2 className="text-2xl font-bold text-gray-900 mb-3">
+                Where do you currently work?
+              </h2>
+              <p className="text-gray-600 mb-6 text-base">
+                Knowing your current workplace helps us understand your experience level and avoid showing you duplicate opportunities. This information also helps us provide more relevant career insights and job recommendations tailored to your background.
+              </p>
+              <p className="text-sm text-gray-500 mb-6">Optional - Enter the name of your current hospital or facility</p>
+
+              <div>
+                <label htmlFor="workplace" className="block text-sm font-medium text-gray-700 mb-2">
+                  Hospital/Facility Name
+                </label>
+                <input
+                  type="text"
+                  id="workplace"
+                  value={formData.currentWorkplace}
+                  onChange={(e) => setFormData(prev => ({ ...prev, currentWorkplace: e.target.value }))}
+                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                  placeholder="Enter facility name"
+                />
+                {errors.workplace && (
+                  <p className="text-red-600 text-sm mt-2">{errors.workplace}</p>
+                )}
+              </div>
+
+              {errors.submit && (
+                <div className="mt-4 p-4 bg-red-50 rounded-lg">
+                  <p className="text-red-700 text-sm">{errors.submit}</p>
+                </div>
+              )}
+
+              <div className="flex gap-4 mt-6">
+                <button
+                  onClick={handleBack}
+                  className="px-6 py-3 border border-gray-300 text-gray-700 font-semibold rounded-lg hover:bg-gray-50 transition-colors"
+                >
+                  Back
+                </button>
+                <button
+                  onClick={handleSubmit}
+                  disabled={isSubmitting}
+                  className="flex-1 px-6 py-3 bg-blue-600 text-white font-semibold rounded-lg hover:bg-blue-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                  style={{ backgroundColor: '#6c6cbe' }}
+                >
+                  {isSubmitting ? 'Submitting...' : 'Submit'}
+                </button>
+              </div>
+            </div>
+          )}
+        </div>
+      </div>
+    </div>
+  );
+}
+

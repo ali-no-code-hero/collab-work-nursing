@@ -203,8 +203,11 @@ export default function Page() {
   useEffect(() => {
     const logPageView = async () => {
       try {
+        // Check for email from form data or URL param
+        const formDataStr = sessionStorage.getItem('formData');
+        const formData = formDataStr ? JSON.parse(formDataStr) : null;
         const urlParams = new URLSearchParams(window.location.search);
-        const email = urlParams.get('email');
+        const email = formData?.email || urlParams.get('email');
         
         if (email) {
           await fetch('https://api.collabwork.com/api:ERDpOWih/log_page_view', {
@@ -236,18 +239,64 @@ export default function Page() {
       }
       
       try {
-        // Get email from URL parameters
+        // Check for form data in sessionStorage first, then URL params
+        const formDataStr = sessionStorage.getItem('formData');
+        const formData = formDataStr ? JSON.parse(formDataStr) : null;
         const urlParams = new URLSearchParams(window.location.search);
-        const email = urlParams.get('email');
+        const email = formData?.email || urlParams.get('email');
         setViewerEmail(email); // Store email in state for passing to JobCard
         
-        // If no email parameter, show no results
+        // If no email from form or URL, redirect to form
         if (!email) {
-          console.log('No email parameter provided, showing no results');
-          setJobs([]);
-          setNoResults(true);
+          console.log('No email found, redirecting to form');
+          window.location.href = '/form';
+          return;
+        }
+
+        // Check if we have curated jobs already in sessionStorage
+        const curatedJobsStr = sessionStorage.getItem('curatedJobs');
+        const storedCuratedJobs = curatedJobsStr ? JSON.parse(curatedJobsStr) : null;
+        const subscriberLocationStr = sessionStorage.getItem('subscriberLocation');
+        const storedLocation = subscriberLocationStr ? JSON.parse(subscriberLocationStr) : null;
+        const storedJobPassion = sessionStorage.getItem('jobPassion');
+        const storedJobInterest = sessionStorage.getItem('jobInterest');
+
+        // If we have stored curated jobs, use them immediately
+        if (storedCuratedJobs && Array.isArray(storedCuratedJobs) && storedCuratedJobs.length > 0) {
+          const location = storedLocation 
+            ? `${storedLocation.city}, ${storedLocation.state}`
+            : (formData ? `${formData.city}, ${formData.state}` : 'Houston, TX');
+          setSubscriberLocation(location);
+          
+          setMatchingCriteria({
+            experience: storedJobPassion || 'Critical Care experience',
+            openness: storedJobInterest || 'openness to new roles'
+          });
+          
+          const mappedJobs = storedCuratedJobs.slice(0, 5).map((j: any, idx: number) => ({
+            id: j.job_eid ?? j.id ?? idx,
+            title: j.title ?? "Untitled role",
+            company: j.company ?? "Company",
+            location: j.location_string ?? j.location ?? location,
+            postedAt: j.date_posted ? new Date(j.date_posted).toISOString() : undefined,
+            tags: [j.industry] ?? [],
+            url: j.url ?? "#",
+            salary: j.salary_min && j.salary_max ? `$${j.salary_min.toLocaleString()}-$${j.salary_max.toLocaleString()}` : undefined,
+            salaryMin: j.salary_min,
+            salaryMax: j.salary_max,
+            salaryPeriod: j.salary_period,
+            type: j.is_remote ? "Remote" : "Full-time",
+            isRemote: j.is_remote ?? false,
+            industry: j.industry,
+            logo: undefined,
+            description: j.description ?? `Great opportunity in ${j.location_string ?? j.location ?? location}. Apply now to join our team!`,
+          }));
+          setJobs(mappedJobs);
           setLoading(false);
           setIsRetrying(false);
+          setWaitingForCurated(false);
+          setRedirectingToMore(false);
+          setRetryCount(0);
           return;
         }
         
