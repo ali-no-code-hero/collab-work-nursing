@@ -218,30 +218,48 @@ export default function FormPage() {
             // Read as text first, then parse
             const responseText = await response.text();
             console.log('Location webhook raw response text:', responseText);
-            const responseArray = JSON.parse(responseText);
             
-            console.log('Location webhook response:', responseArray);
             let processingId = null;
             
-            if (Array.isArray(responseArray) && responseArray.length > 0) {
-              // Parse the JSON string from the array
-              const jsonString = responseArray[0];
-              console.log('Parsing JSON string from array:', jsonString);
-              const data = typeof jsonString === 'string' ? JSON.parse(jsonString) : jsonString;
-              processingId = data.id || data.processing_id || data.processingId;
-              console.log('Extracted processing ID:', processingId);
-            } else if (typeof responseArray === 'object' && responseArray !== null) {
-              // Fallback: try parsing as direct JSON object
-              processingId = responseArray.id || responseArray.processing_id || responseArray.processingId;
-            } else if (typeof responseArray === 'string') {
-              // If it's a string, try to parse it
-              const data = JSON.parse(responseArray);
-              processingId = data.id || data.processing_id || data.processingId;
+            try {
+              const responseArray = JSON.parse(responseText);
+              console.log('Location webhook parsed response:', responseArray);
+              
+              if (Array.isArray(responseArray) && responseArray.length > 0) {
+                // Parse the JSON string from the array
+                const jsonString = responseArray[0];
+                console.log('Extracting JSON string from array:', jsonString);
+                
+                // Handle both string and already-parsed object
+                let data;
+                if (typeof jsonString === 'string') {
+                  // Remove any extra whitespace and parse
+                  const cleaned = jsonString.trim();
+                  data = JSON.parse(cleaned);
+                } else {
+                  data = jsonString;
+                }
+                
+                processingId = data.id || data.processing_id || data.processingId;
+                console.log('Extracted processing ID from parsed data:', processingId);
+              } else if (typeof responseArray === 'object' && responseArray !== null && !Array.isArray(responseArray)) {
+                // Fallback: try parsing as direct JSON object
+                processingId = responseArray.id || responseArray.processing_id || responseArray.processingId;
+                console.log('Extracted processing ID from object:', processingId);
+              }
+            } catch (parseError) {
+              console.error('Error parsing location webhook response:', parseError);
+              // Try to extract ID directly from text using regex as last resort
+              const idMatch = responseText.match(/"id"\s*:\s*"(\d+)"/i) || responseText.match(/id["\s:=]+(\d+)/i);
+              if (idMatch) {
+                processingId = idMatch[1];
+                console.log('Extracted processing ID using regex fallback:', processingId);
+              }
             }
             
             if (processingId) {
               const idString = String(processingId);
-              console.log('Received processing ID from location webhook:', idString);
+              console.log('✅ Successfully received processing ID:', idString);
               processingIdRef.current = idString;
               // Store in sessionStorage for reliability
               sessionStorage.setItem('processingId', idString);
@@ -250,12 +268,10 @@ export default function FormPage() {
                 processingId: idString,
               }));
             } else {
-              console.warn('No processing ID found in location webhook response. Response was:', responseArray);
+              console.error('❌ No processing ID found in location webhook response. Full response:', responseText);
             }
           } catch (e) {
-            console.error('Error parsing location webhook response:', e);
-            const responseText = await response.text().catch(() => '');
-            console.error('Raw response text:', responseText);
+            console.error('Error parsing location webhook response:', e, responseText);
           }
         } else {
           const errorText = await response.text().catch(() => '');
@@ -321,20 +337,29 @@ export default function FormPage() {
       // Check multiple sources: state, ref, and sessionStorage
       let processingId = formData.processingId || processingIdRef.current || sessionStorage.getItem('processingId');
       
+      console.log('Initial processingId check:', { 
+        fromState: formData.processingId, 
+        fromRef: processingIdRef.current, 
+        fromStorage: sessionStorage.getItem('processingId'),
+        final: processingId 
+      });
+      
       if (!processingId) {
         // Wait up to 5 seconds for the ID to arrive from background fetch
+        console.log('Waiting for processing ID...');
         for (let i = 0; i < 10; i++) {
           await new Promise(resolve => setTimeout(resolve, 500)); // Wait 500ms
           // Check all sources again
-          processingId = processingIdRef.current || sessionStorage.getItem('processingId');
+          processingId = processingIdRef.current || sessionStorage.getItem('processingId') || formData.processingId;
           if (processingId) {
+            console.log('Processing ID found after wait:', processingId);
             break;
           }
         }
       }
 
-      // Format data for webhook - only include id if we have it
-      const payload: any = {
+      // Format data for webhook - ALWAYS include id field
+      const payload: Record<string, any> = {
         city: formData.city,
         state: formData.state,
         email: formData.email,
@@ -344,14 +369,16 @@ export default function FormPage() {
         current_workplace: formData.currentWorkplace,
       };
       
-      // Only add id if we have it
+      // Always include id field - use the processing ID if available
       if (processingId) {
         payload.id = String(processingId);
       } else {
-        console.warn('No processing ID available when submitting form');
+        // Still include the field even if null/undefined to ensure it's sent
+        payload.id = null;
+        console.warn('No processing ID available when submitting form - sending id as null');
       }
-
-      console.log('Submitting form with payload:', payload);
+      
+      console.log('Submitting payload to curated jobs webhook:', JSON.stringify(payload, null, 2));
 
       const response = await fetch('https://api.collabwork.com/api:partners/webhook_curated_jobs_nurse_ascent', {
         method: 'POST',
