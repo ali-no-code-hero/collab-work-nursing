@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useRouter } from 'next/navigation';
 
 interface FormData {
@@ -111,6 +111,7 @@ export default function FormPage() {
   const [isLoadingLocation, setIsLoadingLocation] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [errors, setErrors] = useState<Record<string, string>>({});
+  const processingIdRef = useRef<string | undefined>(undefined);
 
   // Helper function to convert state name to abbreviation
   const getStateCode = (stateName: string): string => {
@@ -176,7 +177,7 @@ export default function FormPage() {
     }
   };
 
-  const handleLocationSubmit = async () => {
+  const handleLocationSubmit = () => {
     if (!formData.city.trim() || !formData.state.trim()) {
       setErrors({ location: 'Please enter both city and state' });
       return;
@@ -184,52 +185,55 @@ export default function FormPage() {
 
     setErrors({});
     
-    // Send location to first webhook
-    try {
-      const response = await fetch('https://api.collabwork.com/api:partners/webhook_just_state_nurse_ascent', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          city: formData.city,
-          state: formData.state,
-        }),
-      });
-
-      if (response.ok) {
-        // Handle response - might be JSON or plain text like "id: 176256"
-        const responseText = await response.text();
-        let processingId = null;
-        
-        try {
-          // Try parsing as JSON first
-          const data = JSON.parse(responseText);
-          processingId = data.id || data.processing_id || data.processingId;
-        } catch (e) {
-          // If not JSON, try to extract ID from text like "id: 176256"
-          const idMatch = responseText.match(/id:\s*(\d+)/i) || responseText.match(/id\s*[=:]\s*(\d+)/i);
-          if (idMatch) {
-            processingId = idMatch[1];
+    // Proceed to next step immediately - don't wait for API response
+    setCurrentStep(2);
+    
+    // Send location to first webhook in the background
+    fetch('https://api.collabwork.com/api:partners/webhook_just_state_nurse_ascent', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        city: formData.city,
+        state: formData.state,
+      }),
+    })
+      .then(async (response) => {
+        if (response.ok) {
+          try {
+            // Response is an array with a JSON string inside
+            const responseArray = await response.json();
+            let processingId = null;
+            
+            if (Array.isArray(responseArray) && responseArray.length > 0) {
+              // Parse the JSON string from the array
+              const jsonString = responseArray[0];
+              const data = typeof jsonString === 'string' ? JSON.parse(jsonString) : jsonString;
+              processingId = data.id || data.processing_id || data.processingId;
+            } else {
+              // Fallback: try parsing as direct JSON
+              const data = typeof responseArray === 'string' ? JSON.parse(responseArray) : responseArray;
+              processingId = data.id || data.processing_id || data.processingId;
+            }
+            
+            if (processingId) {
+              const idString = String(processingId);
+              processingIdRef.current = idString;
+              setFormData(prev => ({
+                ...prev,
+                processingId: idString,
+              }));
+            }
+          } catch (e) {
+            console.error('Error parsing location webhook response:', e);
           }
         }
-        
-        if (processingId) {
-          setFormData(prev => ({
-            ...prev,
-            processingId: processingId,
-          }));
-        }
-        setCurrentStep(2);
-      } else {
-        const errorText = await response.text().catch(() => '');
-        console.error('Location webhook error:', response.status, errorText);
-        setErrors({ location: 'Failed to process location. Please try again.' });
-      }
-    } catch (error) {
-      console.error('Error sending location:', error);
-      setErrors({ location: 'Failed to process location. Please try again.' });
-    }
+      })
+      .catch((error) => {
+        console.error('Error sending location:', error);
+        // Don't show error to user since they've already moved on
+      });
   };
 
   const handleMultiSelect = (field: 'licenses' | 'specialties' | 'jobTypes', value: string) => {
@@ -280,6 +284,20 @@ export default function FormPage() {
     setErrors({});
 
     try {
+      // Wait for processing ID if not available yet (max 5 seconds)
+      // The ID is fetched in background after location step, so it might not be ready yet
+      let processingId = formData.processingId || processingIdRef.current;
+      if (!processingId) {
+        // Wait up to 5 seconds for the ID to arrive from background fetch
+        for (let i = 0; i < 10; i++) {
+          await new Promise(resolve => setTimeout(resolve, 500)); // Wait 500ms
+          processingId = processingIdRef.current;
+          if (processingId) {
+            break;
+          }
+        }
+      }
+
       // Format data for webhook
       const payload = {
         city: formData.city,
@@ -289,7 +307,7 @@ export default function FormPage() {
         specialties: formData.specialties,
         job_types: formData.jobTypes,
         current_workplace: formData.currentWorkplace,
-        processing_id: formData.processingId,
+        id: processingId, // Send as 'id' to match API expectation
       };
 
       const response = await fetch('https://api.collabwork.com/api:partners/webhook_curated_jobs_nurse_ascent', {
