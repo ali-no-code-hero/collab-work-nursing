@@ -98,7 +98,10 @@ export default function FormPage() {
       }
     } catch (error) {
       console.error('Error getting location:', error);
-      setLocationError('Could not automatically detect your location. Please enter it manually.');
+      // Only show error if user hasn't manually entered location yet
+      if (!formData.city && !formData.state) {
+        setLocationError('Could not automatically detect your location. Please enter it manually.');
+      }
     } finally {
       setIsLoadingLocation(false);
     }
@@ -126,13 +129,32 @@ export default function FormPage() {
       });
 
       if (response.ok) {
-        const data = await response.json();
-        setFormData(prev => ({
-          ...prev,
-          processingId: data.id || data.processing_id || data.processingId,
-        }));
+        // Handle response - might be JSON or plain text like "id: 176256"
+        const responseText = await response.text();
+        let processingId = null;
+        
+        try {
+          // Try parsing as JSON first
+          const data = JSON.parse(responseText);
+          processingId = data.id || data.processing_id || data.processingId;
+        } catch (e) {
+          // If not JSON, try to extract ID from text like "id: 176256"
+          const idMatch = responseText.match(/id:\s*(\d+)/i) || responseText.match(/id\s*[=:]\s*(\d+)/i);
+          if (idMatch) {
+            processingId = idMatch[1];
+          }
+        }
+        
+        if (processingId) {
+          setFormData(prev => ({
+            ...prev,
+            processingId: processingId,
+          }));
+        }
         setCurrentStep(2);
       } else {
+        const errorText = await response.text().catch(() => '');
+        console.error('Location webhook error:', response.status, errorText);
         setErrors({ location: 'Failed to process location. Please try again.' });
       }
     } catch (error) {
@@ -308,7 +330,12 @@ export default function FormPage() {
                     type="text"
                     id="city"
                     value={formData.city}
-                    onChange={(e) => setFormData(prev => ({ ...prev, city: e.target.value }))}
+                    onChange={(e) => {
+                      setFormData(prev => ({ ...prev, city: e.target.value }));
+                      if (e.target.value && formData.state) {
+                        setLocationError(null);
+                      }
+                    }}
                     className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                     placeholder="Enter your city"
                   />
@@ -322,7 +349,12 @@ export default function FormPage() {
                     type="text"
                     id="state"
                     value={formData.state}
-                    onChange={(e) => setFormData(prev => ({ ...prev, state: e.target.value }))}
+                    onChange={(e) => {
+                      setFormData(prev => ({ ...prev, state: e.target.value }));
+                      if (formData.city && e.target.value) {
+                        setLocationError(null);
+                      }
+                    }}
                     className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                     placeholder="Enter your state"
                   />
