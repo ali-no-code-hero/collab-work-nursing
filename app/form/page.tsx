@@ -142,7 +142,7 @@ export default function FormPage() {
 
   // Try to get location from geolocation API
   useEffect(() => {
-    if (currentStep === 1 && !formData.city && !formData.state) {
+    if (currentStep === 2 && !formData.city && !formData.state) {
       getLocationFromBrowser();
     }
   }, [currentStep]);
@@ -200,7 +200,7 @@ export default function FormPage() {
     setErrors({});
     
     // Proceed to next step immediately - don't wait for API response
-    setCurrentStep(2);
+    setCurrentStep(3);
     
     // Send location to first webhook in the background
     fetch('https://api.collabwork.com/api:partners/webhook_just_state_nurse_ascent', {
@@ -300,7 +300,7 @@ export default function FormPage() {
   const handleNext = () => {
     setErrors({});
     
-    if (currentStep === 2) {
+    if (currentStep === 1) {
       if (!formData.email.trim() || !formData.email.includes('@')) {
         setErrors({ email: 'Please enter a valid email address' });
         return;
@@ -472,8 +472,45 @@ export default function FormPage() {
       <section className="py-6 sm:py-8 lg:py-12 bg-gray-50">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
           <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-4 sm:p-6 lg:p-8">
-            {/* Step 1: Location */}
+            {/* Step 1: Email */}
             {currentStep === 1 && (
+              <div>
+              <h2 className="text-xl sm:text-2xl font-bold text-gray-900 mb-2 sm:mb-3">What's your email address?</h2>
+              <p className="text-sm sm:text-base text-gray-600 mb-4 sm:mb-6">
+                Your email allows us to send you personalized job recommendations, career tips, and exclusive opportunities. We'll also use it to notify you if you win our monthly $200 Amazon gift card raffle!
+              </p>
+
+              <div>
+                <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-2">
+                  Email Address
+                </label>
+                <input
+                  type="email"
+                  id="email"
+                  value={formData.email}
+                  onChange={(e) => setFormData(prev => ({ ...prev, email: e.target.value }))}
+                  className="w-full px-3 sm:px-4 py-2.5 sm:py-2 text-base border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                  placeholder="your.email@example.com"
+                />
+                {errors.email && (
+                  <p className="text-red-600 text-sm mt-2">{errors.email}</p>
+                )}
+              </div>
+
+              <div className="flex gap-3 sm:gap-4 mt-4 sm:mt-6">
+                <button
+                  onClick={handleNext}
+                  className="flex-1 px-4 sm:px-6 py-2.5 sm:py-3 bg-blue-600 text-white text-sm sm:text-base font-semibold rounded-lg hover:bg-blue-700 transition-colors"
+                  style={{ backgroundColor: '#6c6cbe' }}
+                >
+                  Continue
+                </button>
+              </div>
+              </div>
+            )}
+
+            {/* Step 2: Location */}
+            {currentStep === 2 && (
               <div>
               <h2 className="text-xl sm:text-2xl font-bold text-gray-900 mb-2 sm:mb-3">Where are you located?</h2>
               <p className="text-sm sm:text-base text-gray-600 mb-4 sm:mb-6">
@@ -542,55 +579,18 @@ export default function FormPage() {
 
                 <div className="flex gap-3 sm:gap-4 mt-4 sm:mt-6">
                   <button
+                    onClick={handleBack}
+                    className="px-4 sm:px-6 py-2.5 sm:py-3 border border-gray-300 text-gray-700 text-sm sm:text-base font-semibold rounded-lg hover:bg-gray-50 transition-colors"
+                  >
+                    Back
+                  </button>
+                  <button
                     onClick={handleLocationSubmit}
                     className="flex-1 px-4 sm:px-6 py-2.5 sm:py-3 bg-blue-600 text-white text-sm sm:text-base font-semibold rounded-lg hover:bg-blue-700 transition-colors"
                   >
                     Continue
                   </button>
                 </div>
-              </div>
-              </div>
-            )}
-
-            {/* Step 2: Email */}
-            {currentStep === 2 && (
-              <div>
-              <h2 className="text-xl sm:text-2xl font-bold text-gray-900 mb-2 sm:mb-3">What's your email address?</h2>
-              <p className="text-sm sm:text-base text-gray-600 mb-4 sm:mb-6">
-                Your email allows us to send you personalized job recommendations, career tips, and exclusive opportunities. We'll also use it to notify you if you win our monthly $200 Amazon gift card raffle!
-              </p>
-
-              <div>
-                <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-2">
-                  Email Address
-                </label>
-                <input
-                  type="email"
-                  id="email"
-                  value={formData.email}
-                  onChange={(e) => setFormData(prev => ({ ...prev, email: e.target.value }))}
-                  className="w-full px-3 sm:px-4 py-2.5 sm:py-2 text-base border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                  placeholder="your.email@example.com"
-                />
-                {errors.email && (
-                  <p className="text-red-600 text-sm mt-2">{errors.email}</p>
-                )}
-              </div>
-
-              <div className="flex gap-3 sm:gap-4 mt-4 sm:mt-6">
-                <button
-                  onClick={handleBack}
-                  className="px-4 sm:px-6 py-2.5 sm:py-3 border border-gray-300 text-gray-700 text-sm sm:text-base font-semibold rounded-lg hover:bg-gray-50 transition-colors"
-                >
-                  Back
-                </button>
-                <button
-                  onClick={handleNext}
-                  className="flex-1 px-4 sm:px-6 py-2.5 sm:py-3 bg-blue-600 text-white text-sm sm:text-base font-semibold rounded-lg hover:bg-blue-700 transition-colors"
-                  style={{ backgroundColor: '#6c6cbe' }}
-                >
-                  Continue
-                </button>
               </div>
               </div>
             )}
