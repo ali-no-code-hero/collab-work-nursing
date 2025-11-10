@@ -104,8 +104,8 @@ export default function JobCard({ job, email }: { job: Job; email?: string | nul
   const shortDescription = isDescriptionLong ? (job.description?.substring(0, 100) + '...') : (job.description || '');
 
   return (
-    <article className="bg-white rounded-lg shadow-sm border border-gray-200 p-6 hover:shadow-md transition-shadow">
-      <div className="flex items-start gap-4">
+    <article className="bg-white rounded-lg shadow-sm border border-gray-200 p-4 sm:p-6 hover:shadow-md transition-shadow">
+      <div className="flex flex-col sm:flex-row items-start gap-4">
         {/* Company Logo */}
         <div className="flex-shrink-0">
           {job.logo ? (
@@ -172,13 +172,13 @@ export default function JobCard({ job, email }: { job: Job; email?: string | nul
           )}
 
           {/* Actions and Meta */}
-          <div className="flex items-center justify-between">
+          <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-4 w-full">
             <div className="flex items-center gap-3">
               <a
                 href={job.url || '#'}
                 target="_blank"
                 rel="noreferrer"
-                className="text-white px-6 py-2 rounded-lg font-medium transition-colors"
+                className="text-white px-4 sm:px-6 py-2 rounded-lg font-medium transition-colors whitespace-nowrap"
                 style={{ backgroundColor: '#6c6cbe' }}
                 onMouseEnter={(e) => (e.target as HTMLElement).style.backgroundColor = '#b2b2e6'}
                 onMouseLeave={(e) => (e.target as HTMLElement).style.backgroundColor = '#6c6cbe'}
@@ -188,10 +188,10 @@ export default function JobCard({ job, email }: { job: Job; email?: string | nul
               </a>
             </div>
 
-            <div className="text-right text-xs text-gray-500">
+            <div className="text-left sm:text-right text-xs text-gray-500">
               <div className="flex items-center gap-1 mb-1">
                 <span className="text-orange-500">🔥</span>
-                <span>{applicationCount ? `${applicationCount} nurses applied this week` : 'Loading...'}</span>
+                <span className="break-words">{applicationCount ? `${applicationCount} nurses applied this week` : 'Loading...'}</span>
               </div>
               <div>Posted {formatPostedDate()}</div>
             </div>

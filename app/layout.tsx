@@ -6,13 +6,16 @@ import Script from "next/script";
 export const metadata = {
   title: "Jobs — CollabWORK‑inspired",
   description: "Minimal jobs page styled with a CollabWORK‑inspired look",
+  icons: {
+    icon: "data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>💼</text></svg>",
+  },
 };
 
 export default function RootLayout({ children }: { children: ReactNode }) {
   return (
     <html lang="en">
       <body>
-        <div className="min-h-screen flex flex-col bg-white">
+        <div className="min-h-screen flex flex-col bg-white overflow-x-hidden">
           <header className="sticky top-0 z-30 border-b border-gray-200 bg-white shadow-sm">
             <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
               <div className="flex items-center h-16">
@@ -30,9 +33,9 @@ export default function RootLayout({ children }: { children: ReactNode }) {
           <main className="flex-1">{children}</main>
           <footer className="border-t border-gray-200 bg-white">
             <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-8">
-              <div className="flex items-center justify-between">
+              <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
                 <p className="text-sm text-gray-600">© {new Date().getFullYear()} CollabWORK.</p>
-                <div className="flex items-center space-x-6 text-sm text-gray-600">
+                <div className="flex flex-wrap items-center justify-center gap-4 sm:gap-6 text-sm text-gray-600">
                   <a href="#" className="hover:text-gray-900">Privacy Policy</a>
                   <a href="#" className="hover:text-gray-900">Terms of Service</a>
                   <a href="#" className="hover:text-gray-900">Contact</a>

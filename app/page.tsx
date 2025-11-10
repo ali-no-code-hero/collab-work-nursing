@@ -512,7 +512,7 @@ export default function Page() {
   const jobCount = noResults ? 0 : Math.min(jobs.length, 5);
 
   return (
-    <div className="min-h-screen bg-white">
+    <div className="min-h-screen bg-white overflow-x-hidden">
       {/* Hero Section */}
       <section className="bg-white border-b border-gray-200">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-12">
@@ -527,7 +527,7 @@ export default function Page() {
           </div>
 
           {/* Main Heading */}
-          <h1 className="text-4xl md:text-5xl font-bold text-gray-900 mb-6 leading-tight">
+          <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold text-gray-900 mb-6 leading-tight">
             {noResults ? (
               TEXT.headingNoJobs
             ) : (
@@ -537,17 +537,17 @@ export default function Page() {
 
           {/* Matching Criteria - only show when there are results */}
           {!noResults && jobs.length > 0 && (
-            <div className="flex flex-wrap items-center gap-3 text-base text-gray-600">
-              <span>{TEXT.matchingNetworkText}</span>
-              <div className="flex flex-wrap gap-3">
-                <span className="px-4 py-2 bg-blue-50 text-blue-700 rounded-lg text-sm font-medium flex items-center gap-2">
-                  📍 {subscriberLocation} location
+            <div className="flex flex-col sm:flex-row sm:flex-wrap sm:items-center gap-3 text-base text-gray-600">
+              <span className="mb-2 sm:mb-0">{TEXT.matchingNetworkText}</span>
+              <div className="flex flex-wrap gap-2 sm:gap-3">
+                <span className="px-3 sm:px-4 py-2 bg-blue-50 text-blue-700 rounded-lg text-xs sm:text-sm font-medium flex items-center gap-2 whitespace-nowrap">
+                  📍 <span className="truncate max-w-[150px] sm:max-w-none">{subscriberLocation}</span> location
                 </span>
-                <span className="px-4 py-2 bg-purple-50 text-purple-700 rounded-lg text-sm font-medium flex items-center gap-2">
-                  🩺 {matchingCriteria.experience}
+                <span className="px-3 sm:px-4 py-2 bg-purple-50 text-purple-700 rounded-lg text-xs sm:text-sm font-medium flex items-center gap-2">
+                  🩺 <span className="truncate max-w-[200px] sm:max-w-none">{matchingCriteria.experience}</span>
                 </span>
-                <span className="px-4 py-2 bg-green-50 text-green-700 rounded-lg text-sm font-medium flex items-center gap-2">
-                  ✓ {matchingCriteria.openness}
+                <span className="px-3 sm:px-4 py-2 bg-green-50 text-green-700 rounded-lg text-xs sm:text-sm font-medium flex items-center gap-2">
+                  ✓ <span className="truncate max-w-[200px] sm:max-w-none">{matchingCriteria.openness}</span>
                 </span>
               </div>
             </div>
