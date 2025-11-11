@@ -21,8 +21,8 @@ export default function RootLayout({ children }: { children: ReactNode }) {
               <div className="flex items-center h-16">
                 <a href="/" className="flex items-center">
                   <img 
-                    src="https://api.surveyjs.io/private/Surveys/files?name=ec679579-87c3-4066-bb6a-df9e969152e6" 
-                    alt="CollabWork Logo" 
+                    src="https://api.collabwork.com/vault/7QXnOupJ/_zUOeSNkecxgm-t_EJdHBzryyqw/JXug4w../with_padding.png" 
+                    alt="Nurse Ascent Logo" 
                     className="h-8 w-auto"
                   />
                 </a>

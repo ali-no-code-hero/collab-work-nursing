@@ -476,32 +476,18 @@ export default function FormPage() {
             {/* Step 1: Email */}
             {currentStep === 1 && (
               <div>
-              {/* Logo and Image Section */}
+              {/* Hero Image - Three nurses in scrubs */}
               <div className="mb-6 sm:mb-8">
-                <div className="flex flex-col items-center gap-4 sm:gap-6">
-                  {/* Logo */}
-                  <div className="w-full max-w-xs sm:max-w-sm">
-                    <Image
-                      src="https://api.collabwork.com/vault/7QXnOupJ/_zUOeSNkecxgm-t_EJdHBzryyqw/JXug4w../with_padding.png"
-                      alt="Nurse Ascent Logo"
-                      width={400}
-                      height={200}
-                      className="w-full h-auto object-contain"
-                      unoptimized
-                    />
-                  </div>
-                  
-                  {/* Hero Image - Three nurses in scrubs */}
+                <div className="flex flex-col items-center">
                   <div className="w-full max-w-md sm:max-w-lg">
                     <div className="relative w-full aspect-[4/3] rounded-lg overflow-hidden bg-gray-100">
-                      <img
-                        src="/images/nurses-hero.jpg"
+                      <Image
+                        src="https://api.collabwork.com/vault/7QXnOupJ/K-rQrpUQRA8BVM6jJDwS2Dh8aj4/hvvTIw../TRPiMfYYHMszzBEqSh4Yc2Sfmh57iX5NG1NZljbX.jpg"
                         alt="Nursing professionals smiling"
-                        className="w-full h-full object-cover"
-                        onError={(e) => {
-                          // Hide image if file doesn't exist yet
-                          (e.target as HTMLImageElement).style.display = 'none';
-                        }}
+                        fill
+                        className="object-cover"
+                        unoptimized
+                        priority
                       />
                     </div>
                   </div>
