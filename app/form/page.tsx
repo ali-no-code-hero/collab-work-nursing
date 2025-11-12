@@ -210,6 +210,7 @@ export default function FormPage() {
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
+        email: formData.email,
         city: formData.city,
         state: formData.state,
       }),
