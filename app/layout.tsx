@@ -34,7 +34,7 @@ export default function RootLayout({ children }: { children: ReactNode }) {
               </div>
             </header>
 
-            <main className="flex-1">{children}</main>
+            <main>{children}</main>
             <footer className="border-t border-gray-200 dark:border-border-dark bg-white dark:bg-surface-dark transition-colors duration-200">
               <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-8">
                 <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
