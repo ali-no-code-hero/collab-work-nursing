@@ -2,6 +2,8 @@ import "./globals.css";
 import { ReactNode } from "react";
 import { Analytics } from "@vercel/analytics/next";
 import Script from "next/script";
+import { DarkModeProvider } from "../components/DarkModeProvider";
+import DarkModeToggle from "../components/DarkModeToggle";
 
 export const metadata = {
   title: "Jobs — CollabWORK‑inspired",
@@ -13,37 +15,40 @@ export const metadata = {
 
 export default function RootLayout({ children }: { children: ReactNode }) {
   return (
-    <html lang="en">
-      <body>
-        <div className="min-h-screen flex flex-col bg-white overflow-x-hidden">
-          <header className="sticky top-0 z-30 border-b border-gray-200 bg-white shadow-sm">
-            <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-              <div className="flex items-center h-16">
-                <a href="/" className="flex items-center">
-                  <img 
-                    src="https://api.collabwork.com/vault/7QXnOupJ/_zUOeSNkecxgm-t_EJdHBzryyqw/JXug4w../with_padding.png" 
-                    alt="Nurse Ascent Logo" 
-                    className="h-8 w-auto"
-                  />
-                </a>
-              </div>
-            </div>
-          </header>
-
-          <main className="flex-1">{children}</main>
-          <footer className="border-t border-gray-200 bg-white">
-            <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-8">
-              <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
-                <p className="text-sm text-gray-600">© {new Date().getFullYear()} CollabWORK.</p>
-                <div className="flex flex-wrap items-center justify-center gap-4 sm:gap-6 text-sm text-gray-600">
-                  <a href="#" className="hover:text-gray-900">Privacy Policy</a>
-                  <a href="#" className="hover:text-gray-900">Terms of Service</a>
-                  <a href="#" className="hover:text-gray-900">Contact</a>
+    <html lang="en" suppressHydrationWarning>
+      <body className="transition-colors duration-200">
+        <DarkModeProvider>
+          <div className="min-h-screen flex flex-col bg-white dark:bg-surface-dark overflow-x-hidden transition-colors duration-200">
+            <header className="sticky top-0 z-30 border-b border-gray-200 dark:border-border-dark bg-white dark:bg-surface-dark shadow-sm dark:shadow-none backdrop-blur-sm bg-white/95 dark:bg-surface-dark/95 transition-colors duration-200">
+              <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+                <div className="flex items-center justify-between h-16">
+                  <a href="/" className="flex items-center group">
+                    <img 
+                      src="https://api.collabwork.com/vault/7QXnOupJ/_zUOeSNkecxgm-t_EJdHBzryyqw/JXug4w../with_padding.png" 
+                      alt="Nurse Ascent Logo" 
+                      className="h-8 w-auto transition-transform duration-200 group-hover:scale-105"
+                    />
+                  </a>
+                  <DarkModeToggle />
                 </div>
               </div>
-            </div>
-          </footer>
-        </div>
+            </header>
+
+            <main className="flex-1">{children}</main>
+            <footer className="border-t border-gray-200 dark:border-border-dark bg-white dark:bg-surface-dark transition-colors duration-200">
+              <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-8">
+                <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
+                  <p className="text-sm text-gray-600 dark:text-ink-dark-soft">© {new Date().getFullYear()} CollabWORK.</p>
+                  <div className="flex flex-wrap items-center justify-center gap-4 sm:gap-6 text-sm text-gray-600 dark:text-ink-dark-soft">
+                    <a href="#" className="hover:text-gray-900 dark:hover:text-ink-dark transition-colors">Privacy Policy</a>
+                    <a href="#" className="hover:text-gray-900 dark:hover:text-ink-dark transition-colors">Terms of Service</a>
+                    <a href="#" className="hover:text-gray-900 dark:hover:text-ink-dark transition-colors">Contact</a>
+                  </div>
+                </div>
+              </div>
+            </footer>
+          </div>
+        </DarkModeProvider>
         <Script id="microsoft-clarity" strategy="afterInteractive">
           {`
             (function(c,l,a,r,i,t,y){

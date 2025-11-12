@@ -104,7 +104,7 @@ export default function JobCard({ job, email }: { job: Job; email?: string | nul
   const shortDescription = isDescriptionLong ? (job.description?.substring(0, 100) + '...') : (job.description || '');
 
   return (
-    <article className="bg-white rounded-lg shadow-sm border border-gray-200 p-4 sm:p-6 hover:shadow-md transition-shadow">
+    <article className="bg-white dark:bg-surface-dark-alt rounded-lg shadow-sm border border-gray-200 dark:border-border-dark p-4 sm:p-6 hover:shadow-md dark:hover:shadow-lg transition-all duration-200">
       <div className="flex flex-col sm:flex-row items-start gap-4">
         {/* Company Logo */}
         <div className="flex-shrink-0">
@@ -112,12 +112,12 @@ export default function JobCard({ job, email }: { job: Job; email?: string | nul
             <img
               src={job.logo}
               alt={`${job.company} logo`}
-              className="w-16 h-16 rounded-full object-cover border-2 border-gray-100"
+              className="w-16 h-16 rounded-full object-cover border-2 border-gray-100 dark:border-border-dark transition-colors duration-200"
               loading="lazy"
             />
           ) : (
-            <div className="w-16 h-16 rounded-full bg-blue-100 border-2 border-gray-100 flex items-center justify-center">
-              <span className="text-2xl font-bold text-blue-600">
+            <div className="w-16 h-16 rounded-full bg-blue-100 dark:bg-blue-900/30 border-2 border-gray-100 dark:border-border-dark flex items-center justify-center transition-colors duration-200">
+              <span className="text-2xl font-bold text-blue-600 dark:text-blue-400 transition-colors duration-200">
                 {getCompanyInitial()}
               </span>
             </div>
@@ -127,9 +127,9 @@ export default function JobCard({ job, email }: { job: Job; email?: string | nul
         <div className="flex-1 min-w-0">
           {/* Job Title and Company */}
           <div className="mb-2">
-            <h3 className="text-xl font-bold text-gray-900 mb-1">{job.title}</h3>
-            <p className="text-gray-700 font-medium">{job.company}</p>
-            <p className="text-gray-600 text-sm">
+            <h3 className="text-xl font-bold text-gray-900 dark:text-ink-dark mb-1 transition-colors duration-200">{job.title}</h3>
+            <p className="text-gray-700 dark:text-ink-dark-soft font-medium transition-colors duration-200">{job.company}</p>
+            <p className="text-gray-600 dark:text-ink-dark-muted text-sm transition-colors duration-200">
               {job.location || 'Location not specified'}
               {job.isRemote && ' • Remote'}
             </p>
@@ -137,20 +137,20 @@ export default function JobCard({ job, email }: { job: Job; email?: string | nul
 
           {/* Salary */}
           <div className="mb-3">
-            <span className="text-green-600 font-semibold text-lg">
+            <span className="text-green-600 dark:text-green-400 font-semibold text-lg transition-colors duration-200">
               {formatSalary()}
             </span>
           </div>
 
           {/* Description */}
           <div className="mb-4">
-            <p className="text-gray-700 text-sm leading-relaxed">
+            <p className="text-gray-700 dark:text-ink-dark-soft text-sm leading-relaxed transition-colors duration-200">
               {isExpanded ? (job.description || '') : shortDescription}
             </p>
             {isDescriptionLong && (
               <button
                 onClick={() => setIsExpanded(!isExpanded)}
-                className="text-blue-600 text-sm font-medium mt-1 hover:text-blue-800"
+                className="text-primary dark:text-primary-dark-mode text-sm font-medium mt-1 hover:text-primary-hover dark:hover:text-primary-dark-hover transition-colors duration-200"
               >
                 {isExpanded ? 'Show less' : 'Show more'}
               </button>
@@ -163,7 +163,7 @@ export default function JobCard({ job, email }: { job: Job; email?: string | nul
               {job.tags.slice(0, 3).map((tag, i) => (
                 <span
                   key={i}
-                  className="px-3 py-1 bg-blue-100 text-blue-700 rounded-full text-xs font-medium"
+                  className="px-3 py-1 bg-blue-100 dark:bg-blue-900/20 text-blue-700 dark:text-blue-300 rounded-full text-xs font-medium border border-blue-200 dark:border-blue-800 transition-colors duration-200"
                 >
                   {tag}
                 </span>
@@ -178,19 +178,16 @@ export default function JobCard({ job, email }: { job: Job; email?: string | nul
                 href={job.url || '#'}
                 target="_blank"
                 rel="noreferrer"
-                className="text-white px-4 sm:px-6 py-2 rounded-lg font-medium transition-colors whitespace-nowrap"
-                style={{ backgroundColor: '#6c6cbe' }}
-                onMouseEnter={(e) => (e.target as HTMLElement).style.backgroundColor = '#b2b2e6'}
-                onMouseLeave={(e) => (e.target as HTMLElement).style.backgroundColor = '#6c6cbe'}
+                className="text-white px-4 sm:px-6 py-2 rounded-lg font-medium transition-all duration-200 whitespace-nowrap bg-primary dark:bg-primary-dark-mode hover:bg-primary-hover dark:hover:bg-primary-dark-hover shadow-sm hover:shadow-md"
                 onClick={handleApplyClick}
               >
                 Apply Now
               </a>
             </div>
 
-            <div className="text-left sm:text-right text-xs text-gray-500">
+            <div className="text-left sm:text-right text-xs text-gray-500 dark:text-ink-dark-muted transition-colors duration-200">
               <div className="flex items-center gap-1 mb-1">
-                <span className="text-orange-500">🔥</span>
+                <span className="text-orange-500 dark:text-orange-400">🔥</span>
                 <span className="break-words">{applicationCount ? `${applicationCount} nurses applied this week` : 'Loading...'}</span>
               </div>
               <div>Posted {formatPostedDate()}</div>

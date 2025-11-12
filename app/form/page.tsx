@@ -439,14 +439,14 @@ export default function FormPage() {
   };
 
   return (
-    <div className="min-h-screen bg-white">
+    <div className="min-h-screen bg-white dark:bg-surface-dark transition-colors duration-200">
       {/* Hero Section */}
-      <section className="bg-white border-b border-gray-200">
+      <section className="bg-white dark:bg-surface-dark border-b border-gray-200 dark:border-border-dark transition-colors duration-200">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-6 sm:py-8 lg:py-12">
-          <h1 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold text-gray-900 mb-3 sm:mb-4 leading-tight">
+          <h1 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold text-gray-900 dark:text-ink-dark mb-3 sm:mb-4 leading-tight transition-colors duration-200">
             Subscribe to Nurse Ascent *
           </h1>
-          <p className="text-base sm:text-lg text-gray-600 mb-6 sm:mb-8">
+          <p className="text-base sm:text-lg text-gray-600 dark:text-ink-dark-soft mb-6 sm:mb-8 transition-colors duration-200">
             Complete this form to get the 5-minute newsletter nurses trust to grow their careers 🎁 + enter our monthly raffle for a $200 Amazon gift card.
           </p>
 
@@ -454,15 +454,15 @@ export default function FormPage() {
           <div className="mb-6">
             <div className="flex items-center justify-between mb-2">
               <div className="flex-1">
-                <div className="h-2 bg-gray-200 rounded-full overflow-hidden">
+                <div className="h-2 bg-gray-200 dark:bg-neutral-800 rounded-full overflow-hidden transition-colors duration-200">
                   <div
-                    className="h-full bg-blue-600 transition-all duration-300"
+                    className="h-full bg-primary dark:bg-primary-dark-mode transition-all duration-300"
                     style={{ width: `${(currentStep / 7) * 100}%` }}
                   />
                 </div>
               </div>
             </div>
-            <p className="text-sm text-gray-600 text-center">
+            <p className="text-sm text-gray-600 dark:text-ink-dark-soft text-center transition-colors duration-200">
               Step {currentStep} of 7
             </p>
           </div>
@@ -470,9 +470,9 @@ export default function FormPage() {
       </section>
 
       {/* Form Section */}
-      <section className="py-6 sm:py-8 lg:py-12 bg-gray-50">
+      <section className="py-6 sm:py-8 lg:py-12 bg-gray-50 dark:bg-surface-dark-alt transition-colors duration-200">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-          <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-4 sm:p-6 lg:p-8">
+          <div className="bg-white dark:bg-surface-dark-alt rounded-xl shadow-sm border border-gray-200 dark:border-border-dark p-4 sm:p-6 lg:p-8 transition-all duration-200">
             {/* Step 1: Email */}
             {currentStep === 1 && (
               <div>
@@ -480,7 +480,7 @@ export default function FormPage() {
               <div className="mb-6 sm:mb-8">
                 <div className="flex flex-col items-center">
                   <div className="w-full max-w-md sm:max-w-lg">
-                    <div className="relative w-full aspect-[4/3] rounded-lg overflow-hidden bg-gray-100">
+                    <div className="relative w-full aspect-[4/3] rounded-xl overflow-hidden bg-gray-100 dark:bg-neutral-800 shadow-lg transition-all duration-200">
                       <Image
                         src="https://api.collabwork.com/vault/7QXnOupJ/K-rQrpUQRA8BVM6jJDwS2Dh8aj4/hvvTIw../TRPiMfYYHMszzBEqSh4Yc2Sfmh57iX5NG1NZljbX.jpg"
                         alt="Nursing professionals smiling"
@@ -494,13 +494,13 @@ export default function FormPage() {
                 </div>
               </div>
 
-              <h2 className="text-xl sm:text-2xl font-bold text-gray-900 mb-2 sm:mb-3">What's your email address?</h2>
-              <p className="text-sm sm:text-base text-gray-600 mb-4 sm:mb-6">
+              <h2 className="text-xl sm:text-2xl font-bold text-gray-900 dark:text-ink-dark mb-2 sm:mb-3 transition-colors duration-200">What's your email address?</h2>
+              <p className="text-sm sm:text-base text-gray-600 dark:text-ink-dark-soft mb-4 sm:mb-6 transition-colors duration-200">
                 Your email allows us to send you personalized job recommendations, career tips, and exclusive opportunities. We'll also use it to notify you if you win our monthly $200 Amazon gift card raffle!
               </p>
 
               <div>
-                <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-2">
+                <label htmlFor="email" className="block text-sm font-medium text-gray-700 dark:text-ink-dark-soft mb-2 transition-colors duration-200">
                   Email Address
                 </label>
                 <input
@@ -508,19 +508,18 @@ export default function FormPage() {
                   id="email"
                   value={formData.email}
                   onChange={(e) => setFormData(prev => ({ ...prev, email: e.target.value }))}
-                  className="w-full px-3 sm:px-4 py-2.5 sm:py-2 text-base border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                  className="w-full px-3 sm:px-4 py-2.5 sm:py-2 text-base border border-gray-300 dark:border-border-dark rounded-lg bg-white dark:bg-surface-dark-muted text-gray-900 dark:text-ink-dark focus:ring-2 focus:ring-primary dark:focus:ring-primary-dark-mode focus:border-primary dark:focus:border-primary-dark-mode transition-all duration-200 placeholder:text-gray-400 dark:placeholder:text-neutral-500"
                   placeholder="your.email@example.com"
                 />
                 {errors.email && (
-                  <p className="text-red-600 text-sm mt-2">{errors.email}</p>
+                  <p className="text-red-600 dark:text-red-400 text-sm mt-2 transition-colors duration-200">{errors.email}</p>
                 )}
               </div>
 
               <div className="flex gap-3 sm:gap-4 mt-4 sm:mt-6">
                 <button
                   onClick={handleNext}
-                  className="flex-1 px-4 sm:px-6 py-2.5 sm:py-3 bg-blue-600 text-white text-sm sm:text-base font-semibold rounded-lg hover:bg-blue-700 transition-colors"
-                  style={{ backgroundColor: '#6c6cbe' }}
+                  className="flex-1 px-4 sm:px-6 py-2.5 sm:py-3 bg-primary dark:bg-primary-dark-mode text-white text-sm sm:text-base font-semibold rounded-lg hover:bg-primary-hover dark:hover:bg-primary-dark-hover transition-all duration-200 shadow-sm hover:shadow-md"
                 >
                   Continue
                 </button>
@@ -531,26 +530,26 @@ export default function FormPage() {
             {/* Step 2: Location */}
             {currentStep === 2 && (
               <div>
-              <h2 className="text-xl sm:text-2xl font-bold text-gray-900 mb-2 sm:mb-3">Where are you located?</h2>
-              <p className="text-sm sm:text-base text-gray-600 mb-4 sm:mb-6">
+              <h2 className="text-xl sm:text-2xl font-bold text-gray-900 dark:text-ink-dark mb-2 sm:mb-3 transition-colors duration-200">Where are you located?</h2>
+              <p className="text-sm sm:text-base text-gray-600 dark:text-ink-dark-soft mb-4 sm:mb-6 transition-colors duration-200">
                 We use your location to match you with nursing opportunities in your area. This helps us show you relevant jobs that are actually accessible to you, saving you time and ensuring you see positions you can realistically pursue.
               </p>
 
               {isLoadingLocation && (
-                <div className="mb-4 p-4 bg-blue-50 rounded-lg">
-                  <p className="text-blue-700">Detecting your location...</p>
+                <div className="mb-4 p-4 bg-blue-50 dark:bg-blue-900/20 rounded-lg border border-blue-200 dark:border-blue-800 transition-colors duration-200">
+                  <p className="text-blue-700 dark:text-blue-300">Detecting your location...</p>
                 </div>
               )}
 
               {locationError && (
-                <div className="mb-4 p-4 bg-yellow-50 rounded-lg">
-                  <p className="text-yellow-700 text-sm">{locationError}</p>
+                <div className="mb-4 p-4 bg-yellow-50 dark:bg-yellow-900/20 rounded-lg border border-yellow-200 dark:border-yellow-800 transition-colors duration-200">
+                  <p className="text-yellow-700 dark:text-yellow-300 text-sm">{locationError}</p>
                 </div>
               )}
 
               <div className="space-y-4">
                 <div>
-                  <label htmlFor="city" className="block text-sm font-medium text-gray-700 mb-2">
+                  <label htmlFor="city" className="block text-sm font-medium text-gray-700 dark:text-ink-dark-soft mb-2 transition-colors duration-200">
                     City
                   </label>
                   <input
@@ -563,13 +562,13 @@ export default function FormPage() {
                         setLocationError(null);
                       }
                     }}
-                    className="w-full px-3 sm:px-4 py-2.5 sm:py-2 text-base border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                    className="w-full px-3 sm:px-4 py-2.5 sm:py-2 text-base border border-gray-300 dark:border-border-dark rounded-lg bg-white dark:bg-surface-dark-muted text-gray-900 dark:text-ink-dark focus:ring-2 focus:ring-primary dark:focus:ring-primary-dark-mode focus:border-primary dark:focus:border-primary-dark-mode transition-all duration-200 placeholder:text-gray-400 dark:placeholder:text-neutral-500"
                     placeholder="Enter your city"
                   />
                 </div>
 
                 <div>
-                  <label htmlFor="state" className="block text-sm font-medium text-gray-700 mb-2">
+                  <label htmlFor="state" className="block text-sm font-medium text-gray-700 dark:text-ink-dark-soft mb-2 transition-colors duration-200">
                     State
                   </label>
                   <select
@@ -581,7 +580,7 @@ export default function FormPage() {
                         setLocationError(null);
                       }
                     }}
-                    className="w-full px-3 sm:px-4 py-2.5 sm:py-2 text-base border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-white"
+                    className="w-full px-3 sm:px-4 py-2.5 sm:py-2 text-base border border-gray-300 dark:border-border-dark rounded-lg bg-white dark:bg-surface-dark-muted text-gray-900 dark:text-ink-dark focus:ring-2 focus:ring-primary dark:focus:ring-primary-dark-mode focus:border-primary dark:focus:border-primary-dark-mode transition-all duration-200"
                   >
                     <option value="">Select your state</option>
                     {US_STATES.map((state) => (
@@ -593,19 +592,19 @@ export default function FormPage() {
                 </div>
 
                 {errors.location && (
-                  <p className="text-red-600 text-sm">{errors.location}</p>
+                  <p className="text-red-600 dark:text-red-400 text-sm transition-colors duration-200">{errors.location}</p>
                 )}
 
                 <div className="flex gap-3 sm:gap-4 mt-4 sm:mt-6">
                   <button
                     onClick={handleBack}
-                    className="px-4 sm:px-6 py-2.5 sm:py-3 border border-gray-300 text-gray-700 text-sm sm:text-base font-semibold rounded-lg hover:bg-gray-50 transition-colors"
+                    className="px-4 sm:px-6 py-2.5 sm:py-3 border border-gray-300 dark:border-border-dark text-gray-700 dark:text-ink-dark-soft text-sm sm:text-base font-semibold rounded-lg hover:bg-gray-50 dark:hover:bg-neutral-800 transition-colors duration-200"
                   >
                     Back
                   </button>
                   <button
                     onClick={handleLocationSubmit}
-                    className="flex-1 px-4 sm:px-6 py-2.5 sm:py-3 bg-blue-600 text-white text-sm sm:text-base font-semibold rounded-lg hover:bg-blue-700 transition-colors"
+                    className="flex-1 px-4 sm:px-6 py-2.5 sm:py-3 bg-primary dark:bg-primary-dark-mode text-white text-sm sm:text-base font-semibold rounded-lg hover:bg-primary-hover dark:hover:bg-primary-dark-hover transition-all duration-200 shadow-sm hover:shadow-md"
                   >
                     Continue
                   </button>
@@ -617,33 +616,33 @@ export default function FormPage() {
             {/* Step 3: Licenses */}
             {currentStep === 3 && (
               <div>
-              <h2 className="text-xl sm:text-2xl font-bold text-gray-900 mb-2 sm:mb-3">
+              <h2 className="text-xl sm:text-2xl font-bold text-gray-900 dark:text-ink-dark mb-2 sm:mb-3 transition-colors duration-200">
                 Which of the following nursing licenses or certifications do you currently hold?
               </h2>
-              <p className="text-sm sm:text-base text-gray-600 mb-4 sm:mb-6">
+              <p className="text-sm sm:text-base text-gray-600 dark:text-ink-dark-soft mb-4 sm:mb-6 transition-colors duration-200">
                 Your licenses and certifications help us match you with jobs that align with your qualifications. This ensures you only see opportunities you're actually eligible for, making your job search more efficient and targeted.
               </p>
-              <p className="text-sm text-gray-500 mb-6">Select all that apply</p>
+              <p className="text-sm text-gray-500 dark:text-neutral-400 mb-6 transition-colors duration-200">Select all that apply</p>
 
               <div className="space-y-2 sm:space-y-3">
                 {LICENSE_OPTIONS.map((license) => (
                   <label
                     key={license}
-                    className="flex items-center p-3 sm:p-4 border border-gray-300 rounded-lg cursor-pointer hover:bg-gray-50 transition-colors"
+                    className="flex items-center p-3 sm:p-4 border border-gray-300 dark:border-border-dark rounded-lg cursor-pointer hover:bg-gray-50 dark:hover:bg-neutral-800 transition-colors duration-200"
                   >
                     <input
                       type="checkbox"
                       checked={formData.licenses.includes(license)}
                       onChange={() => handleMultiSelect('licenses', license)}
-                      className="w-4 h-4 sm:w-5 sm:h-5 text-blue-600 border-gray-300 rounded focus:ring-blue-500 flex-shrink-0"
+                      className="w-4 h-4 sm:w-5 sm:h-5 text-primary dark:text-primary-dark-mode border-gray-300 dark:border-border-dark rounded focus:ring-primary dark:focus:ring-primary-dark-mode flex-shrink-0"
                     />
-                    <span className="ml-2 sm:ml-3 text-sm sm:text-base text-gray-700">{license}</span>
+                    <span className="ml-2 sm:ml-3 text-sm sm:text-base text-gray-700 dark:text-ink-dark-soft">{license}</span>
                   </label>
                 ))}
               </div>
 
               {errors.licenses && (
-                <p className="text-red-600 text-sm mt-4">{errors.licenses}</p>
+                  <p className="text-red-600 dark:text-red-400 text-sm mt-4 transition-colors duration-200">{errors.licenses}</p>
               )}
 
               <div className="flex gap-3 sm:gap-4 mt-4 sm:mt-6">
@@ -655,7 +654,7 @@ export default function FormPage() {
                 </button>
                 <button
                   onClick={handleNext}
-                  className="flex-1 px-4 sm:px-6 py-2.5 sm:py-3 bg-blue-600 text-white text-sm sm:text-base font-semibold rounded-lg hover:bg-blue-700 transition-colors"
+                  className="flex-1 px-4 sm:px-6 py-2.5 sm:py-3 bg-primary dark:bg-primary-dark-mode text-white text-sm sm:text-base font-semibold rounded-lg hover:bg-primary-hover dark:hover:bg-primary-dark-hover transition-all duration-200 shadow-sm hover:shadow-md"
                   style={{ backgroundColor: '#6c6cbe' }}
                 >
                   Continue
@@ -667,33 +666,33 @@ export default function FormPage() {
             {/* Step 4: Specialties */}
             {currentStep === 4 && (
               <div>
-              <h2 className="text-xl sm:text-2xl font-bold text-gray-900 mb-2 sm:mb-3">
+              <h2 className="text-xl sm:text-2xl font-bold text-gray-900 dark:text-ink-dark mb-2 sm:mb-3 transition-colors duration-200">
                 Which nursing specialties are you most passionate about?
               </h2>
-              <p className="text-sm sm:text-base text-gray-600 mb-4 sm:mb-6">
+              <p className="text-sm sm:text-base text-gray-600 dark:text-ink-dark-soft mb-4 sm:mb-6 transition-colors duration-200">
                 Understanding your passion areas helps us prioritize job opportunities that match what you love doing. Whether you're passionate about critical care, pediatrics, or mental health, we'll make sure those opportunities appear first in your recommendations.
               </p>
-              <p className="text-sm text-gray-500 mb-6">Select all that apply</p>
+              <p className="text-sm text-gray-500 dark:text-neutral-400 mb-6 transition-colors duration-200">Select all that apply</p>
 
               <div className="space-y-2 sm:space-y-3">
                 {SPECIALTY_OPTIONS.map((specialty) => (
                   <label
                     key={specialty}
-                    className="flex items-center p-3 sm:p-4 border border-gray-300 rounded-lg cursor-pointer hover:bg-gray-50 transition-colors"
+                    className="flex items-center p-3 sm:p-4 border border-gray-300 dark:border-border-dark rounded-lg cursor-pointer hover:bg-gray-50 dark:hover:bg-neutral-800 transition-colors duration-200"
                   >
                     <input
                       type="checkbox"
                       checked={formData.specialties.includes(specialty)}
                       onChange={() => handleMultiSelect('specialties', specialty)}
-                      className="w-4 h-4 sm:w-5 sm:h-5 text-blue-600 border-gray-300 rounded focus:ring-blue-500 flex-shrink-0"
+                      className="w-4 h-4 sm:w-5 sm:h-5 text-primary dark:text-primary-dark-mode border-gray-300 dark:border-border-dark rounded focus:ring-primary dark:focus:ring-primary-dark-mode flex-shrink-0"
                     />
-                    <span className="ml-2 sm:ml-3 text-sm sm:text-base text-gray-700">{specialty}</span>
+                    <span className="ml-2 sm:ml-3 text-sm sm:text-base text-gray-700 dark:text-ink-dark-soft">{specialty}</span>
                   </label>
                 ))}
               </div>
 
               {errors.specialties && (
-                <p className="text-red-600 text-sm mt-4">{errors.specialties}</p>
+                  <p className="text-red-600 dark:text-red-400 text-sm mt-4 transition-colors duration-200">{errors.specialties}</p>
               )}
 
               <div className="flex gap-3 sm:gap-4 mt-4 sm:mt-6">
@@ -705,7 +704,7 @@ export default function FormPage() {
                 </button>
                 <button
                   onClick={handleNext}
-                  className="flex-1 px-4 sm:px-6 py-2.5 sm:py-3 bg-blue-600 text-white text-sm sm:text-base font-semibold rounded-lg hover:bg-blue-700 transition-colors"
+                  className="flex-1 px-4 sm:px-6 py-2.5 sm:py-3 bg-primary dark:bg-primary-dark-mode text-white text-sm sm:text-base font-semibold rounded-lg hover:bg-primary-hover dark:hover:bg-primary-dark-hover transition-all duration-200 shadow-sm hover:shadow-md"
                   style={{ backgroundColor: '#6c6cbe' }}
                 >
                   Continue
@@ -717,33 +716,33 @@ export default function FormPage() {
             {/* Step 5: Job Types */}
             {currentStep === 5 && (
               <div>
-              <h2 className="text-xl sm:text-2xl font-bold text-gray-900 mb-2 sm:mb-3">
+              <h2 className="text-xl sm:text-2xl font-bold text-gray-900 dark:text-ink-dark mb-2 sm:mb-3 transition-colors duration-200">
                 What type of nursing jobs interest you?
               </h2>
-              <p className="text-sm sm:text-base text-gray-600 mb-4 sm:mb-6">
+              <p className="text-sm sm:text-base text-gray-600 dark:text-ink-dark-soft mb-4 sm:mb-6 transition-colors duration-200">
                 Whether you're looking for full-time stability, part-time flexibility, travel opportunities, or remote work, we'll tailor your job matches to your preferred work style. This helps you find opportunities that fit your lifestyle and career goals.
               </p>
-              <p className="text-sm text-gray-500 mb-6">Select all that apply</p>
+              <p className="text-sm text-gray-500 dark:text-neutral-400 mb-6 transition-colors duration-200">Select all that apply</p>
 
               <div className="space-y-2 sm:space-y-3">
                 {JOB_TYPE_OPTIONS.map((jobType) => (
                   <label
                     key={jobType}
-                    className="flex items-center p-3 sm:p-4 border border-gray-300 rounded-lg cursor-pointer hover:bg-gray-50 transition-colors"
+                    className="flex items-center p-3 sm:p-4 border border-gray-300 dark:border-border-dark rounded-lg cursor-pointer hover:bg-gray-50 dark:hover:bg-neutral-800 transition-colors duration-200"
                   >
                     <input
                       type="checkbox"
                       checked={formData.jobTypes.includes(jobType)}
                       onChange={() => handleMultiSelect('jobTypes', jobType)}
-                      className="w-4 h-4 sm:w-5 sm:h-5 text-blue-600 border-gray-300 rounded focus:ring-blue-500 flex-shrink-0"
+                      className="w-4 h-4 sm:w-5 sm:h-5 text-primary dark:text-primary-dark-mode border-gray-300 dark:border-border-dark rounded focus:ring-primary dark:focus:ring-primary-dark-mode flex-shrink-0"
                     />
-                    <span className="ml-2 sm:ml-3 text-sm sm:text-base text-gray-700">{jobType}</span>
+                    <span className="ml-2 sm:ml-3 text-sm sm:text-base text-gray-700 dark:text-ink-dark-soft">{jobType}</span>
                   </label>
                 ))}
               </div>
 
               {errors.jobTypes && (
-                <p className="text-red-600 text-sm mt-4">{errors.jobTypes}</p>
+                  <p className="text-red-600 dark:text-red-400 text-sm mt-4 transition-colors duration-200">{errors.jobTypes}</p>
               )}
 
               <div className="flex gap-3 sm:gap-4 mt-4 sm:mt-6">
@@ -755,7 +754,7 @@ export default function FormPage() {
                 </button>
                 <button
                   onClick={handleNext}
-                  className="flex-1 px-4 sm:px-6 py-2.5 sm:py-3 bg-blue-600 text-white text-sm sm:text-base font-semibold rounded-lg hover:bg-blue-700 transition-colors"
+                  className="flex-1 px-4 sm:px-6 py-2.5 sm:py-3 bg-primary dark:bg-primary-dark-mode text-white text-sm sm:text-base font-semibold rounded-lg hover:bg-primary-hover dark:hover:bg-primary-dark-hover transition-all duration-200 shadow-sm hover:shadow-md"
                   style={{ backgroundColor: '#6c6cbe' }}
                 >
                   Continue
@@ -767,16 +766,16 @@ export default function FormPage() {
             {/* Step 6: Current Workplace */}
             {currentStep === 6 && (
               <div>
-              <h2 className="text-xl sm:text-2xl font-bold text-gray-900 mb-2 sm:mb-3">
+              <h2 className="text-xl sm:text-2xl font-bold text-gray-900 dark:text-ink-dark mb-2 sm:mb-3 transition-colors duration-200">
                 Where do you currently work?
               </h2>
-              <p className="text-sm sm:text-base text-gray-600 mb-4 sm:mb-6">
+              <p className="text-sm sm:text-base text-gray-600 dark:text-ink-dark-soft mb-4 sm:mb-6 transition-colors duration-200">
                 Knowing your current workplace helps us understand your experience level and avoid showing you duplicate opportunities. This information also helps us provide more relevant career insights and job recommendations tailored to your background.
               </p>
-              <p className="text-sm text-gray-500 mb-6">Optional - Enter the name of your current hospital or facility</p>
+              <p className="text-sm text-gray-500 dark:text-neutral-400 mb-6 transition-colors duration-200">Optional - Enter the name of your current hospital or facility</p>
 
               <div>
-                <label htmlFor="workplace" className="block text-sm font-medium text-gray-700 mb-2">
+                  <label htmlFor="workplace" className="block text-sm font-medium text-gray-700 dark:text-ink-dark-soft mb-2 transition-colors duration-200">
                   Hospital/Facility Name
                 </label>
                 <input
@@ -784,11 +783,11 @@ export default function FormPage() {
                   id="workplace"
                   value={formData.currentWorkplace}
                   onChange={(e) => setFormData(prev => ({ ...prev, currentWorkplace: e.target.value }))}
-                  className="w-full px-3 sm:px-4 py-2.5 sm:py-2 text-base border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                  className="w-full px-3 sm:px-4 py-2.5 sm:py-2 text-base border border-gray-300 dark:border-border-dark rounded-lg bg-white dark:bg-surface-dark-muted text-gray-900 dark:text-ink-dark focus:ring-2 focus:ring-primary dark:focus:ring-primary-dark-mode focus:border-primary dark:focus:border-primary-dark-mode transition-all duration-200 placeholder:text-gray-400 dark:placeholder:text-neutral-500"
                   placeholder="Enter facility name"
                 />
                 {errors.workplace && (
-                  <p className="text-red-600 text-sm mt-2">{errors.workplace}</p>
+                  <p className="text-red-600 dark:text-red-400 text-sm mt-2 transition-colors duration-200">{errors.workplace}</p>
                 )}
               </div>
 
@@ -801,7 +800,7 @@ export default function FormPage() {
                 </button>
                 <button
                   onClick={handleNext}
-                  className="flex-1 px-4 sm:px-6 py-2.5 sm:py-3 bg-blue-600 text-white text-sm sm:text-base font-semibold rounded-lg hover:bg-blue-700 transition-colors"
+                  className="flex-1 px-4 sm:px-6 py-2.5 sm:py-3 bg-primary dark:bg-primary-dark-mode text-white text-sm sm:text-base font-semibold rounded-lg hover:bg-primary-hover dark:hover:bg-primary-dark-hover transition-all duration-200 shadow-sm hover:shadow-md"
                   style={{ backgroundColor: '#6c6cbe' }}
                 >
                   Continue
@@ -813,19 +812,19 @@ export default function FormPage() {
             {/* Step 7: Open to Opportunities */}
             {currentStep === 7 && (
               <div>
-              <h2 className="text-xl sm:text-2xl font-bold text-gray-900 mb-2 sm:mb-3">
+              <h2 className="text-xl sm:text-2xl font-bold text-gray-900 dark:text-ink-dark mb-2 sm:mb-3 transition-colors duration-200">
                 Are you currently open to new nursing job opportunities?
               </h2>
-              <p className="text-sm sm:text-base text-gray-600 mb-4 sm:mb-6">
+              <p className="text-sm sm:text-base text-gray-600 dark:text-ink-dark-soft mb-4 sm:mb-6 transition-colors duration-200">
                 This helps us understand your current job search status so we can tailor our communications and job recommendations accordingly.
               </p>
 
               <div className="space-y-2 sm:space-y-3">
                 <label
-                  className={`flex items-center p-3 sm:p-4 border-2 rounded-lg cursor-pointer transition-colors ${
+                  className={`flex items-center p-3 sm:p-4 border-2 rounded-lg cursor-pointer transition-colors duration-200 ${
                     formData.openToOpportunities === 'Yes'
-                      ? 'border-blue-600 bg-blue-50'
-                      : 'border-gray-300 hover:bg-gray-50'
+                      ? 'border-primary dark:border-primary-dark-mode bg-primary-light dark:bg-primary-dark-mode/20'
+                      : 'border-gray-300 dark:border-border-dark hover:bg-gray-50 dark:hover:bg-neutral-800'
                   }`}
                 >
                   <input
@@ -834,16 +833,16 @@ export default function FormPage() {
                     value="Yes"
                     checked={formData.openToOpportunities === 'Yes'}
                     onChange={(e) => setFormData(prev => ({ ...prev, openToOpportunities: e.target.value }))}
-                    className="w-4 h-4 sm:w-5 sm:h-5 text-blue-600 border-gray-300 focus:ring-blue-500 flex-shrink-0"
+                    className="w-4 h-4 sm:w-5 sm:h-5 text-primary dark:text-primary-dark-mode border-gray-300 dark:border-border-dark focus:ring-primary dark:focus:ring-primary-dark-mode flex-shrink-0"
                   />
-                  <span className="ml-2 sm:ml-3 text-sm sm:text-base text-gray-700 font-medium">Yes</span>
+                  <span className="ml-2 sm:ml-3 text-sm sm:text-base text-gray-700 dark:text-ink-dark-soft font-medium transition-colors duration-200">Yes</span>
                 </label>
 
                 <label
-                  className={`flex items-center p-3 sm:p-4 border-2 rounded-lg cursor-pointer transition-colors ${
+                  className={`flex items-center p-3 sm:p-4 border-2 rounded-lg cursor-pointer transition-colors duration-200 ${
                     formData.openToOpportunities === 'No'
-                      ? 'border-blue-600 bg-blue-50'
-                      : 'border-gray-300 hover:bg-gray-50'
+                      ? 'border-primary dark:border-primary-dark-mode bg-primary-light dark:bg-primary-dark-mode/20'
+                      : 'border-gray-300 dark:border-border-dark hover:bg-gray-50 dark:hover:bg-neutral-800'
                   }`}
                 >
                   <input
@@ -852,19 +851,19 @@ export default function FormPage() {
                     value="No"
                     checked={formData.openToOpportunities === 'No'}
                     onChange={(e) => setFormData(prev => ({ ...prev, openToOpportunities: e.target.value }))}
-                    className="w-4 h-4 sm:w-5 sm:h-5 text-blue-600 border-gray-300 focus:ring-blue-500 flex-shrink-0"
+                    className="w-4 h-4 sm:w-5 sm:h-5 text-primary dark:text-primary-dark-mode border-gray-300 dark:border-border-dark focus:ring-primary dark:focus:ring-primary-dark-mode flex-shrink-0"
                   />
-                  <span className="ml-2 sm:ml-3 text-sm sm:text-base text-gray-700 font-medium">No, I'm not looking for work right now</span>
+                  <span className="ml-2 sm:ml-3 text-sm sm:text-base text-gray-700 dark:text-ink-dark-soft font-medium transition-colors duration-200">No, I'm not looking for work right now</span>
                 </label>
               </div>
 
               {errors.openToOpportunities && (
-                <p className="text-red-600 text-sm mt-4">{errors.openToOpportunities}</p>
+                  <p className="text-red-600 dark:text-red-400 text-sm mt-4 transition-colors duration-200">{errors.openToOpportunities}</p>
               )}
 
               {errors.submit && (
-                <div className="mt-4 p-4 bg-red-50 rounded-lg">
-                  <p className="text-red-700 text-sm">{errors.submit}</p>
+                <div className="mt-4 p-4 bg-red-50 dark:bg-red-900/20 rounded-lg border border-red-200 dark:border-red-800 transition-colors duration-200">
+                  <p className="text-red-700 dark:text-red-400 text-sm transition-colors duration-200">{errors.submit}</p>
                 </div>
               )}
 
@@ -878,8 +877,7 @@ export default function FormPage() {
                 <button
                   onClick={handleSubmit}
                   disabled={isSubmitting}
-                  className="flex-1 px-4 sm:px-6 py-2.5 sm:py-3 bg-blue-600 text-white text-sm sm:text-base font-semibold rounded-lg hover:bg-blue-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-                  style={{ backgroundColor: '#6c6cbe' }}
+                  className="flex-1 px-4 sm:px-6 py-2.5 sm:py-3 bg-primary dark:bg-primary-dark-mode text-white text-sm sm:text-base font-semibold rounded-lg hover:bg-primary-hover dark:hover:bg-primary-dark-hover transition-all duration-200 shadow-sm hover:shadow-md disabled:opacity-50 disabled:cursor-not-allowed"
                 >
                   {isSubmitting ? 'Submitting...' : 'Submit'}
                 </button>

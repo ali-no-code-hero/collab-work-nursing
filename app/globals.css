@@ -6,13 +6,29 @@
   --radius: 1rem;
 }
 
-html, body { @apply h-full bg-surface text-ink-soft overflow-x-hidden; }
+html, body { 
+  @apply h-full overflow-x-hidden;
+  @apply bg-white dark:bg-surface-dark;
+  @apply text-gray-900 dark:text-ink-dark;
+  transition: background-color 0.2s ease, color 0.2s ease;
+}
 
 @layer base {
-  h1 { @apply text-4xl md:text-5xl font-semibold tracking-tight text-ink; }
-  h2 { @apply text-2xl md:text-3xl font-semibold text-ink; }
-  h3 { @apply text-xl font-semibold text-ink; }
-  a { @apply text-primary hover:text-primary-dark transition; }
+  h1 { 
+    @apply text-4xl md:text-5xl font-semibold tracking-tight;
+    @apply text-gray-900 dark:text-ink-dark;
+  }
+  h2 { 
+    @apply text-2xl md:text-3xl font-semibold;
+    @apply text-gray-900 dark:text-ink-dark;
+  }
+  h3 { 
+    @apply text-xl font-semibold;
+    @apply text-gray-900 dark:text-ink-dark;
+  }
+  a { 
+    @apply text-primary hover:text-primary-hover dark:text-primary-dark-mode dark:hover:text-primary-dark-hover transition;
+  }
 }
 
 .btn {
@@ -20,7 +36,9 @@ html, body { @apply h-full bg-surface text-ink-soft overflow-x-hidden; }
 }
 
 .card {
-  @apply rounded-2xl bg-surface shadow-soft border border-black/5;
+  @apply rounded-2xl shadow-soft;
+  @apply bg-white dark:bg-surface-dark-alt;
+  @apply border border-gray-200 dark:border-border-dark;
 }
 
 .badge {

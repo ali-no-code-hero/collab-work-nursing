@@ -512,22 +512,22 @@ export default function Page() {
   const jobCount = noResults ? 0 : Math.min(jobs.length, 5);
 
   return (
-    <div className="min-h-screen bg-white overflow-x-hidden">
+    <div className="min-h-screen bg-white dark:bg-surface-dark overflow-x-hidden transition-colors duration-200">
       {/* Hero Section */}
-      <section className="bg-white border-b border-gray-200">
+      <section className="bg-white dark:bg-surface-dark border-b border-gray-200 dark:border-border-dark transition-colors duration-200">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-12">
           {/* Subscription Status */}
           <div className="flex items-center gap-2 mb-6">
-            <div className="w-5 h-5 bg-green-500 rounded-full flex items-center justify-center">
+            <div className="w-5 h-5 bg-green-500 dark:bg-green-600 rounded-full flex items-center justify-center transition-colors duration-200">
               <svg className="w-3 h-3 text-white" fill="currentColor" viewBox="0 0 20 20">
                 <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
               </svg>
             </div>
-            <p className="text-green-600 font-medium text-sm">{TEXT.subscriptionStatus}</p>
+            <p className="text-green-600 dark:text-green-400 font-medium text-sm transition-colors duration-200">{TEXT.subscriptionStatus}</p>
           </div>
 
           {/* Main Heading */}
-          <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold text-gray-900 mb-6 leading-tight">
+          <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold text-gray-900 dark:text-ink-dark mb-6 leading-tight transition-colors duration-200">
             {noResults ? (
               TEXT.headingNoJobs
             ) : (
@@ -537,16 +537,16 @@ export default function Page() {
 
           {/* Matching Criteria - only show when there are results */}
           {!noResults && jobs.length > 0 && (
-            <div className="flex flex-col sm:flex-row sm:flex-wrap sm:items-center gap-3 text-base text-gray-600">
+            <div className="flex flex-col sm:flex-row sm:flex-wrap sm:items-center gap-3 text-base text-gray-600 dark:text-ink-dark-soft transition-colors duration-200">
               <span className="mb-2 sm:mb-0">{TEXT.matchingNetworkText}</span>
               <div className="flex flex-wrap gap-2 sm:gap-3">
-                <span className="px-3 sm:px-4 py-2 bg-blue-50 text-blue-700 rounded-lg text-xs sm:text-sm font-medium flex items-center gap-2 whitespace-nowrap">
+                <span className="px-3 sm:px-4 py-2 bg-blue-50 dark:bg-blue-900/20 text-blue-700 dark:text-blue-300 rounded-lg text-xs sm:text-sm font-medium flex items-center gap-2 whitespace-nowrap border border-blue-200 dark:border-blue-800 transition-colors duration-200">
                   📍 <span className="truncate max-w-[150px] sm:max-w-none">{subscriberLocation}</span> location
                 </span>
-                <span className="px-3 sm:px-4 py-2 bg-purple-50 text-purple-700 rounded-lg text-xs sm:text-sm font-medium flex items-center gap-2">
+                <span className="px-3 sm:px-4 py-2 bg-purple-50 dark:bg-purple-900/20 text-purple-700 dark:text-purple-300 rounded-lg text-xs sm:text-sm font-medium flex items-center gap-2 border border-purple-200 dark:border-purple-800 transition-colors duration-200">
                   🩺 <span className="truncate max-w-[200px] sm:max-w-none">{matchingCriteria.experience}</span>
                 </span>
-                <span className="px-3 sm:px-4 py-2 bg-green-50 text-green-700 rounded-lg text-xs sm:text-sm font-medium flex items-center gap-2">
+                <span className="px-3 sm:px-4 py-2 bg-green-50 dark:bg-green-900/20 text-green-700 dark:text-green-300 rounded-lg text-xs sm:text-sm font-medium flex items-center gap-2 border border-green-200 dark:border-green-800 transition-colors duration-200">
                   ✓ <span className="truncate max-w-[200px] sm:max-w-none">{matchingCriteria.openness}</span>
                 </span>
               </div>
@@ -556,16 +556,16 @@ export default function Page() {
       </section>
 
       {/* Jobs */}
-      <section className="py-12 bg-gray-50">
+      <section className="py-12 bg-gray-50 dark:bg-surface-dark-alt transition-colors duration-200">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
                   {loading ? (
-                    <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-8 text-center">
-                      <h3 className="text-xl font-semibold text-gray-900 mb-2">
+                    <div className="bg-white dark:bg-surface-dark-alt rounded-lg shadow-sm border border-gray-200 dark:border-border-dark p-8 text-center transition-colors duration-200">
+                      <h3 className="text-xl font-semibold text-gray-900 dark:text-ink-dark mb-2 transition-colors duration-200">
                         {redirectingToMore
                           ? TEXT.redirectingToMoreJobs
                           : (waitingForCurated ? TEXT.loadingCuratedJobs : (isRetrying ? TEXT.retryingJobs : TEXT.loadingJobs))}
                       </h3>
-                      <p className="text-gray-600">
+                      <p className="text-gray-600 dark:text-ink-dark-soft transition-colors duration-200">
                         {redirectingToMore
                           ? TEXT.redirectCountdownPrefix + ' ' + (redirectCountdown ?? 5) + ' ' + TEXT.redirectCountdownSuffix
                           : (waitingForCurated 
@@ -579,8 +579,8 @@ export default function Page() {
                       </p>
                       {(isRetrying || waitingForCurated || redirectingToMore) && (
                         <div className="mt-4">
-                          <div className="inline-flex items-center px-4 py-2 bg-blue-50 text-blue-700 rounded-lg text-sm">
-                            <svg className="animate-spin -ml-1 mr-3 h-4 w-4 text-blue-500" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                          <div className="inline-flex items-center px-4 py-2 bg-blue-50 dark:bg-blue-900/20 text-blue-700 dark:text-blue-300 rounded-lg text-sm border border-blue-200 dark:border-blue-800 transition-colors duration-200">
+                            <svg className="animate-spin -ml-1 mr-3 h-4 w-4 text-blue-500 dark:text-blue-400" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
                               <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
                               <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
                             </svg>
@@ -591,13 +591,13 @@ export default function Page() {
                       )}
                     </div>
                   ) : noResults || jobs.length === 0 ? (
-            <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-12 text-center">
-              <h3 className="text-2xl font-semibold text-gray-900 mb-4">{TEXT.noJobsTitle}</h3>
-              <p className="text-gray-600 mb-6 text-lg">
+            <div className="bg-white dark:bg-surface-dark-alt rounded-xl shadow-sm border border-gray-200 dark:border-border-dark p-12 text-center transition-colors duration-200">
+              <h3 className="text-2xl font-semibold text-gray-900 dark:text-ink-dark mb-4 transition-colors duration-200">{TEXT.noJobsTitle}</h3>
+              <p className="text-gray-600 dark:text-ink-dark-soft mb-6 text-lg transition-colors duration-200">
                 {TEXT.noJobsDescription}
               </p>
               {redirectCountdown !== null && (
-                <div className="inline-flex items-center px-6 py-3 bg-purple-50 text-purple-700 rounded-lg text-lg font-medium">
+                <div className="inline-flex items-center px-6 py-3 bg-purple-50 dark:bg-purple-900/20 text-purple-700 dark:text-purple-300 rounded-lg text-lg font-medium border border-purple-200 dark:border-purple-800 transition-colors duration-200">
                   <span>{TEXT.redirectCountdownPrefix} {redirectCountdown} {TEXT.redirectCountdownSuffix}</span>
                 </div>
               )}
@@ -614,19 +614,14 @@ export default function Page() {
 
       {/* See More Jobs Button - only show when there are results */}
       {!noResults && jobs.length > 0 && (
-        <section className="py-12 bg-white">
+        <section className="py-12 bg-white dark:bg-surface-dark transition-colors duration-200">
           <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
             <div className="text-center">
               <a
                 href={MORE_JOBS_URL}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="inline-flex items-center px-8 py-4 text-white font-semibold rounded-lg transition-colors duration-200 text-lg"
-                style={{ 
-                  backgroundColor: '#b2b2e6'
-                }}
-                onMouseEnter={(e) => (e.target as HTMLElement).style.backgroundColor = '#c7c7ed'}
-                onMouseLeave={(e) => (e.target as HTMLElement).style.backgroundColor = '#b2b2e6'}
+                className="inline-flex items-center px-8 py-4 bg-primary dark:bg-primary-dark-mode text-white font-semibold rounded-lg transition-all duration-200 text-lg shadow-sm hover:shadow-md hover:bg-primary-hover dark:hover:bg-primary-dark-hover"
               >
                 {TEXT.seeMoreJobsButton}
                 <svg className="ml-3 w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
