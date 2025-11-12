@@ -178,7 +178,7 @@ export default function JobCard({ job, email }: { job: Job; email?: string | nul
                 href={job.url || '#'}
                 target="_blank"
                 rel="noreferrer"
-                className="text-white px-4 sm:px-6 py-2 rounded-lg font-medium transition-all duration-200 whitespace-nowrap bg-primary dark:bg-primary-dark-mode hover:bg-primary-hover dark:hover:bg-primary-dark-hover shadow-sm hover:shadow-md"
+                className="!text-white px-4 sm:px-6 py-2 rounded-lg font-medium transition-all duration-200 whitespace-nowrap bg-primary dark:bg-primary-dark-mode hover:bg-primary-hover dark:hover:bg-primary-dark-hover shadow-sm hover:shadow-md"
                 onClick={handleApplyClick}
               >
                 Apply Now

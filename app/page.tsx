@@ -621,10 +621,10 @@ export default function Page() {
                 href={MORE_JOBS_URL}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="inline-flex items-center px-8 py-4 bg-primary dark:bg-primary-dark-mode text-white font-semibold rounded-lg transition-all duration-200 text-lg shadow-sm hover:shadow-md hover:bg-primary-hover dark:hover:bg-primary-dark-hover"
+                className="inline-flex items-center px-8 py-4 bg-primary dark:bg-primary-dark-mode !text-white font-semibold rounded-lg transition-all duration-200 text-lg shadow-sm hover:shadow-md hover:bg-primary-hover dark:hover:bg-primary-dark-hover"
               >
                 {TEXT.seeMoreJobsButton}
-                <svg className="ml-3 w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <svg className="ml-3 w-5 h-5 !text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
                 </svg>
               </a>

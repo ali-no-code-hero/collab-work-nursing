@@ -40,9 +40,9 @@ export default function RootLayout({ children }: { children: ReactNode }) {
                 <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
                   <p className="text-sm text-gray-600 dark:text-ink-dark-soft">© {new Date().getFullYear()} CollabWORK.</p>
                   <div className="flex flex-wrap items-center justify-center gap-4 sm:gap-6 text-sm text-gray-600 dark:text-ink-dark-soft">
-                    <a href="#" className="hover:text-gray-900 dark:hover:text-ink-dark transition-colors">Privacy Policy</a>
-                    <a href="#" className="hover:text-gray-900 dark:hover:text-ink-dark transition-colors">Terms of Service</a>
-                    <a href="#" className="hover:text-gray-900 dark:hover:text-ink-dark transition-colors">Contact</a>
+                    <a href="https://www.collabwork.com/privacy-notice" target="_blank" rel="noopener noreferrer" className="hover:text-gray-900 dark:hover:text-ink-dark transition-colors">Privacy Policy</a>
+                    <a href="https://www.collabwork.com/terms-of-service" target="_blank" rel="noopener noreferrer" className="hover:text-gray-900 dark:hover:text-ink-dark transition-colors">Terms of Service</a>
+                    <a href="https://www.collabwork.com/contact" target="_blank" rel="noopener noreferrer" className="hover:text-gray-900 dark:hover:text-ink-dark transition-colors">Contact</a>
                   </div>
                 </div>
               </div>
