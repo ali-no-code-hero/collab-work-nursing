@@ -562,7 +562,7 @@ export default function FormPage() {
       </section>
 
       {/* Form Section */}
-      <section className="py-3 sm:py-6 lg:py-12 bg-gray-50 dark:bg-surface-dark-alt transition-colors duration-200">
+      <section className="pt-3 pb-2 sm:py-6 lg:py-12 bg-gray-50 dark:bg-surface-dark-alt transition-colors duration-200">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
           <div className="bg-white dark:bg-surface-dark-alt rounded-xl shadow-sm border border-gray-200 dark:border-border-dark p-3 sm:p-4 lg:p-8 transition-all duration-200">
             {/* Step 1: Email */}
