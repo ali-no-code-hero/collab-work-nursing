@@ -14,6 +14,7 @@ interface FormData {
   currentWorkplace: string;
   openToOpportunities: string; // "Yes" or "No"
   processingId?: string; // ID from first webhook
+  otherSpecialty?: string; // Custom specialty text when "Other" is selected
 }
 
 const LICENSE_OPTIONS = [
@@ -32,7 +33,8 @@ const SPECIALTY_OPTIONS = [
   'Pediatrics',
   'Oncology',
   'Med-Surg',
-  'Psychiatric/Mental Health'
+  'Psychiatric/Mental Health',
+  'Other'
 ];
 
 const JOB_TYPE_OPTIONS = [
@@ -109,6 +111,7 @@ export default function FormPage() {
     jobTypes: [],
     currentWorkplace: '',
     openToOpportunities: '',
+    otherSpecialty: '',
   });
   const [locationError, setLocationError] = useState<string | null>(null);
   const [isLoadingLocation, setIsLoadingLocation] = useState(false);
@@ -300,6 +303,12 @@ export default function FormPage() {
       const updated = current.includes(value)
         ? current.filter(item => item !== value)
         : [...current, value];
+      
+      // If "Other" is deselected, clear the otherSpecialty text
+      if (field === 'specialties' && value === 'Other' && !updated.includes('Other')) {
+        return { ...prev, [field]: updated, otherSpecialty: '' };
+      }
+      
       return { ...prev, [field]: updated };
     });
   };
@@ -349,6 +358,11 @@ export default function FormPage() {
     } else if (currentStep === 4) {
       if (formData.specialties.length === 0) {
         setErrors({ specialties: 'Please select at least one specialty' });
+        return;
+      }
+      // If "Other" is selected, require text input
+      if (formData.specialties.includes('Other') && !formData.otherSpecialty?.trim()) {
+        setErrors({ specialties: 'Please specify your specialty' });
         return;
       }
     } else if (currentStep === 5) {
@@ -417,13 +431,21 @@ export default function FormPage() {
         }
       }
 
+      // Format specialties - replace "Other" with custom text if provided
+      const formattedSpecialties = formData.specialties.map(specialty => {
+        if (specialty === 'Other' && formData.otherSpecialty?.trim()) {
+          return formData.otherSpecialty.trim();
+        }
+        return specialty;
+      }).filter(specialty => specialty !== 'Other'); // Remove "Other" if no custom text was provided (already replaced above)
+
       // Format data for webhook - ALWAYS include id field
       const payload: Record<string, any> = {
         city: formData.city,
         state: formData.state,
         email: formData.email,
         licenses: formData.licenses,
-        specialties: formData.specialties,
+        specialties: formattedSpecialties,
         job_types: formData.jobTypes,
         current_workplace: formData.currentWorkplace,
         open_to_opportunities: formData.openToOpportunities,
@@ -449,7 +471,7 @@ export default function FormPage() {
         formDataEncoded.append('city', formData.city || '');
         formDataEncoded.append('state', formData.state || '');
         formDataEncoded.append('licenses', Array.isArray(formData.licenses) ? formData.licenses.join(', ') : (formData.licenses || ''));
-        formDataEncoded.append('specialties', Array.isArray(formData.specialties) ? formData.specialties.join(', ') : (formData.specialties || ''));
+        formDataEncoded.append('specialties', Array.isArray(formattedSpecialties) ? formattedSpecialties.join(', ') : (formattedSpecialties || ''));
         formDataEncoded.append('job_types', Array.isArray(formData.jobTypes) ? formData.jobTypes.join(', ') : (formData.jobTypes || ''));
         formDataEncoded.append('current_workplace', formData.currentWorkplace || '');
         formDataEncoded.append('open_to_opportunities', formData.openToOpportunities || '');
@@ -532,7 +554,7 @@ export default function FormPage() {
                 Subscribe to Nurse Ascent
               </h1>
               <p className="text-sm sm:text-base lg:text-lg text-gray-600 dark:text-ink-dark-soft mb-3 sm:mb-4 lg:mb-8 transition-colors duration-200">
-                Get the 5-minute nurse career newsletter + enter our $200 gift card raffle.
+                Get the 5-minute newsletter nurses trust to grow their careers + enter our monthly raffle for a $200 gift card.
               </p>
             </>
           )}
@@ -745,18 +767,30 @@ export default function FormPage() {
 
               <div className="space-y-2 sm:space-y-3">
                 {SPECIALTY_OPTIONS.map((specialty) => (
-                  <label
-                    key={specialty}
-                    className="flex items-center p-3 sm:p-4 border border-gray-300 dark:border-border-dark rounded-lg cursor-pointer hover:bg-gray-50 dark:hover:bg-neutral-800 transition-colors duration-200"
-                  >
-                    <input
-                      type="checkbox"
-                      checked={formData.specialties.includes(specialty)}
-                      onChange={() => handleMultiSelect('specialties', specialty)}
-                      className="w-4 h-4 sm:w-5 sm:h-5 text-primary dark:text-primary-dark-mode border-gray-300 dark:border-border-dark rounded focus:ring-primary dark:focus:ring-primary-dark-mode flex-shrink-0"
-                    />
-                    <span className="ml-2 sm:ml-3 text-sm sm:text-base text-gray-700 dark:text-ink-dark-soft">{specialty}</span>
-                  </label>
+                  <div key={specialty}>
+                    <label
+                      className="flex items-center p-3 sm:p-4 border border-gray-300 dark:border-border-dark rounded-lg cursor-pointer hover:bg-gray-50 dark:hover:bg-neutral-800 transition-colors duration-200"
+                    >
+                      <input
+                        type="checkbox"
+                        checked={formData.specialties.includes(specialty)}
+                        onChange={() => handleMultiSelect('specialties', specialty)}
+                        className="w-4 h-4 sm:w-5 sm:h-5 text-primary dark:text-primary-dark-mode border-gray-300 dark:border-border-dark rounded focus:ring-primary dark:focus:ring-primary-dark-mode flex-shrink-0"
+                      />
+                      <span className="ml-2 sm:ml-3 text-sm sm:text-base text-gray-700 dark:text-ink-dark-soft">{specialty}</span>
+                    </label>
+                    {specialty === 'Other' && formData.specialties.includes('Other') && (
+                      <div className="mt-2 sm:mt-3 ml-7 sm:ml-9">
+                        <input
+                          type="text"
+                          value={formData.otherSpecialty || ''}
+                          onChange={(e) => setFormData(prev => ({ ...prev, otherSpecialty: e.target.value }))}
+                          placeholder="Please specify your specialty"
+                          className="w-full px-3 sm:px-4 py-2.5 sm:py-2 text-base border border-gray-300 dark:border-border-dark rounded-lg bg-white dark:bg-surface-dark-muted text-gray-900 dark:text-ink-dark focus:ring-2 focus:ring-primary dark:focus:ring-primary-dark-mode focus:border-primary dark:focus:border-primary-dark-mode transition-all duration-200 placeholder:text-gray-400 dark:placeholder:text-neutral-500"
+                        />
+                      </div>
+                    )}
+                  </div>
                 ))}
               </div>
 
