@@ -535,10 +535,10 @@ export default function FormPage() {
   };
 
   return (
-    <div className="min-h-screen flex flex-col bg-white dark:bg-surface-dark transition-colors duration-200">
+    <div className="h-full flex flex-col bg-white dark:bg-surface-dark transition-colors duration-200">
       {/* Hero Section */}
-      <section className="bg-white dark:bg-surface-dark border-b border-gray-200 dark:border-border-dark transition-colors duration-200">
-        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-3 sm:py-6 lg:py-12">
+      <section className="flex-shrink-0 bg-white dark:bg-surface-dark border-b border-gray-200 dark:border-border-dark transition-colors duration-200">
+        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-3 sm:py-4">
           {currentStep === 1 && (
             <>
               <h1 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold text-gray-900 dark:text-ink-dark mb-2 sm:mb-3 lg:mb-4 leading-tight transition-colors duration-200">
@@ -553,7 +553,7 @@ export default function FormPage() {
       </section>
 
       {/* Form Section */}
-      <section className="flex-1 pt-3 pb-2 sm:py-6 lg:py-12 bg-gray-50 dark:bg-surface-dark-alt transition-colors duration-200">
+      <section className="flex-1 overflow-y-auto pt-3 pb-2 bg-gray-50 dark:bg-surface-dark-alt transition-colors duration-200">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
           <div className="bg-white dark:bg-surface-dark-alt rounded-xl shadow-sm border border-gray-200 dark:border-border-dark p-3 sm:p-4 lg:p-8 transition-all duration-200">
             {/* Step 1: Email */}
@@ -874,8 +874,8 @@ export default function FormPage() {
       </section>
 
       {/* Step Counter - Bottom of Page */}
-      <section className="mt-auto bg-white dark:bg-surface-dark border-t border-gray-200 dark:border-border-dark transition-colors duration-200 shadow-lg dark:shadow-none">
-        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 pt-2 pb-4 sm:py-4">
+      <section className="flex-shrink-0 bg-white dark:bg-surface-dark border-t border-gray-200 dark:border-border-dark transition-colors duration-200 shadow-lg dark:shadow-none">
+        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 pt-2 pb-3 sm:py-3">
           <div className="flex items-center justify-between mb-1 sm:mb-2">
             <div className="flex-1">
               <div className="h-2 bg-gray-200 dark:bg-neutral-800 rounded-full overflow-hidden transition-colors duration-200">
