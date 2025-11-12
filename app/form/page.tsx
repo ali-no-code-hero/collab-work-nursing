@@ -891,33 +891,24 @@ export default function FormPage() {
           </p>
           
           {/* Navigation */}
-          <div className="flex items-center justify-between gap-4 sm:gap-6 mt-2 sm:mt-3">
-            <button
-              onClick={handleBack}
-              disabled={currentStep === 1}
-              className="p-2 rounded-lg border border-gray-300 dark:border-border-dark bg-white dark:bg-surface-dark-alt text-gray-700 dark:text-ink-dark-soft hover:bg-gray-50 dark:hover:bg-neutral-800 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:bg-white dark:disabled:hover:bg-surface-dark-alt"
-              aria-label="Previous step"
-            >
-              <svg
-                className="w-5 h-5 sm:w-6 sm:h-6"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
+          <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 sm:gap-4 mt-3 sm:mt-4">
+            {currentStep > 1 && (
+              <button
+                onClick={handleBack}
+                className="w-full sm:w-auto sm:min-w-[120px] px-6 py-3 border-2 border-gray-300 dark:border-border-dark bg-white dark:bg-surface-dark-alt text-gray-700 dark:text-ink-dark-soft text-base font-semibold rounded-lg hover:bg-gray-50 dark:hover:bg-neutral-800 transition-all duration-200"
+                aria-label="Previous step"
               >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M15 19l-7-7 7-7"
-                />
-              </svg>
-            </button>
+                Back
+              </button>
+            )}
             <button
               onClick={currentStep === 2 ? handleLocationSubmit : (currentStep === 7 ? handleSubmit : handleNext)}
               disabled={currentStep === 7 && isSubmitting}
-              className="flex-1 px-6 sm:px-8 py-2.5 sm:py-3 bg-primary dark:bg-primary-dark-mode text-white text-sm sm:text-base font-semibold rounded-lg hover:bg-primary-hover dark:hover:bg-primary-dark-hover transition-all duration-200 shadow-sm hover:shadow-md disabled:opacity-50 disabled:cursor-not-allowed"
+              className={`w-full sm:flex-1 px-6 py-3 bg-primary dark:bg-primary-dark-mode text-white text-base font-semibold rounded-lg hover:bg-primary-hover dark:hover:bg-primary-dark-hover transition-all duration-200 shadow-sm hover:shadow-md disabled:opacity-50 disabled:cursor-not-allowed ${
+                currentStep === 1 ? 'sm:ml-auto' : ''
+              }`}
             >
-              {currentStep === 7 ? (isSubmitting ? 'Submitting...' : 'Submit') : 'Continue'}
+              {currentStep === 7 ? (isSubmitting ? 'Submitting...' : 'Submit') : 'Next'}
             </button>
           </div>
         </div>
