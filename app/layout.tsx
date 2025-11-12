@@ -6,8 +6,8 @@ import { DarkModeProvider } from "../components/DarkModeProvider";
 import DarkModeToggle from "../components/DarkModeToggle";
 
 export const metadata = {
-  title: "Jobs — CollabWORK‑inspired",
-  description: "Minimal jobs page styled with a CollabWORK‑inspired look",
+  title: "Nurse Ascent Powered By CollabWork",
+  description: "A Career Newsletter for Nurses, By Nurses",
   icons: {
     icon: "data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>💼</text></svg>",
   },
