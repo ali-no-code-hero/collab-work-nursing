@@ -563,7 +563,7 @@ export default function FormPage() {
   };
 
   return (
-    <div className="min-h-screen bg-white dark:bg-surface-dark transition-colors duration-200">
+    <div className="bg-white dark:bg-surface-dark transition-colors duration-200">
       {/* Hero Section */}
       <section className="bg-white dark:bg-surface-dark border-b border-gray-200 dark:border-border-dark transition-colors duration-200">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-3 sm:py-6 lg:py-12">
