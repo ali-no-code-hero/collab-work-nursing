@@ -314,6 +314,7 @@ export default function FormPage() {
         // Use form-encoded format which Zapier webhooks prefer
         const formDataEncoded = new URLSearchParams({
           email: formData.email,
+          justemail: 'Yes',
         });
         
         const response = await fetch('https://hooks.zapier.com/hooks/catch/18147471/u841mbz/', {
@@ -428,6 +429,7 @@ export default function FormPage() {
         // Use form-encoded format which Zapier webhooks prefer
         const formDataEncoded = new URLSearchParams();
         formDataEncoded.append('email', formData.email);
+        formDataEncoded.append('justemail', 'No');
         formDataEncoded.append('city', formData.city || '');
         formDataEncoded.append('state', formData.state || '');
         formDataEncoded.append('licenses', Array.isArray(formData.licenses) ? formData.licenses.join(', ') : (formData.licenses || ''));
