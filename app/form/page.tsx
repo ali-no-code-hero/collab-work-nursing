@@ -1004,7 +1004,7 @@ export default function FormPage() {
               </div>
             </div>
           </div>
-          <p className="text-xs sm:text-sm text-gray-600 dark:text-ink-dark-soft text-center transition-colors duration-200">
+          <p className="text-xs sm:text-sm text-gray-600 dark:text-ink-dark-soft text-center transition-colors duration-200 mt-0 sm:mt-1">
             Step {currentStep} of 7
           </p>
         </div>
