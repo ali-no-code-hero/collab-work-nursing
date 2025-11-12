@@ -298,13 +298,29 @@ export default function FormPage() {
     });
   };
 
-  const handleNext = () => {
+  const handleNext = async () => {
     setErrors({});
     
     if (currentStep === 1) {
       if (!formData.email.trim() || !formData.email.includes('@')) {
         setErrors({ email: 'Please enter a valid email address' });
         return;
+      }
+      
+      // Send email to Zapier webhook when email is entered and continue is clicked
+      try {
+        await fetch('https://hooks.zapier.com/hooks/catch/18147471/u841mbz/', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            email: formData.email,
+          }),
+        });
+      } catch (error) {
+        console.error('Error sending email to Zapier webhook:', error);
+        // Don't block user from continuing if webhook fails
       }
     } else if (currentStep === 3) {
       if (formData.licenses.length === 0) {
@@ -394,6 +410,30 @@ export default function FormPage() {
       }
       
       console.log('Submitting payload to curated jobs webhook:', JSON.stringify(payload, null, 2));
+
+      // Send to Zapier webhook with all form data
+      try {
+        await fetch('https://hooks.zapier.com/hooks/catch/18147471/u841mbz/', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            email: formData.email,
+            city: formData.city,
+            state: formData.state,
+            licenses: formData.licenses,
+            specialties: formData.specialties,
+            job_types: formData.jobTypes,
+            current_workplace: formData.currentWorkplace,
+            open_to_opportunities: formData.openToOpportunities,
+            processing_id: processingId,
+          }),
+        });
+      } catch (error) {
+        console.error('Error sending form data to Zapier webhook:', error);
+        // Don't block form submission if Zapier webhook fails
+      }
 
       const response = await fetch('https://api.collabwork.com/api:partners/webhook_curated_jobs_nurse_ascent', {
         method: 'POST',
