@@ -993,8 +993,8 @@ export default function FormPage() {
 
       {/* Step Counter - Bottom of Page */}
       <section className="bg-white dark:bg-surface-dark border-t border-gray-200 dark:border-border-dark transition-colors duration-200">
-        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-2 sm:py-4">
-          <div className="flex items-center justify-between mb-2">
+        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 pt-2 pb-1 sm:py-4">
+          <div className="flex items-center justify-between mb-1 sm:mb-2">
             <div className="flex-1">
               <div className="h-2 bg-gray-200 dark:bg-neutral-800 rounded-full overflow-hidden transition-colors duration-200">
                 <div
