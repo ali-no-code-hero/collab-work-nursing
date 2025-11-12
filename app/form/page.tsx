@@ -203,6 +203,11 @@ export default function FormPage() {
     // Proceed to next step immediately - don't wait for API response
     setCurrentStep(3);
     
+    // Scroll to top of page
+    setTimeout(() => {
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }, 100);
+    
     // Send location to first webhook in the background
     fetch('https://api.collabwork.com/api:partners/webhook_just_state_nurse_ascent', {
       method: 'POST',
@@ -354,11 +359,21 @@ export default function FormPage() {
     }
 
     setCurrentStep(prev => prev + 1);
+    
+    // Scroll to top of page
+    setTimeout(() => {
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }, 100);
   };
 
   const handleBack = () => {
     setCurrentStep(prev => Math.max(1, prev - 1));
     setErrors({});
+    
+    // Scroll to top of page
+    setTimeout(() => {
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }, 100);
   };
 
   const handleSubmit = async () => {
