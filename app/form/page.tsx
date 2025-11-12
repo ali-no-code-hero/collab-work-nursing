@@ -553,7 +553,7 @@ export default function FormPage() {
       </section>
 
       {/* Form Section */}
-      <section className="flex-1 overflow-y-auto pt-3 pb-2 bg-gray-50 dark:bg-surface-dark-alt transition-colors duration-200">
+      <section className="flex-1 overflow-y-auto pt-3 pb-32 bg-gray-50 dark:bg-surface-dark-alt transition-colors duration-200">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
           <div className="bg-white dark:bg-surface-dark-alt rounded-xl shadow-sm border border-gray-200 dark:border-border-dark p-3 sm:p-4 lg:p-8 transition-all duration-200">
             {/* Step 1: Email */}
@@ -873,8 +873,8 @@ export default function FormPage() {
         </div>
       </section>
 
-      {/* Step Counter - Bottom of Page */}
-      <section className="flex-shrink-0 bg-white dark:bg-surface-dark border-t border-gray-200 dark:border-border-dark transition-colors duration-200 shadow-lg dark:shadow-none">
+      {/* Step Counter - Fixed Overlay */}
+      <div className="fixed bottom-0 left-0 right-0 z-50 bg-white dark:bg-surface-dark border-t border-gray-200 dark:border-border-dark transition-colors duration-200 shadow-lg dark:shadow-none">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 pt-2 pb-3 sm:py-3">
           <div className="flex items-center justify-between mb-1 sm:mb-2">
             <div className="flex-1">
@@ -922,7 +922,7 @@ export default function FormPage() {
             </button>
           </div>
         </div>
-      </section>
+      </div>
     </div>
   );
 }
