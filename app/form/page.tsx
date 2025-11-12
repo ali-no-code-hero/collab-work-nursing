@@ -874,8 +874,8 @@ export default function FormPage() {
       </section>
 
       {/* Step Counter - Bottom of Page */}
-      <section className="sticky bottom-0 bg-white dark:bg-surface-dark border-t border-gray-200 dark:border-border-dark transition-colors duration-200 shadow-lg dark:shadow-none">
-        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 pt-2 pb-1 sm:py-4">
+      <section className="sticky bottom-0 z-40 bg-white dark:bg-surface-dark border-t border-gray-200 dark:border-border-dark transition-colors duration-200 shadow-lg dark:shadow-none">
+        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 pt-2 pb-4 sm:py-4">
           <div className="flex items-center justify-between mb-1 sm:mb-2">
             <div className="flex-1">
               <div className="h-2 bg-gray-200 dark:bg-neutral-800 rounded-full overflow-hidden transition-colors duration-200">
@@ -891,22 +891,34 @@ export default function FormPage() {
           </p>
           
           {/* Navigation */}
-          <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 sm:gap-4 mt-3 sm:mt-4">
-            {currentStep > 1 && (
+          <div className="flex flex-row items-center gap-3 sm:gap-4 mt-3 sm:mt-4">
+            {currentStep > 1 ? (
               <button
                 onClick={handleBack}
-                className="w-full sm:w-auto sm:min-w-[120px] px-6 py-3 border-2 border-gray-300 dark:border-border-dark bg-white dark:bg-surface-dark-alt text-gray-700 dark:text-ink-dark-soft text-base font-semibold rounded-lg hover:bg-gray-50 dark:hover:bg-neutral-800 transition-all duration-200"
+                className="w-[20%] px-4 py-3 border-2 border-gray-300 dark:border-border-dark bg-white dark:bg-surface-dark-alt text-gray-700 dark:text-ink-dark-soft rounded-lg hover:bg-gray-50 dark:hover:bg-neutral-800 transition-all duration-200 flex items-center justify-center"
                 aria-label="Previous step"
               >
-                Back
+                <svg
+                  className="w-5 h-5"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M15 19l-7-7 7-7"
+                  />
+                </svg>
               </button>
+            ) : (
+              <div className="w-[20%]"></div>
             )}
             <button
               onClick={currentStep === 2 ? handleLocationSubmit : (currentStep === 7 ? handleSubmit : handleNext)}
               disabled={currentStep === 7 && isSubmitting}
-              className={`w-full sm:flex-1 px-6 py-3 bg-primary dark:bg-primary-dark-mode text-white text-base font-semibold rounded-lg hover:bg-primary-hover dark:hover:bg-primary-dark-hover transition-all duration-200 shadow-sm hover:shadow-md disabled:opacity-50 disabled:cursor-not-allowed ${
-                currentStep === 1 ? 'sm:ml-auto' : ''
-              }`}
+              className="w-[80%] px-6 py-3 bg-primary dark:bg-primary-dark-mode text-white text-base font-semibold rounded-lg hover:bg-primary-hover dark:hover:bg-primary-dark-hover transition-all duration-200 shadow-sm hover:shadow-md disabled:opacity-50 disabled:cursor-not-allowed"
             >
               {currentStep === 7 ? (isSubmitting ? 'Submitting...' : 'Submit') : 'Next'}
             </button>
