@@ -511,12 +511,16 @@ export default function FormPage() {
       {/* Hero Section */}
       <section className="bg-white dark:bg-surface-dark border-b border-gray-200 dark:border-border-dark transition-colors duration-200">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-6 sm:py-8 lg:py-12">
-          <h1 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold text-gray-900 dark:text-ink-dark mb-3 sm:mb-4 leading-tight transition-colors duration-200">
-            Subscribe to Nurse Ascent
-          </h1>
-          <p className="text-base sm:text-lg text-gray-600 dark:text-ink-dark-soft mb-6 sm:mb-8 transition-colors duration-200">
-            Get the 5-minute nurse career newsletter + enter our $200 gift card raffle.
-          </p>
+          {currentStep === 1 && (
+            <>
+              <h1 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold text-gray-900 dark:text-ink-dark mb-3 sm:mb-4 leading-tight transition-colors duration-200">
+                Subscribe to Nurse Ascent
+              </h1>
+              <p className="text-base sm:text-lg text-gray-600 dark:text-ink-dark-soft mb-6 sm:mb-8 transition-colors duration-200">
+                Get the 5-minute nurse career newsletter + enter our $200 gift card raffle.
+              </p>
+            </>
+          )}
 
           {/* Progress Indicator */}
           <div className="mb-6">
@@ -561,11 +565,6 @@ export default function FormPage() {
                   </div>
                 </div>
               </div>
-
-              <h2 className="text-xl sm:text-2xl font-bold text-gray-900 dark:text-ink-dark mb-2 sm:mb-3 transition-colors duration-200">Subscribe to Nurse Ascent</h2>
-              <p className="text-sm sm:text-base text-gray-600 dark:text-ink-dark-soft mb-4 sm:mb-6 transition-colors duration-200">
-                Get the 5-minute nurse career newsletter + enter our $200 gift card raffle.
-              </p>
 
               <div>
                 <label htmlFor="email" className="block text-sm font-medium text-gray-700 dark:text-ink-dark-soft mb-2 transition-colors duration-200">
