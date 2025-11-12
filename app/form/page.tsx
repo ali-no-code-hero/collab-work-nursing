@@ -15,6 +15,7 @@ interface FormData {
   openToOpportunities: string; // "Yes" or "No"
   processingId?: string; // ID from first webhook
   otherSpecialty?: string; // Custom specialty text when "Other" is selected
+  otherLicense?: string; // Custom license text when "Other" is selected
 }
 
 const LICENSE_OPTIONS = [
@@ -24,7 +25,8 @@ const LICENSE_OPTIONS = [
   'Certified Registered Nurse Anesthetist (CRNA)',
   'Critical Care Registered Nurse (CCRN)',
   'Basic Life Support (BLS)',
-  'Advanced Cardiovascular Life Support (ACLS)'
+  'Advanced Cardiovascular Life Support (ACLS)',
+  'Other'
 ];
 
 const SPECIALTY_OPTIONS = [
@@ -112,6 +114,7 @@ export default function FormPage() {
     currentWorkplace: '',
     openToOpportunities: '',
     otherSpecialty: '',
+    otherLicense: '',
   });
   const [locationError, setLocationError] = useState<string | null>(null);
   const [isLoadingLocation, setIsLoadingLocation] = useState(false);
@@ -304,9 +307,12 @@ export default function FormPage() {
         ? current.filter(item => item !== value)
         : [...current, value];
       
-      // If "Other" is deselected, clear the otherSpecialty text
+      // If "Other" is deselected, clear the custom text
       if (field === 'specialties' && value === 'Other' && !updated.includes('Other')) {
         return { ...prev, [field]: updated, otherSpecialty: '' };
+      }
+      if (field === 'licenses' && value === 'Other' && !updated.includes('Other')) {
+        return { ...prev, [field]: updated, otherLicense: '' };
       }
       
       return { ...prev, [field]: updated };
@@ -353,6 +359,11 @@ export default function FormPage() {
     } else if (currentStep === 3) {
       if (formData.licenses.length === 0) {
         setErrors({ licenses: 'Please select at least one license or certification' });
+        return;
+      }
+      // If "Other" is selected, require text input
+      if (formData.licenses.includes('Other') && !formData.otherLicense?.trim()) {
+        setErrors({ licenses: 'Please specify your license or certification' });
         return;
       }
     } else if (currentStep === 4) {
@@ -431,6 +442,14 @@ export default function FormPage() {
         }
       }
 
+      // Format licenses - replace "Other" with custom text if provided
+      const formattedLicenses = formData.licenses.map(license => {
+        if (license === 'Other' && formData.otherLicense?.trim()) {
+          return formData.otherLicense.trim();
+        }
+        return license;
+      }).filter(license => license !== 'Other'); // Remove "Other" if no custom text was provided
+
       // Format specialties - replace "Other" with custom text if provided
       const formattedSpecialties = formData.specialties.map(specialty => {
         if (specialty === 'Other' && formData.otherSpecialty?.trim()) {
@@ -444,7 +463,7 @@ export default function FormPage() {
         city: formData.city,
         state: formData.state,
         email: formData.email,
-        licenses: formData.licenses,
+        licenses: formattedLicenses,
         specialties: formattedSpecialties,
         job_types: formData.jobTypes,
         current_workplace: formData.currentWorkplace,
@@ -470,7 +489,7 @@ export default function FormPage() {
         formDataEncoded.append('justemail', 'No');
         formDataEncoded.append('city', formData.city || '');
         formDataEncoded.append('state', formData.state || '');
-        formDataEncoded.append('licenses', Array.isArray(formData.licenses) ? formData.licenses.join(', ') : (formData.licenses || ''));
+        formDataEncoded.append('licenses', Array.isArray(formattedLicenses) ? formattedLicenses.join(', ') : (formattedLicenses || ''));
         formDataEncoded.append('specialties', Array.isArray(formattedSpecialties) ? formattedSpecialties.join(', ') : (formattedSpecialties || ''));
         formDataEncoded.append('job_types', Array.isArray(formData.jobTypes) ? formData.jobTypes.join(', ') : (formData.jobTypes || ''));
         formDataEncoded.append('current_workplace', formData.currentWorkplace || '');
@@ -717,18 +736,30 @@ export default function FormPage() {
 
               <div className="space-y-2 sm:space-y-3">
                 {LICENSE_OPTIONS.map((license) => (
-                  <label
-                    key={license}
-                    className="flex items-center p-3 sm:p-4 border border-gray-300 dark:border-border-dark rounded-lg cursor-pointer hover:bg-gray-50 dark:hover:bg-neutral-800 transition-colors duration-200"
-                  >
-                    <input
-                      type="checkbox"
-                      checked={formData.licenses.includes(license)}
-                      onChange={() => handleMultiSelect('licenses', license)}
-                      className="w-4 h-4 sm:w-5 sm:h-5 text-primary dark:text-primary-dark-mode border-gray-300 dark:border-border-dark rounded focus:ring-primary dark:focus:ring-primary-dark-mode flex-shrink-0"
-                    />
-                    <span className="ml-2 sm:ml-3 text-sm sm:text-base text-gray-700 dark:text-ink-dark-soft">{license}</span>
-                  </label>
+                  <div key={license}>
+                    <label
+                      className="flex items-center p-3 sm:p-4 border border-gray-300 dark:border-border-dark rounded-lg cursor-pointer hover:bg-gray-50 dark:hover:bg-neutral-800 transition-colors duration-200"
+                    >
+                      <input
+                        type="checkbox"
+                        checked={formData.licenses.includes(license)}
+                        onChange={() => handleMultiSelect('licenses', license)}
+                        className="w-4 h-4 sm:w-5 sm:h-5 text-primary dark:text-primary-dark-mode border-gray-300 dark:border-border-dark rounded focus:ring-primary dark:focus:ring-primary-dark-mode flex-shrink-0"
+                      />
+                      <span className="ml-2 sm:ml-3 text-sm sm:text-base text-gray-700 dark:text-ink-dark-soft">{license}</span>
+                    </label>
+                    {license === 'Other' && formData.licenses.includes('Other') && (
+                      <div className="mt-2 sm:mt-3 ml-7 sm:ml-9">
+                        <input
+                          type="text"
+                          value={formData.otherLicense || ''}
+                          onChange={(e) => setFormData(prev => ({ ...prev, otherLicense: e.target.value }))}
+                          placeholder="Please specify your license or certification"
+                          className="w-full px-3 sm:px-4 py-2.5 sm:py-2 text-base border border-gray-300 dark:border-border-dark rounded-lg bg-white dark:bg-surface-dark-muted text-gray-900 dark:text-ink-dark focus:ring-2 focus:ring-primary dark:focus:ring-primary-dark-mode focus:border-primary dark:focus:border-primary-dark-mode transition-all duration-200 placeholder:text-gray-400 dark:placeholder:text-neutral-500"
+                        />
+                      </div>
+                    )}
+                  </div>
                 ))}
               </div>
 
@@ -1007,6 +1038,50 @@ export default function FormPage() {
           <p className="text-xs sm:text-sm text-gray-600 dark:text-ink-dark-soft text-center transition-colors duration-200 mt-0 sm:mt-1">
             Step {currentStep} of 7
           </p>
+          
+          {/* Navigation Arrows */}
+          <div className="flex items-center justify-center gap-4 sm:gap-6 mt-2 sm:mt-3">
+            <button
+              onClick={handleBack}
+              disabled={currentStep === 1}
+              className="p-2 rounded-lg border border-gray-300 dark:border-border-dark bg-white dark:bg-surface-dark-alt text-gray-700 dark:text-ink-dark-soft hover:bg-gray-50 dark:hover:bg-neutral-800 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:bg-white dark:disabled:hover:bg-surface-dark-alt"
+              aria-label="Previous step"
+            >
+              <svg
+                className="w-5 h-5 sm:w-6 sm:h-6"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M15 19l-7-7 7-7"
+                />
+              </svg>
+            </button>
+            <button
+              onClick={currentStep === 7 ? handleSubmit : handleNext}
+              disabled={currentStep === 7 && isSubmitting}
+              className="p-2 rounded-lg border border-gray-300 dark:border-border-dark bg-white dark:bg-surface-dark-alt text-gray-700 dark:text-ink-dark-soft hover:bg-gray-50 dark:hover:bg-neutral-800 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:bg-white dark:disabled:hover:bg-surface-dark-alt"
+              aria-label={currentStep === 7 ? "Submit form" : "Next step"}
+            >
+              <svg
+                className="w-5 h-5 sm:w-6 sm:h-6"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M9 5l7 7-7 7"
+                />
+              </svg>
+            </button>
+          </div>
         </div>
       </section>
     </div>
