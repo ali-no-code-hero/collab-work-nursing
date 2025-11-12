@@ -512,10 +512,10 @@ export default function FormPage() {
       <section className="bg-white dark:bg-surface-dark border-b border-gray-200 dark:border-border-dark transition-colors duration-200">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-6 sm:py-8 lg:py-12">
           <h1 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold text-gray-900 dark:text-ink-dark mb-3 sm:mb-4 leading-tight transition-colors duration-200">
-            Subscribe to Nurse Ascent *
+            Subscribe to Nurse Ascent
           </h1>
           <p className="text-base sm:text-lg text-gray-600 dark:text-ink-dark-soft mb-6 sm:mb-8 transition-colors duration-200">
-            Complete this form to get the 5-minute newsletter nurses trust to grow their careers 🎁 + enter our monthly raffle for a $200 Amazon gift card.
+            Get the 5-minute nurse career newsletter + enter our $200 gift card raffle.
           </p>
 
           {/* Progress Indicator */}
@@ -562,14 +562,14 @@ export default function FormPage() {
                 </div>
               </div>
 
-              <h2 className="text-xl sm:text-2xl font-bold text-gray-900 dark:text-ink-dark mb-2 sm:mb-3 transition-colors duration-200">What's your email address?</h2>
+              <h2 className="text-xl sm:text-2xl font-bold text-gray-900 dark:text-ink-dark mb-2 sm:mb-3 transition-colors duration-200">Subscribe to Nurse Ascent</h2>
               <p className="text-sm sm:text-base text-gray-600 dark:text-ink-dark-soft mb-4 sm:mb-6 transition-colors duration-200">
-                Your email allows us to send you personalized job recommendations, career tips, and exclusive opportunities. We'll also use it to notify you if you win our monthly $200 Amazon gift card raffle!
+                Get the 5-minute nurse career newsletter + enter our $200 gift card raffle.
               </p>
 
               <div>
                 <label htmlFor="email" className="block text-sm font-medium text-gray-700 dark:text-ink-dark-soft mb-2 transition-colors duration-200">
-                  Email Address
+                  Email address
                 </label>
                 <input
                   type="email"
@@ -577,12 +577,16 @@ export default function FormPage() {
                   value={formData.email}
                   onChange={(e) => setFormData(prev => ({ ...prev, email: e.target.value }))}
                   className="w-full px-3 sm:px-4 py-2.5 sm:py-2 text-base border border-gray-300 dark:border-border-dark rounded-lg bg-white dark:bg-surface-dark-muted text-gray-900 dark:text-ink-dark focus:ring-2 focus:ring-primary dark:focus:ring-primary-dark-mode focus:border-primary dark:focus:border-primary-dark-mode transition-all duration-200 placeholder:text-gray-400 dark:placeholder:text-neutral-500"
-                  placeholder="your.email@example.com"
+                  placeholder="Email address"
                 />
                 {errors.email && (
                   <p className="text-red-600 dark:text-red-400 text-sm mt-2 transition-colors duration-200">{errors.email}</p>
                 )}
               </div>
+
+              <p className="text-xs sm:text-sm text-gray-500 dark:text-neutral-400 mt-4 mb-4 transition-colors duration-200">
+                By subscribing, you agree to receive emails from Nurse Ascent and CollabWORK. Unsubscribe anytime.
+              </p>
 
               <div className="flex gap-3 sm:gap-4 mt-4 sm:mt-6">
                 <button
@@ -600,7 +604,7 @@ export default function FormPage() {
               <div>
               <h2 className="text-xl sm:text-2xl font-bold text-gray-900 dark:text-ink-dark mb-2 sm:mb-3 transition-colors duration-200">Where are you located?</h2>
               <p className="text-sm sm:text-base text-gray-600 dark:text-ink-dark-soft mb-4 sm:mb-6 transition-colors duration-200">
-                We use your location to match you with nursing opportunities in your area. This helps us show you relevant jobs that are actually accessible to you, saving you time and ensuring you see positions you can realistically pursue.
+                We'll match you with nursing jobs near you — no spam, just relevant opportunities.
               </p>
 
               {isLoadingLocation && (
@@ -685,10 +689,10 @@ export default function FormPage() {
             {currentStep === 3 && (
               <div>
               <h2 className="text-xl sm:text-2xl font-bold text-gray-900 dark:text-ink-dark mb-2 sm:mb-3 transition-colors duration-200">
-                Which of the following nursing licenses or certifications do you currently hold?
+                Which nursing licenses or certifications do you hold?
               </h2>
-              <p className="text-sm sm:text-base text-gray-600 dark:text-ink-dark-soft mb-4 sm:mb-6 transition-colors duration-200">
-                Your licenses and certifications help us match you with jobs that align with your qualifications. This ensures you only see opportunities you're actually eligible for, making your job search more efficient and targeted.
+              <p className="text-sm sm:text-base text-gray-600 dark:text-ink-dark-soft mb-2 sm:mb-3 transition-colors duration-200">
+                We'll use this to match you with jobs you're qualified for.
               </p>
               <p className="text-sm text-gray-500 dark:text-neutral-400 mb-6 transition-colors duration-200">Select all that apply</p>
 
@@ -737,8 +741,8 @@ export default function FormPage() {
               <h2 className="text-xl sm:text-2xl font-bold text-gray-900 dark:text-ink-dark mb-2 sm:mb-3 transition-colors duration-200">
                 Which nursing specialties are you most passionate about?
               </h2>
-              <p className="text-sm sm:text-base text-gray-600 dark:text-ink-dark-soft mb-4 sm:mb-6 transition-colors duration-200">
-                Understanding your passion areas helps us prioritize job opportunities that match what you love doing. Whether you're passionate about critical care, pediatrics, or mental health, we'll make sure those opportunities appear first in your recommendations.
+              <p className="text-sm sm:text-base text-gray-600 dark:text-ink-dark-soft mb-2 sm:mb-3 transition-colors duration-200">
+                We'll highlight jobs that match your interests and expertise.
               </p>
               <p className="text-sm text-gray-500 dark:text-neutral-400 mb-6 transition-colors duration-200">Select all that apply</p>
 
@@ -787,8 +791,8 @@ export default function FormPage() {
               <h2 className="text-xl sm:text-2xl font-bold text-gray-900 dark:text-ink-dark mb-2 sm:mb-3 transition-colors duration-200">
                 What type of nursing jobs interest you?
               </h2>
-              <p className="text-sm sm:text-base text-gray-600 dark:text-ink-dark-soft mb-4 sm:mb-6 transition-colors duration-200">
-                Whether you're looking for full-time stability, part-time flexibility, travel opportunities, or remote work, we'll tailor your job matches to your preferred work style. This helps you find opportunities that fit your lifestyle and career goals.
+              <p className="text-sm sm:text-base text-gray-600 dark:text-ink-dark-soft mb-2 sm:mb-3 transition-colors duration-200">
+                We'll tailor your matches to fit your preferred work style.
               </p>
               <p className="text-sm text-gray-500 dark:text-neutral-400 mb-6 transition-colors duration-200">Select all that apply</p>
 
@@ -837,10 +841,10 @@ export default function FormPage() {
               <h2 className="text-xl sm:text-2xl font-bold text-gray-900 dark:text-ink-dark mb-2 sm:mb-3 transition-colors duration-200">
                 Where do you currently work?
               </h2>
-              <p className="text-sm sm:text-base text-gray-600 dark:text-ink-dark-soft mb-4 sm:mb-6 transition-colors duration-200">
-                Knowing your current workplace helps us understand your experience level and avoid showing you duplicate opportunities. This information also helps us provide more relevant career insights and job recommendations tailored to your background.
+              <p className="text-sm sm:text-base text-gray-600 dark:text-ink-dark-soft mb-2 sm:mb-3 transition-colors duration-200">
+                Helps us tailor job matches and avoid showing duplicates.
               </p>
-              <p className="text-sm text-gray-500 dark:text-neutral-400 mb-6 transition-colors duration-200">Optional - Enter the name of your current hospital or facility</p>
+              <p className="text-sm text-gray-500 dark:text-neutral-400 mb-4 transition-colors duration-200">Optional - Enter the name of your current hospital or facility</p>
 
               <div>
                   <label htmlFor="workplace" className="block text-sm font-medium text-gray-700 dark:text-ink-dark-soft mb-2 transition-colors duration-200">
@@ -884,7 +888,7 @@ export default function FormPage() {
                 Are you currently open to new nursing job opportunities?
               </h2>
               <p className="text-sm sm:text-base text-gray-600 dark:text-ink-dark-soft mb-4 sm:mb-6 transition-colors duration-200">
-                This helps us understand your current job search status so we can tailor our communications and job recommendations accordingly.
+                Helps us tailor job matches and updates to your situation.
               </p>
 
               <div className="space-y-2 sm:space-y-3">
