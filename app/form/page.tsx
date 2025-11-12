@@ -510,46 +510,29 @@ export default function FormPage() {
     <div className="min-h-screen bg-white dark:bg-surface-dark transition-colors duration-200">
       {/* Hero Section */}
       <section className="bg-white dark:bg-surface-dark border-b border-gray-200 dark:border-border-dark transition-colors duration-200">
-        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-6 sm:py-8 lg:py-12">
+        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-3 sm:py-6 lg:py-12">
           {currentStep === 1 && (
             <>
-              <h1 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold text-gray-900 dark:text-ink-dark mb-3 sm:mb-4 leading-tight transition-colors duration-200">
+              <h1 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold text-gray-900 dark:text-ink-dark mb-2 sm:mb-3 lg:mb-4 leading-tight transition-colors duration-200">
                 Subscribe to Nurse Ascent
               </h1>
-              <p className="text-base sm:text-lg text-gray-600 dark:text-ink-dark-soft mb-6 sm:mb-8 transition-colors duration-200">
+              <p className="text-sm sm:text-base lg:text-lg text-gray-600 dark:text-ink-dark-soft mb-3 sm:mb-4 lg:mb-8 transition-colors duration-200">
                 Get the 5-minute nurse career newsletter + enter our $200 gift card raffle.
               </p>
             </>
           )}
-
-          {/* Progress Indicator */}
-          <div className="mb-6">
-            <div className="flex items-center justify-between mb-2">
-              <div className="flex-1">
-                <div className="h-2 bg-gray-200 dark:bg-neutral-800 rounded-full overflow-hidden transition-colors duration-200">
-                  <div
-                    className="h-full bg-primary dark:bg-primary-dark-mode transition-all duration-300"
-                    style={{ width: `${(currentStep / 7) * 100}%` }}
-                  />
-                </div>
-              </div>
-            </div>
-            <p className="text-sm text-gray-600 dark:text-ink-dark-soft text-center transition-colors duration-200">
-              Step {currentStep} of 7
-            </p>
-          </div>
         </div>
       </section>
 
       {/* Form Section */}
-      <section className="py-6 sm:py-8 lg:py-12 bg-gray-50 dark:bg-surface-dark-alt transition-colors duration-200">
+      <section className="py-3 sm:py-6 lg:py-12 bg-gray-50 dark:bg-surface-dark-alt transition-colors duration-200">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-          <div className="bg-white dark:bg-surface-dark-alt rounded-xl shadow-sm border border-gray-200 dark:border-border-dark p-4 sm:p-6 lg:p-8 transition-all duration-200">
+          <div className="bg-white dark:bg-surface-dark-alt rounded-xl shadow-sm border border-gray-200 dark:border-border-dark p-3 sm:p-4 lg:p-8 transition-all duration-200">
             {/* Step 1: Email */}
             {currentStep === 1 && (
               <div>
               {/* Hero Image - Three nurses in scrubs */}
-              <div className="mb-6 sm:mb-8">
+              <div className="mb-4 sm:mb-6 lg:mb-8">
                 <div className="flex flex-col items-center">
                   <div className="w-full max-w-md sm:max-w-lg">
                     <div className="relative w-full aspect-[4/3] rounded-xl overflow-hidden bg-gray-100 dark:bg-neutral-800 shadow-lg transition-all duration-200">
@@ -587,7 +570,7 @@ export default function FormPage() {
                 By subscribing, you agree to receive emails from Nurse Ascent and CollabWORK. Unsubscribe anytime.
               </p>
 
-              <div className="flex gap-3 sm:gap-4 mt-4 sm:mt-6">
+              <div className="flex gap-3 sm:gap-4 mt-3 sm:mt-4 lg:mt-6">
                 <button
                   onClick={handleNext}
                   className="flex-1 px-4 sm:px-6 py-2.5 sm:py-3 bg-primary dark:bg-primary-dark-mode text-white text-sm sm:text-base font-semibold rounded-lg hover:bg-primary-hover dark:hover:bg-primary-dark-hover transition-all duration-200 shadow-sm hover:shadow-md"
@@ -601,8 +584,8 @@ export default function FormPage() {
             {/* Step 2: Location */}
             {currentStep === 2 && (
               <div>
-              <h2 className="text-xl sm:text-2xl font-bold text-gray-900 dark:text-ink-dark mb-2 sm:mb-3 transition-colors duration-200">Where are you located?</h2>
-              <p className="text-sm sm:text-base text-gray-600 dark:text-ink-dark-soft mb-4 sm:mb-6 transition-colors duration-200">
+              <h2 className="text-xl sm:text-2xl font-bold text-gray-900 dark:text-ink-dark mb-2 transition-colors duration-200">Where are you located?</h2>
+              <p className="text-sm sm:text-base text-gray-600 dark:text-ink-dark-soft mb-3 sm:mb-4 lg:mb-6 transition-colors duration-200">
                 We'll match you with nursing jobs near you — no spam, just relevant opportunities.
               </p>
 
@@ -666,7 +649,7 @@ export default function FormPage() {
                   <p className="text-red-600 dark:text-red-400 text-sm transition-colors duration-200">{errors.location}</p>
                 )}
 
-                <div className="flex gap-3 sm:gap-4 mt-4 sm:mt-6">
+                <div className="flex gap-3 sm:gap-4 mt-3 sm:mt-4 lg:mt-6">
                   <button
                     onClick={handleBack}
                     className="px-4 sm:px-6 py-2.5 sm:py-3 border border-gray-300 dark:border-border-dark text-gray-700 dark:text-ink-dark-soft text-sm sm:text-base font-semibold rounded-lg hover:bg-gray-50 dark:hover:bg-neutral-800 transition-colors duration-200"
@@ -687,13 +670,13 @@ export default function FormPage() {
             {/* Step 3: Licenses */}
             {currentStep === 3 && (
               <div>
-              <h2 className="text-xl sm:text-2xl font-bold text-gray-900 dark:text-ink-dark mb-2 sm:mb-3 transition-colors duration-200">
+              <h2 className="text-xl sm:text-2xl font-bold text-gray-900 dark:text-ink-dark mb-2 transition-colors duration-200">
                 Which nursing licenses or certifications do you hold?
               </h2>
-              <p className="text-sm sm:text-base text-gray-600 dark:text-ink-dark-soft mb-2 sm:mb-3 transition-colors duration-200">
+              <p className="text-sm sm:text-base text-gray-600 dark:text-ink-dark-soft mb-2 transition-colors duration-200">
                 We'll use this to match you with jobs you're qualified for.
               </p>
-              <p className="text-sm text-gray-500 dark:text-neutral-400 mb-6 transition-colors duration-200">Select all that apply</p>
+              <p className="text-sm text-gray-500 dark:text-neutral-400 mb-4 sm:mb-6 transition-colors duration-200">Select all that apply</p>
 
               <div className="space-y-2 sm:space-y-3">
                 {LICENSE_OPTIONS.map((license) => (
@@ -716,7 +699,7 @@ export default function FormPage() {
                   <p className="text-red-600 dark:text-red-400 text-sm mt-4 transition-colors duration-200">{errors.licenses}</p>
               )}
 
-              <div className="flex gap-3 sm:gap-4 mt-4 sm:mt-6">
+              <div className="flex gap-3 sm:gap-4 mt-3 sm:mt-4 lg:mt-6">
                 <button
                   onClick={handleBack}
                   className="px-4 sm:px-6 py-2.5 sm:py-3 border border-gray-300 text-gray-700 text-sm sm:text-base font-semibold rounded-lg hover:bg-gray-50 transition-colors"
@@ -737,13 +720,13 @@ export default function FormPage() {
             {/* Step 4: Specialties */}
             {currentStep === 4 && (
               <div>
-              <h2 className="text-xl sm:text-2xl font-bold text-gray-900 dark:text-ink-dark mb-2 sm:mb-3 transition-colors duration-200">
+              <h2 className="text-xl sm:text-2xl font-bold text-gray-900 dark:text-ink-dark mb-2 transition-colors duration-200">
                 Which nursing specialties are you most passionate about?
               </h2>
-              <p className="text-sm sm:text-base text-gray-600 dark:text-ink-dark-soft mb-2 sm:mb-3 transition-colors duration-200">
+              <p className="text-sm sm:text-base text-gray-600 dark:text-ink-dark-soft mb-2 transition-colors duration-200">
                 We'll highlight jobs that match your interests and expertise.
               </p>
-              <p className="text-sm text-gray-500 dark:text-neutral-400 mb-6 transition-colors duration-200">Select all that apply</p>
+              <p className="text-sm text-gray-500 dark:text-neutral-400 mb-4 sm:mb-6 transition-colors duration-200">Select all that apply</p>
 
               <div className="space-y-2 sm:space-y-3">
                 {SPECIALTY_OPTIONS.map((specialty) => (
@@ -766,7 +749,7 @@ export default function FormPage() {
                   <p className="text-red-600 dark:text-red-400 text-sm mt-4 transition-colors duration-200">{errors.specialties}</p>
               )}
 
-              <div className="flex gap-3 sm:gap-4 mt-4 sm:mt-6">
+              <div className="flex gap-3 sm:gap-4 mt-3 sm:mt-4 lg:mt-6">
                 <button
                   onClick={handleBack}
                   className="px-4 sm:px-6 py-2.5 sm:py-3 border border-gray-300 text-gray-700 text-sm sm:text-base font-semibold rounded-lg hover:bg-gray-50 transition-colors"
@@ -787,13 +770,13 @@ export default function FormPage() {
             {/* Step 5: Job Types */}
             {currentStep === 5 && (
               <div>
-              <h2 className="text-xl sm:text-2xl font-bold text-gray-900 dark:text-ink-dark mb-2 sm:mb-3 transition-colors duration-200">
+              <h2 className="text-xl sm:text-2xl font-bold text-gray-900 dark:text-ink-dark mb-2 transition-colors duration-200">
                 What type of nursing jobs interest you?
               </h2>
-              <p className="text-sm sm:text-base text-gray-600 dark:text-ink-dark-soft mb-2 sm:mb-3 transition-colors duration-200">
+              <p className="text-sm sm:text-base text-gray-600 dark:text-ink-dark-soft mb-2 transition-colors duration-200">
                 We'll tailor your matches to fit your preferred work style.
               </p>
-              <p className="text-sm text-gray-500 dark:text-neutral-400 mb-6 transition-colors duration-200">Select all that apply</p>
+              <p className="text-sm text-gray-500 dark:text-neutral-400 mb-4 sm:mb-6 transition-colors duration-200">Select all that apply</p>
 
               <div className="space-y-2 sm:space-y-3">
                 {JOB_TYPE_OPTIONS.map((jobType) => (
@@ -816,7 +799,7 @@ export default function FormPage() {
                   <p className="text-red-600 dark:text-red-400 text-sm mt-4 transition-colors duration-200">{errors.jobTypes}</p>
               )}
 
-              <div className="flex gap-3 sm:gap-4 mt-4 sm:mt-6">
+              <div className="flex gap-3 sm:gap-4 mt-3 sm:mt-4 lg:mt-6">
                 <button
                   onClick={handleBack}
                   className="px-4 sm:px-6 py-2.5 sm:py-3 border border-gray-300 text-gray-700 text-sm sm:text-base font-semibold rounded-lg hover:bg-gray-50 transition-colors"
@@ -837,13 +820,13 @@ export default function FormPage() {
             {/* Step 6: Current Workplace */}
             {currentStep === 6 && (
               <div>
-              <h2 className="text-xl sm:text-2xl font-bold text-gray-900 dark:text-ink-dark mb-2 sm:mb-3 transition-colors duration-200">
+              <h2 className="text-xl sm:text-2xl font-bold text-gray-900 dark:text-ink-dark mb-2 transition-colors duration-200">
                 Where do you currently work?
               </h2>
-              <p className="text-sm sm:text-base text-gray-600 dark:text-ink-dark-soft mb-2 sm:mb-3 transition-colors duration-200">
+              <p className="text-sm sm:text-base text-gray-600 dark:text-ink-dark-soft mb-2 transition-colors duration-200">
                 Helps us tailor job matches and avoid showing duplicates.
               </p>
-              <p className="text-sm text-gray-500 dark:text-neutral-400 mb-4 transition-colors duration-200">Optional - Enter the name of your current hospital or facility</p>
+              <p className="text-sm text-gray-500 dark:text-neutral-400 mb-3 sm:mb-4 transition-colors duration-200">Optional - Enter the name of your current hospital or facility</p>
 
               <div>
                   <label htmlFor="workplace" className="block text-sm font-medium text-gray-700 dark:text-ink-dark-soft mb-2 transition-colors duration-200">
@@ -862,7 +845,7 @@ export default function FormPage() {
                 )}
               </div>
 
-              <div className="flex gap-3 sm:gap-4 mt-4 sm:mt-6">
+              <div className="flex gap-3 sm:gap-4 mt-3 sm:mt-4 lg:mt-6">
                 <button
                   onClick={handleBack}
                   className="px-4 sm:px-6 py-2.5 sm:py-3 border border-gray-300 text-gray-700 text-sm sm:text-base font-semibold rounded-lg hover:bg-gray-50 transition-colors"
@@ -883,10 +866,10 @@ export default function FormPage() {
             {/* Step 7: Open to Opportunities */}
             {currentStep === 7 && (
               <div>
-              <h2 className="text-xl sm:text-2xl font-bold text-gray-900 dark:text-ink-dark mb-2 sm:mb-3 transition-colors duration-200">
+              <h2 className="text-xl sm:text-2xl font-bold text-gray-900 dark:text-ink-dark mb-2 transition-colors duration-200">
                 Are you currently open to new nursing job opportunities?
               </h2>
-              <p className="text-sm sm:text-base text-gray-600 dark:text-ink-dark-soft mb-4 sm:mb-6 transition-colors duration-200">
+              <p className="text-sm sm:text-base text-gray-600 dark:text-ink-dark-soft mb-3 sm:mb-4 lg:mb-6 transition-colors duration-200">
                 Helps us tailor job matches and updates to your situation.
               </p>
 
@@ -938,7 +921,7 @@ export default function FormPage() {
                 </div>
               )}
 
-              <div className="flex gap-3 sm:gap-4 mt-4 sm:mt-6">
+              <div className="flex gap-3 sm:gap-4 mt-3 sm:mt-4 lg:mt-6">
                 <button
                   onClick={handleBack}
                   className="px-4 sm:px-6 py-2.5 sm:py-3 border border-gray-300 text-gray-700 text-sm sm:text-base font-semibold rounded-lg hover:bg-gray-50 transition-colors"
@@ -956,6 +939,25 @@ export default function FormPage() {
               </div>
             )}
           </div>
+        </div>
+      </section>
+
+      {/* Step Counter - Bottom of Page */}
+      <section className="bg-white dark:bg-surface-dark border-t border-gray-200 dark:border-border-dark transition-colors duration-200">
+        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-3 sm:py-4">
+          <div className="flex items-center justify-between mb-2">
+            <div className="flex-1">
+              <div className="h-2 bg-gray-200 dark:bg-neutral-800 rounded-full overflow-hidden transition-colors duration-200">
+                <div
+                  className="h-full bg-primary dark:bg-primary-dark-mode transition-all duration-300"
+                  style={{ width: `${(currentStep / 7) * 100}%` }}
+                />
+              </div>
+            </div>
+          </div>
+          <p className="text-xs sm:text-sm text-gray-600 dark:text-ink-dark-soft text-center transition-colors duration-200">
+            Step {currentStep} of 7
+          </p>
         </div>
       </section>
     </div>
