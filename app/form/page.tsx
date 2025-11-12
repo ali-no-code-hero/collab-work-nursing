@@ -553,7 +553,7 @@ export default function FormPage() {
       </section>
 
       {/* Form Section */}
-      <section className="flex-1 overflow-y-auto pt-3 pb-32 bg-gray-50 dark:bg-surface-dark-alt transition-colors duration-200">
+      <section className="flex-1 overflow-y-auto pt-3 pb-24 bg-gray-50 dark:bg-surface-dark-alt transition-colors duration-200">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
           <div className="bg-white dark:bg-surface-dark-alt rounded-xl shadow-sm border border-gray-200 dark:border-border-dark p-3 sm:p-4 lg:p-8 transition-all duration-200">
             {/* Step 1: Email */}
@@ -875,10 +875,10 @@ export default function FormPage() {
 
       {/* Step Counter - Fixed Overlay */}
       <div className="fixed bottom-0 left-0 right-0 z-50 bg-white dark:bg-surface-dark border-t border-gray-200 dark:border-border-dark transition-colors duration-200 shadow-lg dark:shadow-none">
-        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 pt-2 pb-3 sm:py-3">
-          <div className="flex items-center justify-between mb-1 sm:mb-2">
+        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 pt-1.5 pb-2">
+          <div className="flex items-center justify-between mb-1">
             <div className="flex-1">
-              <div className="h-2 bg-gray-200 dark:bg-neutral-800 rounded-full overflow-hidden transition-colors duration-200">
+              <div className="h-1.5 bg-gray-200 dark:bg-neutral-800 rounded-full overflow-hidden transition-colors duration-200">
                 <div
                   className="h-full bg-primary dark:bg-primary-dark-mode transition-all duration-300"
                   style={{ width: `${(currentStep / 7) * 100}%` }}
@@ -886,20 +886,20 @@ export default function FormPage() {
               </div>
             </div>
           </div>
-          <p className="text-xs sm:text-sm text-gray-600 dark:text-ink-dark-soft text-center transition-colors duration-200 mt-0 sm:mt-1">
+          <p className="text-xs text-gray-600 dark:text-ink-dark-soft text-center transition-colors duration-200">
             Step {currentStep} of 7
           </p>
           
           {/* Navigation */}
-          <div className="flex flex-row items-center gap-3 sm:gap-4 mt-3 sm:mt-4">
+          <div className="flex flex-row items-center gap-2 sm:gap-3 mt-2">
             {currentStep > 1 && (
               <button
                 onClick={handleBack}
-                className="w-[20%] px-4 py-3 border-2 border-gray-300 dark:border-border-dark bg-white dark:bg-surface-dark-alt text-gray-700 dark:text-ink-dark-soft rounded-lg hover:bg-gray-50 dark:hover:bg-neutral-800 transition-all duration-200 flex items-center justify-center"
+                className="w-[20%] px-3 py-2 border-2 border-gray-300 dark:border-border-dark bg-white dark:bg-surface-dark-alt text-gray-700 dark:text-ink-dark-soft rounded-lg hover:bg-gray-50 dark:hover:bg-neutral-800 transition-all duration-200 flex items-center justify-center"
                 aria-label="Previous step"
               >
                 <svg
-                  className="w-5 h-5"
+                  className="w-4 h-4"
                   fill="none"
                   stroke="currentColor"
                   viewBox="0 0 24 24"
@@ -916,7 +916,7 @@ export default function FormPage() {
             <button
               onClick={currentStep === 2 ? handleLocationSubmit : (currentStep === 7 ? handleSubmit : handleNext)}
               disabled={currentStep === 7 && isSubmitting}
-              className={`${currentStep === 1 ? 'w-full' : 'w-[80%]'} px-6 py-3 bg-primary dark:bg-primary-dark-mode text-white text-base font-semibold rounded-lg hover:bg-primary-hover dark:hover:bg-primary-dark-hover transition-all duration-200 shadow-sm hover:shadow-md disabled:opacity-50 disabled:cursor-not-allowed`}
+              className={`${currentStep === 1 ? 'w-full' : 'w-[80%]'} px-4 py-2 bg-primary dark:bg-primary-dark-mode text-white text-sm font-semibold rounded-lg hover:bg-primary-hover dark:hover:bg-primary-dark-hover transition-all duration-200 shadow-sm hover:shadow-md disabled:opacity-50 disabled:cursor-not-allowed`}
             >
               {currentStep === 7 ? (isSubmitting ? 'Submitting...' : 'Submit') : 'Next'}
             </button>
