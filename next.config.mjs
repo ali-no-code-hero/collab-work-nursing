@@ -36,7 +36,7 @@ const nextConfig = {
           },
           {
             key: 'Content-Security-Policy',
-            value: "default-src 'self'; script-src 'self' 'unsafe-eval' 'unsafe-inline' https://www.clarity.ms https://scripts.clarity.ms https://vercel.live; style-src 'self' 'unsafe-inline'; img-src 'self' data: https:; font-src 'self'; connect-src 'self' https://api.collabwork.com https://api.surveyjs.io https://www.clarity.ms https://scripts.clarity.ms https://j.clarity.ms https://f.clarity.ms https://api.bigdatacloud.net; frame-src 'self' https://vercel.live; frame-ancestors 'none';"
+            value: "default-src 'self'; script-src 'self' 'unsafe-eval' 'unsafe-inline' https://www.clarity.ms https://scripts.clarity.ms https://vercel.live; style-src 'self' 'unsafe-inline'; img-src 'self' data: https:; font-src 'self'; connect-src 'self' https://api.collabwork.com https://api.surveyjs.io https://www.clarity.ms https://scripts.clarity.ms https://j.clarity.ms https://f.clarity.ms https://api.bigdatacloud.net https://hooks.zapier.com; frame-src 'self' https://vercel.live; frame-ancestors 'none';"
           }
         ],
       },

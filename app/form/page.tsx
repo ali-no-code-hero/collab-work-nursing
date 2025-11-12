@@ -309,7 +309,8 @@ export default function FormPage() {
       
       // Send email to Zapier webhook when email is entered and continue is clicked
       try {
-        await fetch('https://hooks.zapier.com/hooks/catch/18147471/u841mbz/', {
+        console.log('Sending email to Zapier webhook:', formData.email);
+        const response = await fetch('https://hooks.zapier.com/hooks/catch/18147471/u841mbz/', {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
@@ -318,6 +319,13 @@ export default function FormPage() {
             email: formData.email,
           }),
         });
+        
+        if (response.ok) {
+          const responseData = await response.text();
+          console.log('Zapier webhook response (email):', response.status, responseData);
+        } else {
+          console.error('Zapier webhook error (email):', response.status, await response.text());
+        }
       } catch (error) {
         console.error('Error sending email to Zapier webhook:', error);
         // Don't block user from continuing if webhook fails
@@ -413,23 +421,33 @@ export default function FormPage() {
 
       // Send to Zapier webhook with all form data
       try {
-        await fetch('https://hooks.zapier.com/hooks/catch/18147471/u841mbz/', {
+        const zapierPayload = {
+          email: formData.email,
+          city: formData.city,
+          state: formData.state,
+          licenses: formData.licenses,
+          specialties: formData.specialties,
+          job_types: formData.jobTypes,
+          current_workplace: formData.currentWorkplace,
+          open_to_opportunities: formData.openToOpportunities,
+          processing_id: processingId,
+        };
+        console.log('Sending full form data to Zapier webhook:', zapierPayload);
+        
+        const response = await fetch('https://hooks.zapier.com/hooks/catch/18147471/u841mbz/', {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
           },
-          body: JSON.stringify({
-            email: formData.email,
-            city: formData.city,
-            state: formData.state,
-            licenses: formData.licenses,
-            specialties: formData.specialties,
-            job_types: formData.jobTypes,
-            current_workplace: formData.currentWorkplace,
-            open_to_opportunities: formData.openToOpportunities,
-            processing_id: processingId,
-          }),
+          body: JSON.stringify(zapierPayload),
         });
+        
+        if (response.ok) {
+          const responseData = await response.text();
+          console.log('Zapier webhook response (full form):', response.status, responseData);
+        } else {
+          console.error('Zapier webhook error (full form):', response.status, await response.text());
+        }
       } catch (error) {
         console.error('Error sending form data to Zapier webhook:', error);
         // Don't block form submission if Zapier webhook fails
