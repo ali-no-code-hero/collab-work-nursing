@@ -56,7 +56,13 @@ export function DarkModeProvider({ children }: { children: React.ReactNode }) {
 export function useDarkMode() {
   const context = useContext(DarkModeContext);
   if (context === undefined) {
-    throw new Error('useDarkMode must be used within a DarkModeProvider');
+    // Return safe defaults during SSG or when provider is not available
+    return {
+      isDark: false,
+      toggleDarkMode: () => {
+        // No-op during SSG
+      },
+    };
   }
   return context;
 }
