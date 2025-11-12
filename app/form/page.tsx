@@ -598,14 +598,6 @@ export default function FormPage() {
                 By subscribing, you agree to receive emails from Nurse Ascent and CollabWORK. Unsubscribe anytime.
               </p>
 
-              <div className="flex gap-3 sm:gap-4 mt-3 sm:mt-4 lg:mt-6">
-                <button
-                  onClick={handleNext}
-                  className="flex-1 px-4 sm:px-6 py-2.5 sm:py-3 bg-primary dark:bg-primary-dark-mode text-white text-sm sm:text-base font-semibold rounded-lg hover:bg-primary-hover dark:hover:bg-primary-dark-hover transition-all duration-200 shadow-sm hover:shadow-md"
-                >
-                  Continue
-                </button>
-              </div>
               </div>
             )}
 
@@ -677,20 +669,6 @@ export default function FormPage() {
                   <p className="text-red-600 dark:text-red-400 text-sm transition-colors duration-200">{errors.location}</p>
                 )}
 
-                <div className="flex gap-3 sm:gap-4 mt-3 sm:mt-4 lg:mt-6">
-                  <button
-                    onClick={handleBack}
-                    className="px-4 sm:px-6 py-2.5 sm:py-3 border border-gray-300 dark:border-border-dark text-gray-700 dark:text-ink-dark-soft text-sm sm:text-base font-semibold rounded-lg hover:bg-gray-50 dark:hover:bg-neutral-800 transition-colors duration-200"
-                  >
-                    Back
-                  </button>
-                  <button
-                    onClick={handleLocationSubmit}
-                    className="flex-1 px-4 sm:px-6 py-2.5 sm:py-3 bg-primary dark:bg-primary-dark-mode text-white text-sm sm:text-base font-semibold rounded-lg hover:bg-primary-hover dark:hover:bg-primary-dark-hover transition-all duration-200 shadow-sm hover:shadow-md"
-                  >
-                    Continue
-                  </button>
-                </div>
               </div>
               </div>
             )}
@@ -727,21 +705,6 @@ export default function FormPage() {
                   <p className="text-red-600 dark:text-red-400 text-sm mt-4 transition-colors duration-200">{errors.licenses}</p>
               )}
 
-              <div className="flex gap-3 sm:gap-4 mt-3 sm:mt-4 lg:mt-6">
-                <button
-                  onClick={handleBack}
-                  className="px-4 sm:px-6 py-2.5 sm:py-3 border border-gray-300 text-gray-700 text-sm sm:text-base font-semibold rounded-lg hover:bg-gray-50 transition-colors"
-                >
-                  Back
-                </button>
-                <button
-                  onClick={handleNext}
-                  className="flex-1 px-4 sm:px-6 py-2.5 sm:py-3 bg-primary dark:bg-primary-dark-mode text-white text-sm sm:text-base font-semibold rounded-lg hover:bg-primary-hover dark:hover:bg-primary-dark-hover transition-all duration-200 shadow-sm hover:shadow-md"
-                  style={{ backgroundColor: '#6c6cbe' }}
-                >
-                  Continue
-                </button>
-              </div>
               </div>
             )}
 
@@ -777,21 +740,6 @@ export default function FormPage() {
                   <p className="text-red-600 dark:text-red-400 text-sm mt-4 transition-colors duration-200">{errors.specialties}</p>
               )}
 
-              <div className="flex gap-3 sm:gap-4 mt-3 sm:mt-4 lg:mt-6">
-                <button
-                  onClick={handleBack}
-                  className="px-4 sm:px-6 py-2.5 sm:py-3 border border-gray-300 text-gray-700 text-sm sm:text-base font-semibold rounded-lg hover:bg-gray-50 transition-colors"
-                >
-                  Back
-                </button>
-                <button
-                  onClick={handleNext}
-                  className="flex-1 px-4 sm:px-6 py-2.5 sm:py-3 bg-primary dark:bg-primary-dark-mode text-white text-sm sm:text-base font-semibold rounded-lg hover:bg-primary-hover dark:hover:bg-primary-dark-hover transition-all duration-200 shadow-sm hover:shadow-md"
-                  style={{ backgroundColor: '#6c6cbe' }}
-                >
-                  Continue
-                </button>
-              </div>
               </div>
             )}
 
@@ -827,21 +775,6 @@ export default function FormPage() {
                   <p className="text-red-600 dark:text-red-400 text-sm mt-4 transition-colors duration-200">{errors.jobTypes}</p>
               )}
 
-              <div className="flex gap-3 sm:gap-4 mt-3 sm:mt-4 lg:mt-6">
-                <button
-                  onClick={handleBack}
-                  className="px-4 sm:px-6 py-2.5 sm:py-3 border border-gray-300 text-gray-700 text-sm sm:text-base font-semibold rounded-lg hover:bg-gray-50 transition-colors"
-                >
-                  Back
-                </button>
-                <button
-                  onClick={handleNext}
-                  className="flex-1 px-4 sm:px-6 py-2.5 sm:py-3 bg-primary dark:bg-primary-dark-mode text-white text-sm sm:text-base font-semibold rounded-lg hover:bg-primary-hover dark:hover:bg-primary-dark-hover transition-all duration-200 shadow-sm hover:shadow-md"
-                  style={{ backgroundColor: '#6c6cbe' }}
-                >
-                  Continue
-                </button>
-              </div>
             </div>
             )}
 
@@ -873,21 +806,6 @@ export default function FormPage() {
                 )}
               </div>
 
-              <div className="flex gap-3 sm:gap-4 mt-3 sm:mt-4 lg:mt-6">
-                <button
-                  onClick={handleBack}
-                  className="px-4 sm:px-6 py-2.5 sm:py-3 border border-gray-300 text-gray-700 text-sm sm:text-base font-semibold rounded-lg hover:bg-gray-50 transition-colors"
-                >
-                  Back
-                </button>
-                <button
-                  onClick={handleNext}
-                  className="flex-1 px-4 sm:px-6 py-2.5 sm:py-3 bg-primary dark:bg-primary-dark-mode text-white text-sm sm:text-base font-semibold rounded-lg hover:bg-primary-hover dark:hover:bg-primary-dark-hover transition-all duration-200 shadow-sm hover:shadow-md"
-                  style={{ backgroundColor: '#6c6cbe' }}
-                >
-                  Continue
-                </button>
-              </div>
               </div>
             )}
 
@@ -949,21 +867,6 @@ export default function FormPage() {
                 </div>
               )}
 
-              <div className="flex gap-3 sm:gap-4 mt-3 sm:mt-4 lg:mt-6">
-                <button
-                  onClick={handleBack}
-                  className="px-4 sm:px-6 py-2.5 sm:py-3 border border-gray-300 text-gray-700 text-sm sm:text-base font-semibold rounded-lg hover:bg-gray-50 transition-colors"
-                >
-                  Back
-                </button>
-                <button
-                  onClick={handleSubmit}
-                  disabled={isSubmitting}
-                  className="flex-1 px-4 sm:px-6 py-2.5 sm:py-3 bg-primary dark:bg-primary-dark-mode text-white text-sm sm:text-base font-semibold rounded-lg hover:bg-primary-hover dark:hover:bg-primary-dark-hover transition-all duration-200 shadow-sm hover:shadow-md disabled:opacity-50 disabled:cursor-not-allowed"
-                >
-                  {isSubmitting ? 'Submitting...' : 'Submit'}
-                </button>
-              </div>
               </div>
             )}
           </div>
@@ -987,8 +890,8 @@ export default function FormPage() {
             Step {currentStep} of 7
           </p>
           
-          {/* Navigation Arrows */}
-          <div className="flex items-center justify-center gap-4 sm:gap-6 mt-2 sm:mt-3">
+          {/* Navigation */}
+          <div className="flex items-center justify-between gap-4 sm:gap-6 mt-2 sm:mt-3">
             <button
               onClick={handleBack}
               disabled={currentStep === 1}
@@ -1010,24 +913,11 @@ export default function FormPage() {
               </svg>
             </button>
             <button
-              onClick={currentStep === 7 ? handleSubmit : handleNext}
+              onClick={currentStep === 2 ? handleLocationSubmit : (currentStep === 7 ? handleSubmit : handleNext)}
               disabled={currentStep === 7 && isSubmitting}
-              className="p-2 rounded-lg border border-gray-300 dark:border-border-dark bg-white dark:bg-surface-dark-alt text-gray-700 dark:text-ink-dark-soft hover:bg-gray-50 dark:hover:bg-neutral-800 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:bg-white dark:disabled:hover:bg-surface-dark-alt"
-              aria-label={currentStep === 7 ? "Submit form" : "Next step"}
+              className="flex-1 px-6 sm:px-8 py-2.5 sm:py-3 bg-primary dark:bg-primary-dark-mode text-white text-sm sm:text-base font-semibold rounded-lg hover:bg-primary-hover dark:hover:bg-primary-dark-hover transition-all duration-200 shadow-sm hover:shadow-md disabled:opacity-50 disabled:cursor-not-allowed"
             >
-              <svg
-                className="w-5 h-5 sm:w-6 sm:h-6"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M9 5l7 7-7 7"
-                />
-              </svg>
+              {currentStep === 7 ? (isSubmitting ? 'Submitting...' : 'Submit') : 'Continue'}
             </button>
           </div>
         </div>
