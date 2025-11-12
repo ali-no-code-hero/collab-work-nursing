@@ -535,7 +535,7 @@ export default function FormPage() {
   };
 
   return (
-    <div className="bg-white dark:bg-surface-dark transition-colors duration-200">
+    <div className="min-h-screen flex flex-col bg-white dark:bg-surface-dark transition-colors duration-200">
       {/* Hero Section */}
       <section className="bg-white dark:bg-surface-dark border-b border-gray-200 dark:border-border-dark transition-colors duration-200">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-3 sm:py-6 lg:py-12">
@@ -553,7 +553,7 @@ export default function FormPage() {
       </section>
 
       {/* Form Section */}
-      <section className="pt-3 pb-2 sm:py-6 lg:py-12 bg-gray-50 dark:bg-surface-dark-alt transition-colors duration-200">
+      <section className="flex-1 pt-3 pb-2 sm:py-6 lg:py-12 bg-gray-50 dark:bg-surface-dark-alt transition-colors duration-200">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
           <div className="bg-white dark:bg-surface-dark-alt rounded-xl shadow-sm border border-gray-200 dark:border-border-dark p-3 sm:p-4 lg:p-8 transition-all duration-200">
             {/* Step 1: Email */}
@@ -874,7 +874,7 @@ export default function FormPage() {
       </section>
 
       {/* Step Counter - Bottom of Page */}
-      <section className="sticky bottom-0 z-40 bg-white dark:bg-surface-dark border-t border-gray-200 dark:border-border-dark transition-colors duration-200 shadow-lg dark:shadow-none">
+      <section className="mt-auto bg-white dark:bg-surface-dark border-t border-gray-200 dark:border-border-dark transition-colors duration-200 shadow-lg dark:shadow-none">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 pt-2 pb-4 sm:py-4">
           <div className="flex items-center justify-between mb-1 sm:mb-2">
             <div className="flex-1">
@@ -892,7 +892,7 @@ export default function FormPage() {
           
           {/* Navigation */}
           <div className="flex flex-row items-center gap-3 sm:gap-4 mt-3 sm:mt-4">
-            {currentStep > 1 ? (
+            {currentStep > 1 && (
               <button
                 onClick={handleBack}
                 className="w-[20%] px-4 py-3 border-2 border-gray-300 dark:border-border-dark bg-white dark:bg-surface-dark-alt text-gray-700 dark:text-ink-dark-soft rounded-lg hover:bg-gray-50 dark:hover:bg-neutral-800 transition-all duration-200 flex items-center justify-center"
@@ -912,13 +912,11 @@ export default function FormPage() {
                   />
                 </svg>
               </button>
-            ) : (
-              <div className="w-[20%]"></div>
             )}
             <button
               onClick={currentStep === 2 ? handleLocationSubmit : (currentStep === 7 ? handleSubmit : handleNext)}
               disabled={currentStep === 7 && isSubmitting}
-              className="w-[80%] px-6 py-3 bg-primary dark:bg-primary-dark-mode text-white text-base font-semibold rounded-lg hover:bg-primary-hover dark:hover:bg-primary-dark-hover transition-all duration-200 shadow-sm hover:shadow-md disabled:opacity-50 disabled:cursor-not-allowed"
+              className={`${currentStep === 1 ? 'w-full' : 'w-[80%]'} px-6 py-3 bg-primary dark:bg-primary-dark-mode text-white text-base font-semibold rounded-lg hover:bg-primary-hover dark:hover:bg-primary-dark-hover transition-all duration-200 shadow-sm hover:shadow-md disabled:opacity-50 disabled:cursor-not-allowed`}
             >
               {currentStep === 7 ? (isSubmitting ? 'Submitting...' : 'Submit') : 'Next'}
             </button>
