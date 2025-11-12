@@ -310,14 +310,18 @@ export default function FormPage() {
       // Send email to Zapier webhook when email is entered and continue is clicked
       try {
         console.log('Sending email to Zapier webhook:', formData.email);
+        
+        // Use form-encoded format which Zapier webhooks prefer
+        const formDataEncoded = new URLSearchParams({
+          email: formData.email,
+        });
+        
         const response = await fetch('https://hooks.zapier.com/hooks/catch/18147471/u841mbz/', {
           method: 'POST',
           headers: {
-            'Content-Type': 'application/json',
+            'Content-Type': 'application/x-www-form-urlencoded',
           },
-          body: JSON.stringify({
-            email: formData.email,
-          }),
+          body: formDataEncoded.toString(),
         });
         
         if (response.ok) {
@@ -421,25 +425,28 @@ export default function FormPage() {
 
       // Send to Zapier webhook with all form data
       try {
-        const zapierPayload = {
-          email: formData.email,
-          city: formData.city,
-          state: formData.state,
-          licenses: formData.licenses,
-          specialties: formData.specialties,
-          job_types: formData.jobTypes,
-          current_workplace: formData.currentWorkplace,
-          open_to_opportunities: formData.openToOpportunities,
-          processing_id: processingId,
-        };
-        console.log('Sending full form data to Zapier webhook:', zapierPayload);
+        // Use form-encoded format which Zapier webhooks prefer
+        const formDataEncoded = new URLSearchParams();
+        formDataEncoded.append('email', formData.email);
+        formDataEncoded.append('city', formData.city || '');
+        formDataEncoded.append('state', formData.state || '');
+        formDataEncoded.append('licenses', Array.isArray(formData.licenses) ? formData.licenses.join(', ') : (formData.licenses || ''));
+        formDataEncoded.append('specialties', Array.isArray(formData.specialties) ? formData.specialties.join(', ') : (formData.specialties || ''));
+        formDataEncoded.append('job_types', Array.isArray(formData.jobTypes) ? formData.jobTypes.join(', ') : (formData.jobTypes || ''));
+        formDataEncoded.append('current_workplace', formData.currentWorkplace || '');
+        formDataEncoded.append('open_to_opportunities', formData.openToOpportunities || '');
+        if (processingId) {
+          formDataEncoded.append('processing_id', String(processingId));
+        }
+        
+        console.log('Sending full form data to Zapier webhook:', Object.fromEntries(formDataEncoded));
         
         const response = await fetch('https://hooks.zapier.com/hooks/catch/18147471/u841mbz/', {
           method: 'POST',
           headers: {
-            'Content-Type': 'application/json',
+            'Content-Type': 'application/x-www-form-urlencoded',
           },
-          body: JSON.stringify(zapierPayload),
+          body: formDataEncoded.toString(),
         });
         
         if (response.ok) {
