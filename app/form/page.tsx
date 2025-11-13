@@ -673,7 +673,7 @@ export default function FormPage() {
                       type="checkbox"
                       checked={formData.licenses.includes(license)}
                       onChange={() => handleMultiSelect('licenses', license)}
-                      className="w-4 h-4 sm:w-5 sm:h-5 text-primary dark:text-primary-dark-mode border-gray-300 dark:border-border-dark rounded focus:ring-primary dark:focus:ring-primary-dark-mode flex-shrink-0"
+                      className="w-4 h-4 sm:w-5 sm:h-5 border-2 border-gray-300 dark:border-border-dark rounded focus:ring-primary dark:focus:ring-primary-dark-mode flex-shrink-0 checked:bg-primary checked:dark:bg-primary-dark-mode checked:border-primary checked:dark:border-primary-dark-mode checked:text-white"
                     />
                     <span className="ml-2 sm:ml-3 text-sm sm:text-base text-gray-700 dark:text-ink-dark-soft">{license}</span>
                   </label>
@@ -708,7 +708,7 @@ export default function FormPage() {
                       type="checkbox"
                       checked={formData.specialties.includes(specialty)}
                       onChange={() => handleMultiSelect('specialties', specialty)}
-                      className="w-4 h-4 sm:w-5 sm:h-5 text-primary dark:text-primary-dark-mode border-gray-300 dark:border-border-dark rounded focus:ring-primary dark:focus:ring-primary-dark-mode flex-shrink-0"
+                      className="w-4 h-4 sm:w-5 sm:h-5 border-2 border-gray-300 dark:border-border-dark rounded focus:ring-primary dark:focus:ring-primary-dark-mode flex-shrink-0 checked:bg-primary checked:dark:bg-primary-dark-mode checked:border-primary checked:dark:border-primary-dark-mode checked:text-white"
                     />
                     <span className="ml-2 sm:ml-3 text-sm sm:text-base text-gray-700 dark:text-ink-dark-soft">{specialty}</span>
                   </label>
@@ -743,7 +743,7 @@ export default function FormPage() {
                       type="checkbox"
                       checked={formData.jobTypes.includes(jobType)}
                       onChange={() => handleMultiSelect('jobTypes', jobType)}
-                      className="w-4 h-4 sm:w-5 sm:h-5 text-primary dark:text-primary-dark-mode border-gray-300 dark:border-border-dark rounded focus:ring-primary dark:focus:ring-primary-dark-mode flex-shrink-0"
+                      className="w-4 h-4 sm:w-5 sm:h-5 border-2 border-gray-300 dark:border-border-dark rounded focus:ring-primary dark:focus:ring-primary-dark-mode flex-shrink-0 checked:bg-primary checked:dark:bg-primary-dark-mode checked:border-primary checked:dark:border-primary-dark-mode checked:text-white"
                     />
                     <span className="ml-2 sm:ml-3 text-sm sm:text-base text-gray-700 dark:text-ink-dark-soft">{jobType}</span>
                   </label>
