@@ -15,7 +15,14 @@ export async function POST(request: NextRequest) {
   }
 
   try {
-    const body = await request.json();
+    let body;
+    try {
+      body = await request.json();
+    } catch (parseError) {
+      console.error('Failed to parse request body:', parseError);
+      return NextResponse.json({ error: 'Invalid request body' }, { status: 400 });
+    }
+    
     const { 
       email, 
       city, 
@@ -30,6 +37,7 @@ export async function POST(request: NextRequest) {
 
     // Validate required fields
     if (!email || typeof email !== 'string') {
+      console.error('Missing or invalid email:', email);
       return NextResponse.json({ error: 'Email is required' }, { status: 400 });
     }
 
@@ -75,26 +83,56 @@ export async function POST(request: NextRequest) {
     }
 
     // Call external API
-    const response = await fetch('https://api.collabwork.com/api:partners/webhook_curated_jobs_nurse_ascent', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify(payload),
-      signal: AbortSignal.timeout(15000), // 15 second timeout for form submission
-    });
+    // Create timeout signal (fallback for older Node.js versions)
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), 15000);
+    
+    let response;
+    try {
+      response = await fetch('https://api.collabwork.com/api:partners/webhook_curated_jobs_nurse_ascent', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(payload),
+        signal: controller.signal,
+      });
+    } catch (fetchError) {
+      clearTimeout(timeoutId);
+      if (fetchError instanceof Error && fetchError.name === 'AbortError') {
+        console.error('Request timeout after 15 seconds');
+        return NextResponse.json({ error: 'Request timeout' }, { status: 504 });
+      }
+      throw fetchError; // Re-throw to be caught by outer catch
+    } finally {
+      clearTimeout(timeoutId);
+    }
 
     if (!response.ok) {
       const errorText = await response.text().catch(() => '');
-      console.error('Submit webhook error:', response.status, errorText);
-      return NextResponse.json({ error: 'Failed to submit form' }, { status: 500 });
+      console.error('Submit webhook error:', {
+        status: response.status,
+        statusText: response.statusText,
+        errorText,
+        url: 'https://api.collabwork.com/api:partners/webhook_curated_jobs_nurse_ascent',
+      });
+      return NextResponse.json({ 
+        error: 'Failed to submit form',
+        details: process.env.NODE_ENV === 'development' ? errorText : undefined
+      }, { status: 500 });
     }
 
     const data = await response.json();
     return NextResponse.json(data);
   } catch (error) {
-    console.error('Error in webhook-submit API:', error);
-    return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
+    console.error('Error in webhook-submit API:', {
+      error: error instanceof Error ? error.message : String(error),
+      stack: error instanceof Error ? error.stack : undefined,
+    });
+    return NextResponse.json({ 
+      error: 'Internal server error',
+      details: process.env.NODE_ENV === 'development' ? (error instanceof Error ? error.message : String(error)) : undefined
+    }, { status: 500 });
   }
 }
 

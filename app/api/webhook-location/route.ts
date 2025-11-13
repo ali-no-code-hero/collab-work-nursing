@@ -15,14 +15,23 @@ export async function POST(request: NextRequest) {
   }
 
   try {
-    const body = await request.json();
+    let body;
+    try {
+      body = await request.json();
+    } catch (parseError) {
+      console.error('Failed to parse request body:', parseError);
+      return NextResponse.json({ error: 'Invalid request body' }, { status: 400 });
+    }
+    
     const { email, city, state } = body;
 
     // Validate required fields
     if (!email || typeof email !== 'string') {
+      console.error('Missing or invalid email:', email);
       return NextResponse.json({ error: 'Email is required' }, { status: 400 });
     }
     if (!city || typeof city !== 'string' || !state || typeof state !== 'string') {
+      console.error('Missing or invalid city/state:', { city, state });
       return NextResponse.json({ error: 'City and state are required' }, { status: 400 });
     }
 
@@ -44,31 +53,61 @@ export async function POST(request: NextRequest) {
     }
 
     // Call external API
-    const response = await fetch('https://api.collabwork.com/api:partners/webhook_just_state_nurse_ascent', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        email: sanitizedEmail,
-        city: sanitizedCity,
-        state: sanitizedState,
-        api_key: apiKey,
-      }),
-      signal: AbortSignal.timeout(10000), // 10 second timeout
-    });
+    // Create timeout signal (fallback for older Node.js versions)
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), 10000);
+    
+    let response;
+    try {
+      response = await fetch('https://api.collabwork.com/api:partners/webhook_just_state_nurse_ascent', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          email: sanitizedEmail,
+          city: sanitizedCity,
+          state: sanitizedState,
+          api_key: apiKey,
+        }),
+        signal: controller.signal,
+      });
+    } catch (fetchError) {
+      clearTimeout(timeoutId);
+      if (fetchError instanceof Error && fetchError.name === 'AbortError') {
+        console.error('Request timeout after 10 seconds');
+        return NextResponse.json({ error: 'Request timeout' }, { status: 504 });
+      }
+      throw fetchError; // Re-throw to be caught by outer catch
+    } finally {
+      clearTimeout(timeoutId);
+    }
 
     if (!response.ok) {
       const errorText = await response.text().catch(() => '');
-      console.error('Location webhook error:', response.status, errorText);
-      return NextResponse.json({ error: 'Failed to process location' }, { status: 500 });
+      console.error('Location webhook error:', {
+        status: response.status,
+        statusText: response.statusText,
+        errorText,
+        url: 'https://api.collabwork.com/api:partners/webhook_just_state_nurse_ascent',
+      });
+      return NextResponse.json({ 
+        error: 'Failed to process location',
+        details: process.env.NODE_ENV === 'development' ? errorText : undefined
+      }, { status: 500 });
     }
 
     const responseText = await response.text();
     return NextResponse.json({ success: true, response: responseText });
   } catch (error) {
-    console.error('Error in webhook-location API:', error);
-    return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
+    console.error('Error in webhook-location API:', {
+      error: error instanceof Error ? error.message : String(error),
+      stack: error instanceof Error ? error.stack : undefined,
+    });
+    return NextResponse.json({ 
+      error: 'Internal server error',
+      details: process.env.NODE_ENV === 'development' ? (error instanceof Error ? error.message : String(error)) : undefined
+    }, { status: 500 });
   }
 }
 
