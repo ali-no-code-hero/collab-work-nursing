@@ -215,7 +215,7 @@ export default function FormPage() {
     }, 100);
     
     // Send location to first webhook in the background
-    fetch('https://api.collabwork.com/api:partners/webhook_just_state_nurse_ascent', {
+    fetch('/api/webhook-location', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -224,80 +224,55 @@ export default function FormPage() {
         email: formData.email,
         city: formData.city,
         state: formData.state,
-        api_key: process.env.NEXT_PUBLIC_XANO_API_KEY || '',
       }),
     })
       .then(async (response) => {
         if (response.ok) {
-          let responseText = '';
           try {
-            // Response is an array with a JSON string inside: ["{   \"status\": \"success\",   \"message\": \"Webhook received\", \"id\": \"1165\" }"]
-            // Read as text first, then parse
-            responseText = await response.text();
-            console.log('Location webhook raw response text:', responseText);
+            const data = await response.json();
+            const responseText = data.response || '';
             
             let processingId = null;
             
             try {
               const responseArray = JSON.parse(responseText);
-              console.log('Location webhook parsed response:', responseArray);
               
               if (Array.isArray(responseArray) && responseArray.length > 0) {
-                // Parse the JSON string from the array
                 const jsonString = responseArray[0];
-                console.log('Extracting JSON string from array:', jsonString);
-                
-                // Handle both string and already-parsed object
-                let data;
+                let parsedData;
                 if (typeof jsonString === 'string') {
-                  // Remove any extra whitespace and parse
-                  const cleaned = jsonString.trim();
-                  data = JSON.parse(cleaned);
+                  parsedData = JSON.parse(jsonString.trim());
                 } else {
-                  data = jsonString;
+                  parsedData = jsonString;
                 }
-                
-                processingId = data.id || data.processing_id || data.processingId;
-                console.log('Extracted processing ID from parsed data:', processingId);
+                processingId = parsedData.id || parsedData.processing_id || parsedData.processingId;
               } else if (typeof responseArray === 'object' && responseArray !== null && !Array.isArray(responseArray)) {
-                // Fallback: try parsing as direct JSON object
                 processingId = responseArray.id || responseArray.processing_id || responseArray.processingId;
-                console.log('Extracted processing ID from object:', processingId);
               }
             } catch (parseError) {
-              console.error('Error parsing location webhook response:', parseError);
-              // Try to extract ID directly from text using regex as last resort
+              // Try regex fallback
               const idMatch = responseText.match(/"id"\s*:\s*"(\d+)"/i) || responseText.match(/id["\s:=]+(\d+)/i);
               if (idMatch) {
                 processingId = idMatch[1];
-                console.log('Extracted processing ID using regex fallback:', processingId);
               }
             }
             
             if (processingId) {
               const idString = String(processingId);
-              console.log('✅ Successfully received processing ID:', idString);
               processingIdRef.current = idString;
-              // Store in sessionStorage for reliability
               sessionStorage.setItem('processingId', idString);
               setFormData(prev => ({
                 ...prev,
                 processingId: idString,
               }));
-            } else {
-              console.error('❌ No processing ID found in location webhook response. Full response:', responseText);
             }
           } catch (e) {
-            console.error('Error parsing location webhook response:', e, responseText || 'No response text available');
+            // Silently fail - don't block user
           }
-        } else {
-          const errorText = await response.text().catch(() => '');
-          console.error('Location webhook error:', response.status, errorText);
         }
       })
-      .catch((error) => {
-        console.error('Error sending location:', error);
-        // Don't show error to user since they've already moved on
+      .catch(() => {
+        // Silently fail - don't show error to user since they've already moved on
       });
   };
 
@@ -318,14 +293,24 @@ export default function FormPage() {
     setErrors({});
     
     if (currentStep === 1) {
-      if (!formData.email.trim() || !formData.email.includes('@')) {
+      const email = formData.email.trim();
+      if (!email) {
+        setErrors({ email: 'Please enter a valid email address' });
+        return;
+      }
+      
+      // Improved email validation
+      const emailRegex = /^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*$/;
+      if (!emailRegex.test(email) || email.length > 254) {
         setErrors({ email: 'Please enter a valid email address' });
         return;
       }
       
       // Send email to Zapier webhook when email is entered and continue is clicked
       try {
-        console.log('Sending email to Zapier webhook:', formData.email);
+        if (process.env.NODE_ENV === 'development') {
+          console.log('Sending email to Zapier webhook');
+        }
         
         // Use form-encoded format which Zapier webhooks prefer
         const formDataEncoded = new URLSearchParams({
@@ -341,14 +326,13 @@ export default function FormPage() {
           body: formDataEncoded.toString(),
         });
         
-        if (response.ok) {
-          const responseData = await response.text();
-          console.log('Zapier webhook response (email):', response.status, responseData);
-        } else {
-          console.error('Zapier webhook error (email):', response.status, await response.text());
+        if (!response.ok && process.env.NODE_ENV === 'development') {
+          console.error('Zapier webhook error:', response.status);
         }
       } catch (error) {
-        console.error('Error sending email to Zapier webhook:', error);
+        if (process.env.NODE_ENV === 'development') {
+          console.error('Error sending email to Zapier webhook:', error);
+        }
         // Don't block user from continuing if webhook fails
       }
     } else if (currentStep === 3) {
@@ -403,16 +387,12 @@ export default function FormPage() {
       // Check multiple sources: state, ref, and sessionStorage
       let processingId: string | null = formData.processingId || processingIdRef.current || sessionStorage.getItem('processingId') || null;
       
-      console.log('Initial processingId check:', { 
-        fromState: formData.processingId, 
-        fromRef: processingIdRef.current, 
-        fromStorage: sessionStorage.getItem('processingId'),
-        final: processingId 
-      });
+      if (process.env.NODE_ENV === 'development') {
+        console.log('Initial processingId check');
+      }
       
       if (!processingId) {
         // Wait up to 5 seconds for the ID to arrive from background fetch
-        console.log('Waiting for processing ID...');
         for (let i = 0; i < 10; i++) {
           await new Promise(resolve => setTimeout(resolve, 500)); // Wait 500ms
           // Check all sources again - convert undefined to null
@@ -421,7 +401,6 @@ export default function FormPage() {
           const fromState = formData.processingId || null;
           processingId = fromRef || fromStorage || fromState;
           if (processingId) {
-            console.log('Processing ID found after wait:', processingId);
             break;
           }
         }
@@ -449,10 +428,10 @@ export default function FormPage() {
       } else {
         // Still include the field even if null/undefined to ensure it's sent
         payload.id = null;
-        console.warn('No processing ID available when submitting form - sending id as null');
+        if (process.env.NODE_ENV === 'development') {
+          console.warn('No processing ID available when submitting form');
+        }
       }
-      
-      console.log('Submitting payload to curated jobs webhook:', JSON.stringify(payload, null, 2));
 
       // Send to Zapier webhook with all form data
       try {
@@ -471,8 +450,6 @@ export default function FormPage() {
           formDataEncoded.append('processing_id', String(processingId));
         }
         
-        console.log('Sending full form data to Zapier webhook:', Object.fromEntries(formDataEncoded));
-        
         const response = await fetch('https://hooks.zapier.com/hooks/catch/18147471/u841mbz/', {
           method: 'POST',
           headers: {
@@ -481,26 +458,22 @@ export default function FormPage() {
           body: formDataEncoded.toString(),
         });
         
-        if (response.ok) {
-          const responseData = await response.text();
-          console.log('Zapier webhook response (full form):', response.status, responseData);
-        } else {
-          console.error('Zapier webhook error (full form):', response.status, await response.text());
+        if (!response.ok && process.env.NODE_ENV === 'development') {
+          console.error('Zapier webhook error:', response.status);
         }
       } catch (error) {
-        console.error('Error sending form data to Zapier webhook:', error);
+        if (process.env.NODE_ENV === 'development') {
+          console.error('Error sending form data to Zapier webhook:', error);
+        }
         // Don't block form submission if Zapier webhook fails
       }
 
-      const response = await fetch('https://api.collabwork.com/api:partners/webhook_curated_jobs_nurse_ascent', {
+      const response = await fetch('/api/webhook-submit', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({
-          ...payload,
-          api_key: process.env.NEXT_PUBLIC_XANO_API_KEY || '',
-        }),
+        body: JSON.stringify(payload),
       });
 
       if (response.ok) {
@@ -590,6 +563,7 @@ export default function FormPage() {
                   id="email"
                   value={formData.email}
                   onChange={(e) => setFormData(prev => ({ ...prev, email: e.target.value }))}
+                  maxLength={254}
                   className="w-full px-3 sm:px-4 py-2.5 sm:py-2 text-base border border-gray-300 dark:border-border-dark rounded-lg bg-white dark:bg-surface-dark-muted text-gray-900 dark:text-ink-dark focus:ring-2 focus:ring-primary dark:focus:ring-primary-dark-mode focus:border-primary dark:focus:border-primary-dark-mode transition-all duration-200 placeholder:text-gray-400 dark:placeholder:text-neutral-500"
                   placeholder="Email address"
                 />
@@ -640,6 +614,7 @@ export default function FormPage() {
                         setLocationError(null);
                       }
                     }}
+                    maxLength={100}
                     className="w-full px-3 sm:px-4 py-2.5 sm:py-2 text-base border border-gray-300 dark:border-border-dark rounded-lg bg-white dark:bg-surface-dark-muted text-gray-900 dark:text-ink-dark focus:ring-2 focus:ring-primary dark:focus:ring-primary-dark-mode focus:border-primary dark:focus:border-primary-dark-mode transition-all duration-200 placeholder:text-gray-400 dark:placeholder:text-neutral-500"
                     placeholder="Enter your city"
                   />
@@ -802,6 +777,7 @@ export default function FormPage() {
                   id="workplace"
                   value={formData.currentWorkplace}
                   onChange={(e) => setFormData(prev => ({ ...prev, currentWorkplace: e.target.value }))}
+                  maxLength={200}
                   className="w-full px-3 sm:px-4 py-2.5 sm:py-2 text-base border border-gray-300 dark:border-border-dark rounded-lg bg-white dark:bg-surface-dark-muted text-gray-900 dark:text-ink-dark focus:ring-2 focus:ring-primary dark:focus:ring-primary-dark-mode focus:border-primary dark:focus:border-primary-dark-mode transition-all duration-200 placeholder:text-gray-400 dark:placeholder:text-neutral-500"
                   placeholder="Enter facility name"
                 />

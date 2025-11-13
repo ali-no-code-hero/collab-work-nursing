@@ -210,15 +210,16 @@ export default function Page() {
         const email = formData?.email || urlParams.get('email');
         
         if (email) {
-          await fetch('https://api.collabwork.com/api:ERDpOWih/log_page_view', {
+          await fetch('/api/log-page-view', {
             method: 'POST',
             headers: {
               'Content-Type': 'application/json',
             },
             body: JSON.stringify({
               email: email,
-              api_key: process.env.NEXT_PUBLIC_XANO_API_KEY || '',
             }),
+          }).catch(() => {
+            // Silently fail - don't block page load
           });
         }
       } catch (error) {

@@ -35,9 +35,9 @@ export async function GET(request: Request) {
         email = email.replace(/ /g, '+');
       }
       
-      // Email validation
-      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-      if (!emailRegex.test(email)) {
+      // Improved email validation
+      const emailRegex = /^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*$/;
+      if (!emailRegex.test(email) || email.length > 254) {
         return NextResponse.json(
           { error: 'Invalid email address' }, 
           { status: 400 }
@@ -52,8 +52,9 @@ export async function GET(request: Request) {
         );
       }
       
-      console.log('Raw email parameter:', emailMatch[1]);
-      console.log('Decoded email:', email);
+      if (process.env.NODE_ENV === 'development') {
+        console.log('Decoded email:', email.substring(0, 10) + '...');
+      }
     }
   }
   

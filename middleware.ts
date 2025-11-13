@@ -6,18 +6,21 @@ const rateLimitMap = new Map<string, { count: number; resetTime: number }>();
 
 const RATE_LIMIT = {
   windowMs: 60 * 1000, // 1 minute
-  maxRequests: 20, // 20 requests per minute
+  maxRequests: 20, // 20 requests per minute per IP
+  // Stricter limits for form submission endpoints
+  formSubmissionLimit: 5, // 5 submissions per minute
 };
 
 function getRateLimitKey(request: NextRequest): string {
-  // Get IP address or email parameter for rate limiting
-  const ip = request.ip || request.headers.get('x-forwarded-for') || 'unknown';
+  // Get IP address for rate limiting
+  const ip = request.ip || request.headers.get('x-forwarded-for')?.split(',')[0] || 'unknown';
+  // For POST requests, try to get email from body if available
   const url = new URL(request.url);
   const email = url.searchParams.get('email') || 'unknown';
   return `${ip}-${email}`;
 }
 
-function checkRateLimit(key: string): boolean {
+function checkRateLimit(key: string, maxRequests: number = RATE_LIMIT.maxRequests): boolean {
   const now = Date.now();
   const record = rateLimitMap.get(key);
 
@@ -31,7 +34,7 @@ function checkRateLimit(key: string): boolean {
     return true;
   }
 
-  if (record.count >= RATE_LIMIT.maxRequests) {
+  if (record.count >= maxRequests) {
     return false;
   }
 
@@ -43,7 +46,13 @@ export function middleware(request: NextRequest) {
   // Apply rate limiting to API routes
   if (request.nextUrl.pathname.startsWith('/api/')) {
     const key = getRateLimitKey(request);
-    const allowed = checkRateLimit(key);
+    const pathname = request.nextUrl.pathname;
+    
+    // Stricter rate limiting for form submission endpoints
+    const isFormSubmission = pathname.includes('webhook-submit') || pathname.includes('webhook-location');
+    const limit = isFormSubmission ? RATE_LIMIT.formSubmissionLimit : RATE_LIMIT.maxRequests;
+    
+    const allowed = checkRateLimit(key, limit);
 
     if (!allowed) {
       return NextResponse.json(
@@ -52,7 +61,7 @@ export function middleware(request: NextRequest) {
           status: 429,
           headers: {
             'Retry-After': '60',
-            'X-RateLimit-Limit': RATE_LIMIT.maxRequests.toString(),
+            'X-RateLimit-Limit': limit.toString(),
           }
         }
       );
