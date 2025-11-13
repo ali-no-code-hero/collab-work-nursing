@@ -674,7 +674,7 @@ export default function FormPage() {
                       checked={formData.licenses.includes(license)}
                       onChange={() => handleMultiSelect('licenses', license)}
                       className="w-4 h-4 sm:w-5 sm:h-5 border-2 border-gray-300 dark:border-border-dark rounded focus:ring-primary dark:focus:ring-primary-dark-mode flex-shrink-0"
-                      style={{ accentColor: '#7E59FF' }}
+                      style={{ accentColor: 'rgb(139, 111, 255)' }}
                     />
                     <span className="ml-2 sm:ml-3 text-sm sm:text-base text-gray-700 dark:text-ink-dark-soft">{license}</span>
                   </label>
@@ -710,7 +710,7 @@ export default function FormPage() {
                       checked={formData.specialties.includes(specialty)}
                       onChange={() => handleMultiSelect('specialties', specialty)}
                       className="w-4 h-4 sm:w-5 sm:h-5 border-2 border-gray-300 dark:border-border-dark rounded focus:ring-primary dark:focus:ring-primary-dark-mode flex-shrink-0"
-                      style={{ accentColor: '#7E59FF' }}
+                      style={{ accentColor: 'rgb(139, 111, 255)' }}
                     />
                     <span className="ml-2 sm:ml-3 text-sm sm:text-base text-gray-700 dark:text-ink-dark-soft">{specialty}</span>
                   </label>
@@ -746,7 +746,7 @@ export default function FormPage() {
                       checked={formData.jobTypes.includes(jobType)}
                       onChange={() => handleMultiSelect('jobTypes', jobType)}
                       className="w-4 h-4 sm:w-5 sm:h-5 border-2 border-gray-300 dark:border-border-dark rounded focus:ring-primary dark:focus:ring-primary-dark-mode flex-shrink-0"
-                      style={{ accentColor: '#7E59FF' }}
+                      style={{ accentColor: 'rgb(139, 111, 255)' }}
                     />
                     <span className="ml-2 sm:ml-3 text-sm sm:text-base text-gray-700 dark:text-ink-dark-soft">{jobType}</span>
                   </label>
