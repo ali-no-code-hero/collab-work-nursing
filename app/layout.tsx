@@ -40,10 +40,44 @@ export default function RootLayout({ children }: { children: ReactNode }) {
         <Script id="microsoft-clarity" strategy="afterInteractive">
           {`
             (function(c,l,a,r,i,t,y){
-              c[a]=c[a]||function(){(c[a].q=c[a].q||[]).push(arguments)};
-              t=l.createElement(r);t.async=1;t.src="https://www.clarity.ms/tag/"+i;
-              y=l.getElementsByTagName(r)[0];y.parentNode.insertBefore(t,y);
+              try {
+                c[a]=c[a]||function(){(c[a].q=c[a].q||[]).push(arguments)};
+                t=l.createElement(r);t.async=1;t.src="https://www.clarity.ms/tag/"+i;
+                t.onerror=function(){/* Suppress Clarity loading errors */};
+                y=l.getElementsByTagName(r)[0];y.parentNode.insertBefore(t,y);
+              } catch(e) {
+                // Suppress Clarity initialization errors
+                if (typeof console !== 'undefined' && console.error) {
+                  console.error('Clarity initialization error:', e);
+                }
+              }
             })(window, document, "clarity", "script", "u1fvm7mhly");
+          `}
+        </Script>
+        <Script id="suppress-clarity-errors" strategy="afterInteractive">
+          {`
+            // Suppress Clarity-related errors from global error handler
+            if (typeof window !== 'undefined') {
+              const originalOnError = window.onerror;
+              window.onerror = function(message, source, lineno, colno, error) {
+                // Suppress Clarity script errors but allow other errors
+                if (source && source.includes('clarity')) {
+                  return true; // Suppress the error
+                }
+                if (originalOnError) {
+                  return originalOnError.call(this, message, source, lineno, colno, error);
+                }
+                return false; // Let default error handling proceed
+              };
+              
+              // Also handle unhandled promise rejections from Clarity
+              window.addEventListener('unhandledrejection', function(event) {
+                const reason = event.reason;
+                if (reason && typeof reason === 'string' && reason.includes('clarity')) {
+                  event.preventDefault(); // Suppress Clarity promise rejections
+                }
+              });
+            }
           `}
         </Script>
         <Analytics />
