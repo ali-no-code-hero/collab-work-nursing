@@ -2,7 +2,7 @@ import { NextResponse } from "next/server";
 
 // API endpoint for getting personalized nursing jobs based on email
 export async function GET(request: Request) {
-  const apiKey = process.env.COLLABWORK_API_KEY;
+  const apiKey = process.env.XANO_API_KEY || process.env.COLLABWORK_API_KEY;
   const apiUrl = 'https://api.collabwork.com/api:partners/get_nursing_form_record_jobs';
   
   console.log('Environment variables:', {

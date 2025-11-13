@@ -48,6 +48,7 @@ export default function JobCard({ job, email }: { job: Job; email?: string | nul
           job_url: job.url || '',
           email: email,
           job_eid: job.id.toString(),
+          api_key: process.env.NEXT_PUBLIC_XANO_API_KEY || '',
         }),
       });
     } catch (error) {

@@ -217,6 +217,7 @@ export default function Page() {
             },
             body: JSON.stringify({
               email: email,
+              api_key: process.env.NEXT_PUBLIC_XANO_API_KEY || '',
             }),
           });
         }

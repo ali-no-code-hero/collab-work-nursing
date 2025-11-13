@@ -224,6 +224,7 @@ export default function FormPage() {
         email: formData.email,
         city: formData.city,
         state: formData.state,
+        api_key: process.env.NEXT_PUBLIC_XANO_API_KEY || '',
       }),
     })
       .then(async (response) => {
@@ -496,7 +497,10 @@ export default function FormPage() {
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify(payload),
+        body: JSON.stringify({
+          ...payload,
+          api_key: process.env.NEXT_PUBLIC_XANO_API_KEY || '',
+        }),
       });
 
       if (response.ok) {

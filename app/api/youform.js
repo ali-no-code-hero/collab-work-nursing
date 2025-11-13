@@ -67,7 +67,7 @@ module.exports = async (req, res) => {
     const endpoint =
       process.env.COLLABWORK_ENDPOINT ||
       'https://api.collabwork.com/api:partners/JobSearchKW';
-    const apiKey = process.env.COLLABWORK_API_KEY;
+    const apiKey = process.env.XANO_API_KEY || process.env.COLLABWORK_API_KEY;
 
     let collabworkResponse = null;
     let collabworkStatus = null;
