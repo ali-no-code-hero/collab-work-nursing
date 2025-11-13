@@ -2,7 +2,7 @@ import { NextResponse } from "next/server";
 
 // API endpoint for getting personalized nursing jobs based on email
 export async function GET(request: Request) {
-  const apiKey = process.env.COLLABWORK_API_KEY;
+  const apiKey = process.env.XANO_API_KEY || process.env.COLLABWORK_API_KEY;
   const apiUrl = 'https://api.collabwork.com/api:partners/get_nursing_form_record_jobs';
   
   console.log('Environment variables:', {
@@ -35,9 +35,9 @@ export async function GET(request: Request) {
         email = email.replace(/ /g, '+');
       }
       
-      // Email validation
-      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-      if (!emailRegex.test(email)) {
+      // Improved email validation
+      const emailRegex = /^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*$/;
+      if (!emailRegex.test(email) || email.length > 254) {
         return NextResponse.json(
           { error: 'Invalid email address' }, 
           { status: 400 }
@@ -52,8 +52,9 @@ export async function GET(request: Request) {
         );
       }
       
-      console.log('Raw email parameter:', emailMatch[1]);
-      console.log('Decoded email:', email);
+      if (process.env.NODE_ENV === 'development') {
+        console.log('Decoded email:', email.substring(0, 10) + '...');
+      }
     }
   }
   

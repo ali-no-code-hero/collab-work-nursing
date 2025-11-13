@@ -38,7 +38,7 @@ export default function JobCard({ job, email }: { job: Job; email?: string | nul
     }
 
     try {
-      await fetch('https://api.collabwork.com/api:ERDpOWih/log_apply', {
+      await fetch('/api/log-apply', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -49,6 +49,8 @@ export default function JobCard({ job, email }: { job: Job; email?: string | nul
           email: email,
           job_eid: job.id.toString(),
         }),
+      }).catch(() => {
+        // Silently fail - don't block navigation
       });
     } catch (error) {
       console.error('Failed to log apply click:', error);
