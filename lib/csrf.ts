@@ -15,11 +15,11 @@ export function validateCSRF(request: NextRequest): boolean {
   }
   
   // Check if origin matches our domain
-  const allowedOrigins = [
+  const allowedOrigins: string[] = [
     process.env.NEXT_PUBLIC_SITE_URL,
     'https://collab-work-nursing.vercel.app',
     'https://collab-work-nursing-env-staging-collab-work-1ae2c176.vercel.app',
-  ].filter(Boolean);
+  ].filter((url): url is string => typeof url === 'string' && url.length > 0);
   
   // Allow requests from our domains
   if (allowedOrigins.some(allowed => origin.startsWith(allowed))) {
