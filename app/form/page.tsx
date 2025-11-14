@@ -230,32 +230,8 @@ export default function FormPage() {
         if (response.ok) {
           try {
             const data = await response.json();
-            const responseText = data.response || '';
-            
-            let processingId = null;
-            
-            try {
-              const responseArray = JSON.parse(responseText);
-              
-              if (Array.isArray(responseArray) && responseArray.length > 0) {
-                const jsonString = responseArray[0];
-                let parsedData;
-                if (typeof jsonString === 'string') {
-                  parsedData = JSON.parse(jsonString.trim());
-                } else {
-                  parsedData = jsonString;
-                }
-                processingId = parsedData.id || parsedData.processing_id || parsedData.processingId;
-              } else if (typeof responseArray === 'object' && responseArray !== null && !Array.isArray(responseArray)) {
-                processingId = responseArray.id || responseArray.processing_id || responseArray.processingId;
-              }
-            } catch (parseError) {
-              // Try regex fallback
-              const idMatch = responseText.match(/"id"\s*:\s*"(\d+)"/i) || responseText.match(/id["\s:=]+(\d+)/i);
-              if (idMatch) {
-                processingId = idMatch[1];
-              }
-            }
+            // The API endpoint now extracts and returns the ID directly
+            const processingId = data.id || null;
             
             if (processingId) {
               const idString = String(processingId);
@@ -268,6 +244,9 @@ export default function FormPage() {
             }
           } catch (e) {
             // Silently fail - don't block user
+            if (process.env.NODE_ENV === 'development') {
+              console.error('Error processing location webhook response:', e);
+            }
           }
         }
       })

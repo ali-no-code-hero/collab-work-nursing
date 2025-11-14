@@ -97,8 +97,55 @@ export async function POST(request: NextRequest) {
       }, { status: 500 });
     }
 
+    // Parse JSON response and extract ID
+    // Read response as text first (can only read body once)
     const responseText = await response.text();
-    return NextResponse.json({ success: true, response: responseText });
+    let apiResponse: any = null;
+    let extractedId: string | null = null;
+    
+    try {
+      // Try to parse as JSON
+      apiResponse = JSON.parse(responseText);
+      
+      // Extract ID from various possible response formats
+      if (Array.isArray(apiResponse) && apiResponse.length > 0) {
+        const firstItem = apiResponse[0];
+        if (typeof firstItem === 'string') {
+          // If it's a JSON string, parse it
+          try {
+            const parsed = JSON.parse(firstItem);
+            extractedId = parsed.id || parsed.processing_id || parsed.processingId || null;
+          } catch {
+            // Not JSON, try regex
+            const idMatch = firstItem.match(/"id"\s*:\s*"?(\d+)"?/i) || firstItem.match(/id["\s:=]+(\d+)/i);
+            extractedId = idMatch ? idMatch[1] : null;
+          }
+        } else if (typeof firstItem === 'object' && firstItem !== null) {
+          extractedId = firstItem.id || firstItem.processing_id || firstItem.processingId || null;
+        }
+      } else if (typeof apiResponse === 'object' && apiResponse !== null && !Array.isArray(apiResponse)) {
+        extractedId = apiResponse.id || apiResponse.processing_id || apiResponse.processingId || null;
+      }
+      
+      // Convert ID to string if found
+      if (extractedId !== null) {
+        extractedId = String(extractedId);
+      }
+    } catch (parseError) {
+      // If JSON parsing fails, try to extract ID from text using regex
+      const idMatch = responseText.match(/"id"\s*:\s*"?(\d+)"?/i) || responseText.match(/id["\s:=]+(\d+)/i);
+      extractedId = idMatch ? String(idMatch[1]) : null;
+      
+      if (process.env.NODE_ENV === 'development') {
+        console.warn('Failed to parse JSON response, used regex fallback:', parseError);
+      }
+    }
+    
+    return NextResponse.json({ 
+      success: true, 
+      id: extractedId,
+      response: apiResponse || responseText
+    });
   } catch (error) {
     console.error('Error in webhook-location API:', {
       error: error instanceof Error ? error.message : String(error),
