@@ -285,6 +285,21 @@ export default function FormPage() {
         return;
       }
       
+      // Track Facebook Pixel Lead event when email is entered and validated
+      if (typeof window !== 'undefined' && window.fbq) {
+        try {
+          window.fbq('track', 'Lead', {
+            content_name: 'Email Subscription',
+            content_category: 'Newsletter Signup'
+          });
+        } catch (error) {
+          // Silently fail if pixel hasn't loaded yet
+          if (process.env.NODE_ENV === 'development') {
+            console.error('Facebook Pixel Lead event error:', error);
+          }
+        }
+      }
+      
       // Send email to Zapier webhook when email is entered and continue is clicked
       try {
         if (process.env.NODE_ENV === 'development') {
