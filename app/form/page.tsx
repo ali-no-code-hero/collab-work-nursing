@@ -170,6 +170,13 @@ export default function FormPage() {
           timeout: 10000,
           enableHighAccuracy: false,
         });
+      }).catch((error: GeolocationPositionError) => {
+        // Suppress timeout errors in console - they're expected when user denies or location is unavailable
+        if (error.code === 3) { // TIMEOUT
+          // Timeout is expected behavior, don't log as error
+          throw error;
+        }
+        throw error;
       });
 
       // Reverse geocode to get city and state
@@ -188,7 +195,13 @@ export default function FormPage() {
         }));
       }
     } catch (error) {
-      console.error('Error getting location:', error);
+      // Only log non-timeout errors (timeouts are expected when location is unavailable)
+      const geolocationError = error as GeolocationPositionError;
+      if (geolocationError.code !== 3) { // Not a timeout error
+        if (process.env.NODE_ENV === 'development') {
+          console.error('Error getting location:', error);
+        }
+      }
       // Only show error if user hasn't manually entered location yet
       if (!formData.city && !formData.state) {
         setLocationError('Could not automatically detect your location. Please enter it manually.');
