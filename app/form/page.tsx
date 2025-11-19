@@ -239,7 +239,7 @@ export default function FormPage() {
         // If stateName contains a comma or dash, extract the relevant part
         if (stateName && (stateName.includes(',') || stateName.includes('-'))) {
           // Take the part after comma/dash, or the first part
-          const parts = stateName.split(/[,-]/).map(p => p.trim());
+          const parts = stateName.split(/[,-]/).map((p: string) => p.trim());
           stateName = parts[parts.length - 1] || parts[0] || stateName;
         }
         
