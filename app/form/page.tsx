@@ -209,14 +209,88 @@ export default function FormPage() {
 
         const data = await response.json();
         
-        const stateName = data.principalSubdivision || data.region || '';
-        const stateCode = getStateCode(stateName);
-        const city = data.city || data.locality || '';
+        // Log API response in development for debugging (without coordinates)
+        if (process.env.NODE_ENV === 'development') {
+          console.log('Geocoding API response fields:', Object.keys(data));
+        }
+        
+        // Try multiple possible field names for state/region
+        // BigDataCloud API can return data in different structures
+        let stateName = data.principalSubdivision || 
+                       data.region || 
+                       data.administrativeArea || 
+                       data.province ||
+                       data.state ||
+                       '';
+        
+        // Check nested localityInfo structure (common in BigDataCloud responses)
+        if (!stateName && data.localityInfo?.administrative) {
+          // Administrative array: [0]=country, [1]=state, [2]=county typically
+          // Try index 1 first (most common for state), then try others
+          const adminArray = data.localityInfo.administrative;
+          if (adminArray[1]?.name) {
+            stateName = adminArray[1].name;
+          } else if (adminArray[0]?.name && adminArray[0].name !== 'United States') {
+            // If first isn't country name, might be state
+            stateName = adminArray[0].name;
+          }
+        }
+        
+        // If stateName contains a comma or dash, extract the relevant part
+        if (stateName && (stateName.includes(',') || stateName.includes('-'))) {
+          // Take the part after comma/dash, or the first part
+          const parts = stateName.split(/[,-]/).map(p => p.trim());
+          stateName = parts[parts.length - 1] || parts[0] || stateName;
+        }
+        
+        // Try multiple possible field names for city
+        let city = data.city || 
+                  data.locality || 
+                  data.municipality ||
+                  '';
+        
+        // Check nested localityInfo structure for city
+        if (!city && data.localityInfo) {
+          city = data.localityInfo.locality?.name || 
+                 data.localityInfo.administrative?.[2]?.name || // Sometimes city is at index 2
+                 '';
+        }
+        
+        let stateCode = getStateCode(stateName);
+        
+        // Fallback: if we have stateName but no valid state code, try to find any valid US state in the response
+        if (!stateCode && stateName) {
+          // Check if any part of the stateName matches a US state
+          const stateWords = stateName.toUpperCase().split(/\s+/);
+          for (const word of stateWords) {
+            const matchedState = US_STATES.find(s => 
+              s.name.toUpperCase().includes(word) || 
+              s.code === word
+            );
+            if (matchedState) {
+              stateCode = matchedState.code;
+              break;
+            }
+          }
+        }
+
+        if (process.env.NODE_ENV === 'development') {
+          console.log('Extracted location data:', { 
+            city: city ? 'found' : 'missing', 
+            stateName: stateName || 'missing',
+            stateCode: stateCode || 'missing'
+          });
+        }
 
         if (!city || !stateCode) {
-          // Log incomplete data only in development
+          // Log incomplete data only in development with more details
           if (process.env.NODE_ENV === 'development') {
-            console.warn('Incomplete geocoding data received');
+            console.warn('Incomplete geocoding data:', {
+              hasCity: !!city,
+              hasStateCode: !!stateCode,
+              stateName: stateName,
+              availableFields: Object.keys(data)
+            });
           }
           throw new Error('Could not determine city or state from location');
         }
@@ -235,9 +309,13 @@ export default function FormPage() {
         }
 
       } catch (geocodeError) {
-        // Log geocoding errors only in development
+        // Log geocoding errors only in development with more context
         if (process.env.NODE_ENV === 'development') {
           console.error('Reverse geocoding error:', geocodeError instanceof Error ? geocodeError.message : 'Unknown error');
+          // Also log the response if available (but not the full data to avoid exposing coordinates)
+          if (geocodeError instanceof Error && geocodeError.message.includes('status')) {
+            console.error('API response status indicates failure');
+          }
         }
         // Even if reverse geocoding fails, show error and let user enter manually
         setLocationError('Location detected but could not determine city/state. Please enter manually.');
@@ -669,7 +747,7 @@ export default function FormPage() {
                     e.preventDefault();
                     getLocationFromBrowser();
                   }}
-                  className="mb-4 w-full sm:w-auto px-4 py-2.5 bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-lg transition-colors duration-200 flex items-center justify-center gap-2"
+                  className="mb-4 w-full sm:w-auto px-4 py-2 bg-primary dark:bg-primary-dark-mode text-white text-sm font-semibold rounded-lg hover:bg-primary-hover dark:hover:bg-primary-dark-hover transition-all duration-200 shadow-sm hover:shadow-md flex items-center justify-center gap-2"
                 >
                   <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
