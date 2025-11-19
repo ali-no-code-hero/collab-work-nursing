@@ -505,7 +505,7 @@ export default function FormPage() {
         }
 
         // Redirect to jobs page
-        router.push('/');
+        router.push('/jobs');
       } else {
         const errorData = await response.json().catch(() => ({}));
         setErrors({ submit: errorData.message || 'Failed to submit form. Please try again.' });
