@@ -149,8 +149,16 @@ export default function FormPage() {
 
   // Try to get location from geolocation API
   useEffect(() => {
+    // Don't auto-request on mobile devices - they need explicit user interaction
+    // iOS Safari requires a user gesture to request location
     if (currentStep === 2 && !formData.city && !formData.state) {
-      getLocationFromBrowser();
+      const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
+      
+      if (!isMobile) {
+        // Auto-request on desktop only
+        getLocationFromBrowser();
+      }
+      // On mobile, user will click the "Use My Current Location" button
     }
   }, [currentStep]);
 
@@ -165,46 +173,105 @@ export default function FormPage() {
     }
 
     try {
+      // Increased timeout for mobile devices, especially iOS
       const position = await new Promise<GeolocationPosition>((resolve, reject) => {
-        navigator.geolocation.getCurrentPosition(resolve, reject, {
-          timeout: 10000,
-          enableHighAccuracy: false,
-        });
-      }).catch((error: GeolocationPositionError) => {
-        // Suppress timeout errors in console - they're expected when user denies or location is unavailable
-        if (error.code === 3) { // TIMEOUT
-          // Timeout is expected behavior, don't log as error
-          throw error;
-        }
-        throw error;
+        navigator.geolocation.getCurrentPosition(
+          resolve, 
+          reject, 
+          {
+            timeout: 20000, // Increased to 20 seconds for iOS
+            enableHighAccuracy: false,
+            maximumAge: 300000, // Accept cached location up to 5 minutes old
+          }
+        );
       });
 
-      // Reverse geocode to get city and state
-      const response = await fetch(
-        `https://api.bigdatacloud.net/data/reverse-geocode-client?latitude=${position.coords.latitude}&longitude=${position.coords.longitude}&localityLanguage=en`
-      );
+      // Log success only in development, without exposing exact coordinates
+      if (process.env.NODE_ENV === 'development') {
+        console.log('Geolocation success - coordinates received');
+      }
 
-      if (response.ok) {
+      // Reverse geocode to get city and state
+      try {
+        const response = await fetch(
+          `https://api.bigdatacloud.net/data/reverse-geocode-client?latitude=${position.coords.latitude}&longitude=${position.coords.longitude}&localityLanguage=en`,
+          {
+            method: 'GET',
+            headers: {
+              'Accept': 'application/json',
+            },
+          }
+        );
+
+        if (!response.ok) {
+          throw new Error(`Reverse geocoding failed: ${response.status}`);
+        }
+
         const data = await response.json();
+        
         const stateName = data.principalSubdivision || data.region || '';
         const stateCode = getStateCode(stateName);
+        const city = data.city || data.locality || '';
+
+        if (!city || !stateCode) {
+          // Log incomplete data only in development
+          if (process.env.NODE_ENV === 'development') {
+            console.warn('Incomplete geocoding data received');
+          }
+          throw new Error('Could not determine city or state from location');
+        }
+
         setFormData(prev => ({
           ...prev,
-          city: data.city || data.locality || '',
+          city: city,
           state: stateCode,
         }));
-      }
-    } catch (error) {
-      // Only log non-timeout errors (timeouts are expected when location is unavailable)
-      const geolocationError = error as GeolocationPositionError;
-      if (geolocationError.code !== 3) { // Not a timeout error
+
+        // Clear any previous errors
+        setLocationError(null);
+
         if (process.env.NODE_ENV === 'development') {
-          console.error('Error getting location:', error);
+          console.log('Location set successfully');
         }
+
+      } catch (geocodeError) {
+        // Log geocoding errors only in development
+        if (process.env.NODE_ENV === 'development') {
+          console.error('Reverse geocoding error:', geocodeError instanceof Error ? geocodeError.message : 'Unknown error');
+        }
+        // Even if reverse geocoding fails, show error and let user enter manually
+        setLocationError('Location detected but could not determine city/state. Please enter manually.');
       }
+
+    } catch (error) {
+      const geolocationError = error as GeolocationPositionError;
+      
+      // Log errors only in development, and only error codes (not sensitive data)
+      if (process.env.NODE_ENV === 'development') {
+        console.error('Geolocation error code:', geolocationError.code);
+      }
+
+      // Handle different error codes with user-friendly messages
+      let errorMessage = 'Could not automatically detect your location. Please enter it manually.';
+      
+      switch (geolocationError.code) {
+        case 1: // PERMISSION_DENIED
+          errorMessage = 'Location permission was denied. Please enter your location manually.';
+          break;
+        case 2: // POSITION_UNAVAILABLE
+          errorMessage = 'Location information is unavailable. Please enter your location manually.';
+          break;
+        case 3: // TIMEOUT
+          errorMessage = 'Location request timed out. Please enter your location manually.';
+          break;
+        default:
+          // Use default message for unknown errors
+          break;
+      }
+
       // Only show error if user hasn't manually entered location yet
       if (!formData.city && !formData.state) {
-        setLocationError('Could not automatically detect your location. Please enter it manually.');
+        setLocationError(errorMessage);
       }
     } finally {
       setIsLoadingLocation(false);
@@ -593,6 +660,24 @@ export default function FormPage() {
               <p className="text-sm sm:text-base text-gray-600 dark:text-ink-dark-soft mb-3 sm:mb-4 lg:mb-6 transition-colors duration-200">
                 We'll match you with nursing jobs near you — no spam, just relevant opportunities.
               </p>
+
+              {/* Button for manual location trigger - required for iOS Safari */}
+              {!isLoadingLocation && !formData.city && !formData.state && (
+                <button
+                  type="button"
+                  onClick={(e) => {
+                    e.preventDefault();
+                    getLocationFromBrowser();
+                  }}
+                  className="mb-4 w-full sm:w-auto px-4 py-2.5 bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-lg transition-colors duration-200 flex items-center justify-center gap-2"
+                >
+                  <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
+                  </svg>
+                  Use My Current Location
+                </button>
+              )}
 
               {isLoadingLocation && (
                 <div className="mb-4 p-4 bg-blue-50 dark:bg-blue-900/20 rounded-lg border border-blue-200 dark:border-blue-800 transition-colors duration-200">
