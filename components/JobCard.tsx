@@ -106,20 +106,20 @@ export default function JobCard({ job, email }: { job: Job; email?: string | nul
   const shortDescription = isDescriptionLong ? (job.description?.substring(0, 100) + '...') : (job.description || '');
 
   return (
-    <article className="bg-white dark:bg-surface-dark-alt rounded-lg shadow-sm border border-gray-200 dark:border-border-dark p-4 sm:p-6 hover:shadow-md dark:hover:shadow-lg transition-all duration-200">
-      <div className="flex flex-col sm:flex-row items-start gap-4">
+    <article className="bg-white dark:bg-surface-dark-alt rounded-lg shadow-sm border border-gray-200 dark:border-border-dark p-3 sm:p-4 md:p-6 hover:shadow-md dark:hover:shadow-lg transition-all duration-200">
+      <div className="flex flex-col sm:flex-row items-start gap-3 sm:gap-4">
         {/* Company Logo */}
         <div className="flex-shrink-0">
           {job.logo ? (
             <img
               src={job.logo}
               alt={`${job.company} logo`}
-              className="w-16 h-16 rounded-full object-cover border-2 border-gray-100 dark:border-border-dark transition-colors duration-200"
+              className="w-12 h-12 sm:w-16 sm:h-16 rounded-full object-cover border-2 border-gray-100 dark:border-border-dark transition-colors duration-200"
               loading="lazy"
             />
           ) : (
-            <div className="w-16 h-16 rounded-full bg-blue-100 dark:bg-blue-900/30 border-2 border-gray-100 dark:border-border-dark flex items-center justify-center transition-colors duration-200">
-              <span className="text-2xl font-bold text-blue-600 dark:text-blue-400 transition-colors duration-200">
+            <div className="w-12 h-12 sm:w-16 sm:h-16 rounded-full bg-blue-100 dark:bg-blue-900/30 border-2 border-gray-100 dark:border-border-dark flex items-center justify-center transition-colors duration-200">
+              <span className="text-xl sm:text-2xl font-bold text-blue-600 dark:text-blue-400 transition-colors duration-200">
                 {getCompanyInitial()}
               </span>
             </div>
@@ -128,24 +128,24 @@ export default function JobCard({ job, email }: { job: Job; email?: string | nul
 
         <div className="flex-1 min-w-0">
           {/* Job Title and Company */}
-          <div className="mb-2">
-            <h3 className="text-xl font-bold text-gray-900 dark:text-ink-dark mb-1 transition-colors duration-200">{job.title}</h3>
-            <p className="text-gray-700 dark:text-ink-dark-soft font-medium transition-colors duration-200">{job.company}</p>
-            <p className="text-gray-600 dark:text-ink-dark-muted text-sm transition-colors duration-200">
+          <div className="mb-1.5 sm:mb-2">
+            <h3 className="text-lg sm:text-xl font-bold text-gray-900 dark:text-ink-dark mb-0.5 sm:mb-1 transition-colors duration-200">{job.title}</h3>
+            <p className="text-gray-700 dark:text-ink-dark-soft font-medium text-sm sm:text-base transition-colors duration-200">{job.company}</p>
+            <p className="text-gray-600 dark:text-ink-dark-muted text-xs sm:text-sm transition-colors duration-200">
               {job.location || 'Location not specified'}
               {job.isRemote && ' • Remote'}
             </p>
           </div>
 
           {/* Salary */}
-          <div className="mb-3">
-            <span className="text-green-600 dark:text-green-400 font-semibold text-lg transition-colors duration-200">
+          <div className="mb-2 sm:mb-3">
+            <span className="text-green-600 dark:text-green-400 font-semibold text-base sm:text-lg transition-colors duration-200">
               {formatSalary()}
             </span>
           </div>
 
-          {/* Description */}
-          <div className="mb-4">
+          {/* Description - hidden on very small screens, show on sm+ */}
+          <div className="mb-2 sm:mb-4 hidden sm:block">
             <p className="text-gray-700 dark:text-ink-dark-soft text-sm leading-relaxed transition-colors duration-200">
               {isExpanded ? (job.description || '') : shortDescription}
             </p>
@@ -159,9 +159,9 @@ export default function JobCard({ job, email }: { job: Job; email?: string | nul
             )}
           </div>
 
-          {/* Tags */}
+          {/* Tags - hidden on very small screens */}
           {job.tags && job.tags.length > 0 && (
-            <div className="mb-4 flex flex-wrap gap-2">
+            <div className="mb-2 sm:mb-4 flex flex-wrap gap-2 hidden sm:flex">
               {job.tags.slice(0, 3).map((tag, i) => (
                 <span
                   key={i}
@@ -174,22 +174,22 @@ export default function JobCard({ job, email }: { job: Job; email?: string | nul
           )}
 
           {/* Actions and Meta */}
-          <div className="flex flex-col gap-4 w-full">
+          <div className="flex flex-col gap-2 sm:gap-4 w-full">
             {/* Apply Now button - more prominent on mobile */}
             <div className="flex items-center justify-center sm:justify-start">
               <a
                 href={job.url || '#'}
                 target="_blank"
                 rel="noreferrer"
-                className="!text-white w-full sm:w-auto px-6 py-3.5 sm:px-4 sm:py-2 sm:px-6 rounded-lg font-semibold sm:font-medium text-base sm:text-sm transition-all duration-200 whitespace-nowrap bg-primary dark:bg-primary-dark-mode hover:bg-primary-hover dark:hover:bg-primary-dark-hover shadow-md hover:shadow-lg active:scale-95 text-center"
+                className="!text-white w-full sm:w-auto px-6 py-3 sm:py-3.5 sm:px-4 sm:py-2 sm:px-6 rounded-lg font-semibold sm:font-medium text-base sm:text-sm transition-all duration-200 whitespace-nowrap bg-primary dark:bg-primary-dark-mode hover:bg-primary-hover dark:hover:bg-primary-dark-hover shadow-md hover:shadow-lg active:scale-95 text-center"
                 onClick={handleApplyClick}
               >
                 Apply Now
               </a>
             </div>
 
-            {/* Meta info - below button on mobile */}
-            <div className="text-center sm:text-left sm:text-right text-xs text-gray-500 dark:text-ink-dark-muted transition-colors duration-200">
+            {/* Meta info - below button on mobile, hidden on very small screens */}
+            <div className="text-center sm:text-left sm:text-right text-xs text-gray-500 dark:text-ink-dark-muted transition-colors duration-200 hidden sm:block">
               <div className="flex items-center justify-center sm:justify-end gap-1 mb-1">
                 <span className="text-orange-500 dark:text-orange-400">🔥</span>
                 <span className="break-words">{applicationCount ? `${applicationCount} nurses applied this week` : 'Loading...'}</span>
