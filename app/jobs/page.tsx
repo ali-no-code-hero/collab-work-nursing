@@ -559,7 +559,7 @@ export default function Page() {
 
       {/* Jobs */}
       <section className="pt-3 sm:pt-6 md:pt-8 lg:pt-12 pb-12 bg-gray-50 dark:bg-surface-dark-alt transition-colors duration-200">
-        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+        <div className="mx-auto max-w-7xl px-3 sm:px-4 md:px-6 lg:px-8">
                   {loading ? (
                     <div className="bg-white dark:bg-surface-dark-alt rounded-lg shadow-sm border border-gray-200 dark:border-border-dark p-8 text-center transition-colors duration-200">
                       <h3 className="text-xl font-semibold text-gray-900 dark:text-ink-dark mb-2 transition-colors duration-200">

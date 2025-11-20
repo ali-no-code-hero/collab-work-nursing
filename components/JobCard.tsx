@@ -103,11 +103,14 @@ export default function JobCard({ job, email }: { job: Job; email?: string | nul
 
   // Check if description is long (more than 100 characters)
   const isDescriptionLong = job.description && job.description.length > 100;
-  const shortDescription = isDescriptionLong ? (job.description?.substring(0, 100) + '...') : (job.description || '');
+  // Shorter preview on mobile (60 chars) to save space, longer on desktop (100 chars)
+  const shortDescription = isDescriptionLong 
+    ? (job.description?.substring(0, 60) + '...') 
+    : (job.description || '');
 
   return (
-    <article className="bg-white dark:bg-surface-dark-alt rounded-lg shadow-sm border border-gray-200 dark:border-border-dark p-3 sm:p-4 md:p-6 hover:shadow-md dark:hover:shadow-lg transition-all duration-200">
-      <div className="flex flex-col sm:flex-row items-start gap-3 sm:gap-4">
+    <article className="bg-white dark:bg-surface-dark-alt rounded-lg shadow-sm border border-gray-200 dark:border-border-dark p-3 sm:p-4 md:p-6 hover:shadow-md dark:hover:shadow-lg transition-all duration-200 w-full">
+      <div className="flex flex-col sm:flex-row items-start gap-2.5 sm:gap-4">
         {/* Company Logo */}
         <div className="flex-shrink-0">
           {job.logo ? (
@@ -144,28 +147,28 @@ export default function JobCard({ job, email }: { job: Job; email?: string | nul
             </span>
           </div>
 
-          {/* Description - hidden on very small screens, show on sm+ */}
-          <div className="mb-2 sm:mb-4 hidden sm:block">
-            <p className="text-gray-700 dark:text-ink-dark-soft text-sm leading-relaxed transition-colors duration-200">
+          {/* Description - show on all screens with shorter preview on mobile */}
+          <div className="mb-2 sm:mb-4">
+            <p className="text-gray-700 dark:text-ink-dark-soft text-xs sm:text-sm leading-relaxed transition-colors duration-200">
               {isExpanded ? (job.description || '') : shortDescription}
             </p>
             {isDescriptionLong && (
               <button
                 onClick={() => setIsExpanded(!isExpanded)}
-                className="text-primary dark:text-primary-dark-mode text-sm font-medium mt-1 hover:text-primary-hover dark:hover:text-primary-dark-hover transition-colors duration-200"
+                className="text-primary dark:text-primary-dark-mode text-xs sm:text-sm font-medium mt-0.5 sm:mt-1 hover:text-primary-hover dark:hover:text-primary-dark-hover transition-colors duration-200"
               >
                 {isExpanded ? 'Show less' : 'Show more'}
               </button>
             )}
           </div>
 
-          {/* Tags - hidden on very small screens */}
+          {/* Tags - show fewer on mobile, more on desktop */}
           {job.tags && job.tags.length > 0 && (
-            <div className="mb-2 sm:mb-4 flex flex-wrap gap-2 hidden sm:flex">
-              {job.tags.slice(0, 3).map((tag, i) => (
+            <div className="mb-2 sm:mb-4 flex flex-wrap gap-1.5 sm:gap-2">
+              {job.tags.slice(0, 2).map((tag, i) => (
                 <span
                   key={i}
-                  className="px-3 py-1 bg-blue-100 dark:bg-blue-900/20 text-blue-700 dark:text-blue-300 rounded-full text-xs font-medium border border-blue-200 dark:border-blue-800 transition-colors duration-200"
+                  className="px-2 sm:px-3 py-0.5 sm:py-1 bg-blue-100 dark:bg-blue-900/20 text-blue-700 dark:text-blue-300 rounded-full text-xs font-medium border border-blue-200 dark:border-blue-800 transition-colors duration-200"
                 >
                   {tag}
                 </span>
@@ -188,13 +191,13 @@ export default function JobCard({ job, email }: { job: Job; email?: string | nul
               </a>
             </div>
 
-            {/* Meta info - below button on mobile, hidden on very small screens */}
-            <div className="text-center sm:text-left sm:text-right text-xs text-gray-500 dark:text-ink-dark-muted transition-colors duration-200 hidden sm:block">
-              <div className="flex items-center justify-center sm:justify-end gap-1 mb-1">
+            {/* Meta info - below button on mobile, compact on mobile */}
+            <div className="text-center sm:text-left sm:text-right text-xs text-gray-500 dark:text-ink-dark-muted transition-colors duration-200">
+              <div className="flex items-center justify-center sm:justify-end gap-1 mb-0.5 sm:mb-1">
                 <span className="text-orange-500 dark:text-orange-400">🔥</span>
-                <span className="break-words">{applicationCount ? `${applicationCount} nurses applied this week` : 'Loading...'}</span>
+                <span className="break-words text-xs">{applicationCount ? `${applicationCount} nurses applied this week` : 'Loading...'}</span>
               </div>
-              <div>Posted {formatPostedDate()}</div>
+              <div className="text-xs">Posted {formatPostedDate()}</div>
             </div>
           </div>
         </div>
