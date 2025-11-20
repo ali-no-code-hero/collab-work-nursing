@@ -517,9 +517,9 @@ export default function Page() {
     <div className="min-h-screen bg-white dark:bg-surface-dark overflow-x-hidden transition-colors duration-200">
       {/* Hero Section */}
       <section className="bg-white dark:bg-surface-dark border-b border-gray-200 dark:border-border-dark transition-colors duration-200">
-        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-12">
+        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-6 sm:py-8 md:py-12">
           {/* Subscription Status */}
-          <div className="flex items-center gap-2 mb-6">
+          <div className="flex items-center gap-2 mb-4 sm:mb-6">
             <div className="w-5 h-5 bg-green-500 dark:bg-green-600 rounded-full flex items-center justify-center transition-colors duration-200">
               <svg className="w-3 h-3 text-white" fill="currentColor" viewBox="0 0 20 20">
                 <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
@@ -529,7 +529,7 @@ export default function Page() {
           </div>
 
           {/* Main Heading */}
-          <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold text-gray-900 dark:text-ink-dark mb-6 leading-tight transition-colors duration-200">
+          <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold text-gray-900 dark:text-ink-dark mb-4 sm:mb-6 leading-tight transition-colors duration-200">
             {noResults ? (
               TEXT.headingNoJobs
             ) : (
@@ -539,9 +539,9 @@ export default function Page() {
 
           {/* Matching Criteria - only show when there are results */}
           {!noResults && jobs.length > 0 && (
-            <div className="flex flex-col sm:flex-row sm:flex-wrap sm:items-center gap-3 text-base text-gray-600 dark:text-ink-dark-soft transition-colors duration-200">
-              <span className="mb-2 sm:mb-0">{TEXT.matchingNetworkText}</span>
-              <div className="flex flex-wrap gap-2 sm:gap-3">
+            <div className="flex flex-col sm:flex-row sm:flex-wrap sm:items-center gap-2 sm:gap-3 text-sm sm:text-base text-gray-600 dark:text-ink-dark-soft transition-colors duration-200">
+              <span className="mb-1 sm:mb-0">{TEXT.matchingNetworkText}</span>
+              <div className="flex flex-wrap gap-2">
                 <span className="px-3 sm:px-4 py-2 bg-blue-50 dark:bg-blue-900/20 text-blue-700 dark:text-blue-300 rounded-lg text-xs sm:text-sm font-medium flex items-center gap-2 whitespace-nowrap border border-blue-200 dark:border-blue-800 transition-colors duration-200">
                   📍 <span className="truncate max-w-[150px] sm:max-w-none">{subscriberLocation}</span> location
                 </span>
@@ -558,7 +558,7 @@ export default function Page() {
       </section>
 
       {/* Jobs */}
-      <section className="py-12 bg-gray-50 dark:bg-surface-dark-alt transition-colors duration-200">
+      <section className="pt-6 sm:pt-8 md:pt-12 pb-12 bg-gray-50 dark:bg-surface-dark-alt transition-colors duration-200">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
                   {loading ? (
                     <div className="bg-white dark:bg-surface-dark-alt rounded-lg shadow-sm border border-gray-200 dark:border-border-dark p-8 text-center transition-colors duration-200">

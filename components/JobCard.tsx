@@ -174,21 +174,23 @@ export default function JobCard({ job, email }: { job: Job; email?: string | nul
           )}
 
           {/* Actions and Meta */}
-          <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-4 w-full">
-            <div className="flex items-center gap-3">
+          <div className="flex flex-col gap-4 w-full">
+            {/* Apply Now button - more prominent on mobile */}
+            <div className="flex items-center justify-center sm:justify-start">
               <a
                 href={job.url || '#'}
                 target="_blank"
                 rel="noreferrer"
-                className="!text-white px-4 sm:px-6 py-2 rounded-lg font-medium transition-all duration-200 whitespace-nowrap bg-primary dark:bg-primary-dark-mode hover:bg-primary-hover dark:hover:bg-primary-dark-hover shadow-sm hover:shadow-md"
+                className="!text-white w-full sm:w-auto px-6 py-3.5 sm:px-4 sm:py-2 sm:px-6 rounded-lg font-semibold sm:font-medium text-base sm:text-sm transition-all duration-200 whitespace-nowrap bg-primary dark:bg-primary-dark-mode hover:bg-primary-hover dark:hover:bg-primary-dark-hover shadow-md hover:shadow-lg active:scale-95 text-center"
                 onClick={handleApplyClick}
               >
                 Apply Now
               </a>
             </div>
 
-            <div className="text-left sm:text-right text-xs text-gray-500 dark:text-ink-dark-muted transition-colors duration-200">
-              <div className="flex items-center gap-1 mb-1">
+            {/* Meta info - below button on mobile */}
+            <div className="text-center sm:text-left sm:text-right text-xs text-gray-500 dark:text-ink-dark-muted transition-colors duration-200">
+              <div className="flex items-center justify-center sm:justify-end gap-1 mb-1">
                 <span className="text-orange-500 dark:text-orange-400">🔥</span>
                 <span className="break-words">{applicationCount ? `${applicationCount} nurses applied this week` : 'Loading...'}</span>
               </div>
