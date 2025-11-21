@@ -20,7 +20,7 @@ const nextConfig = {
           },
           {
             key: 'X-Frame-Options',
-            value: 'DENY'
+            value: 'SAMEORIGIN' // Allows Facebook/Instagram to embed
           },
           {
             key: 'X-XSS-Protection',
@@ -38,7 +38,7 @@ const nextConfig = {
             key: 'Content-Security-Policy',
             // Note: 'unsafe-inline' and 'unsafe-eval' are required for Microsoft Clarity and Vercel Live
             // Consider implementing nonces/hashes for stricter CSP in the future
-            value: "default-src 'self'; script-src 'self' 'unsafe-eval' 'unsafe-inline' https://www.clarity.ms https://scripts.clarity.ms https://vercel.live https://connect.facebook.net; style-src 'self' 'unsafe-inline'; img-src 'self' data: https:; font-src 'self'; connect-src 'self' https://api.collabwork.com https://api.surveyjs.io https://www.clarity.ms https://scripts.clarity.ms https://j.clarity.ms https://f.clarity.ms https://b.clarity.ms https://api.bigdatacloud.net https://hooks.zapier.com https://connect.facebook.net https://www.facebook.com; frame-src 'self' https://vercel.live; frame-ancestors 'none';"
+            value: "default-src 'self'; script-src 'self' 'unsafe-eval' 'unsafe-inline' https://www.clarity.ms https://scripts.clarity.ms https://vercel.live https://connect.facebook.net; style-src 'self' 'unsafe-inline'; img-src 'self' data: https:; font-src 'self'; connect-src 'self' https://api.collabwork.com https://api.surveyjs.io https://www.clarity.ms https://scripts.clarity.ms https://j.clarity.ms https://f.clarity.ms https://b.clarity.ms https://api.bigdatacloud.net https://hooks.zapier.com https://connect.facebook.net https://www.facebook.com; frame-src 'self' https://vercel.live https://www.facebook.com https://web.facebook.com; frame-ancestors 'self' https://www.facebook.com https://web.facebook.com https://*.facebook.com https://*.instagram.com;"
           }
         ],
       },

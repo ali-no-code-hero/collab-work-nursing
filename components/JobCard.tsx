@@ -184,7 +184,7 @@ export default function JobCard({ job, email }: { job: Job; email?: string | nul
                 href={job.url || '#'}
                 target="_blank"
                 rel="noreferrer"
-                className="!text-white w-full sm:w-auto px-6 py-3 sm:py-3.5 sm:px-4 sm:py-2 sm:px-6 rounded-lg font-semibold sm:font-medium text-base sm:text-sm transition-all duration-200 whitespace-nowrap bg-primary dark:bg-primary-dark-mode hover:bg-primary-hover dark:hover:bg-primary-dark-hover shadow-md hover:shadow-lg active:scale-95 text-center"
+                className="!text-white w-full sm:w-auto px-6 py-3.5 sm:px-4 sm:py-2 sm:px-6 rounded-lg font-semibold sm:font-medium text-base sm:text-sm transition-all duration-200 whitespace-nowrap bg-primary dark:bg-primary-dark-mode hover:bg-primary-hover dark:hover:bg-primary-dark-hover shadow-md hover:shadow-lg active:scale-95 text-center min-h-[44px] touch-manipulation"
                 onClick={handleApplyClick}
               >
                 Learn More
